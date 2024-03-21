@@ -1,22 +1,49 @@
 version 1.0
 
+workflow AnnotateVCFWorkflow {
+    input {
+        File input_vcf
+        String output_annotated_file_name
+        Boolean use_reference_disk
+        String cloud_provider
+        File omim_annotations
+    }
+
+    # Determine docker prefix based on cloud provider
+    String gcr_docker_prefix = "us.gcr.io/broad-gotc-prod/"
+    String acr_docker_prefix = "dsppipelinedev.azurecr.io/"
+
+    String docker_prefix = if cloud_provider == "gcp" then gcr_docker_prefix else acr_docker_prefix
+
+    # Define docker images
+    String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
+
+    call AnnotateVCF {
+        input:
+            input_vcf = input_vcf,
+            output_annotated_file_name = output_annotated_file_name,
+            use_reference_disk = use_reference_disk,
+            cloud_provider = cloud_provider,
+            omim_annotations = omim_annotations,
+            docker_path = docker_prefix + nirvana_docker_image
+    }
+
+    output {
+        File positions_annotation_json = AnnotateVCF.positions_annotation_json
+        File genes_annotation_json = AnnotateVCF.genes_annotation_json
+    }
+}
+
 task AnnotateVCF {
     input {
         File input_vcf
         String output_annotated_file_name
-
-        # Mentioning this path in the inputs section of the task combined with checking the 'Use reference disks' option
-        # in Terra UI tells Cromwell to arrange for the Nirvana reference disk to be attached to this VM.
-        File summon_reference_disk =
-            "gs://broad-public-datasets/gvs/vat-annotations/Nirvana/3.18.1/SupplementaryAnnotation/GRCh38/MITOMAP_20200819.nsa.idx"
-
-        String variants_nirvana_docker
-
-        File omim_annotations = "gs://broad-public-datasets/gvs/vat-annotations/Nirvana/3.18.1/SupplementaryAnnotation/GRCh38/OMIM_20220516.nga"
         Boolean use_reference_disk
+        File omim_annotations
+        String cloud_provider
+        String docker_path
     }
 
-    File monitoring_script = "gs://gvs_quickstart_storage/cromwell_monitoring_script.sh"
 
     String annotation_json_name = output_annotated_file_name + ".json.gz"
     String gene_annotation_json_name = output_annotated_file_name + ".genes.json.gz"
@@ -32,7 +59,6 @@ task AnnotateVCF {
         PS4='\D{+%F %T} \w $ '
         set -o errexit -o nounset -o pipefail -o xtrace
 
-        bash ~{monitoring_script} > monitoring.log &
 
         if [[ "~{use_reference_disk}" == "true" ]]
         then
@@ -58,10 +84,18 @@ task AnnotateVCF {
                 exit 1
             fi
 
-            # Take the parent of the parent directory of this file as root of the locally mounted references:
+            # Take the parent of the parent directory of this file as root of the locally mounted  references:
             DATA_SOURCES_FOLDER="$(dirname $(dirname ${REFERENCE_PATH}))"
         else
-            DATA_SOURCES_FOLDER=/cromwell_root/nirvana_references
+            if [[ "~{cloud_provider}" == "azure" ]]; then
+                DATA_SOURCES_FOLDER=/cromwell-executions/nirvana_references
+            elif [[ "~{cloud_provider}" == "gcp" ]]; then
+                DATA_SOURCES_FOLDER=/cromwell_root/nirvana_references
+            else
+                >&2 echo "Invalid cloud_provider value. Please specify either 'azure' or 'gcp'."
+                exit 1
+            fi
+
             mkdir ${DATA_SOURCES_FOLDER}
 
             # Download the references
@@ -71,6 +105,7 @@ task AnnotateVCF {
             # Nirvana downloader. As this annotation set is currently central for our VAT logic, special-case link in
             # the OMIM .nsa bundle we downloaded back when we made the Delta reference disk:
             ln ~{omim_annotations} ${DATA_SOURCES_FOLDER}/SupplementaryAnnotation/GRCh38/
+
         fi
 
         # Create Nirvana annotations:
@@ -94,11 +129,10 @@ task AnnotateVCF {
         --in ~{annotation_json_name} \
         --section positions \
         --out ~{positions_annotation_json_name}
-
     >>>
 
     runtime {
-        docker: variants_nirvana_docker
+        docker: docker_path
         memory: "64 GB"
         cpu: "4"
         preemptible: 3
@@ -109,29 +143,5 @@ task AnnotateVCF {
     output {
         File genes_annotation_json = "~{gene_annotation_json_name}"
         File positions_annotation_json = "~{positions_annotation_json_name}"
-        File monitoring_log = "monitoring.log"
     }
 }
-
-workflow AnnotateVCFWorkflow {
-    input {
-        File input_vcf
-        String output_annotated_file_name
-        String variants_nirvana_docker
-        Boolean use_reference_disk
-    }
-
-    call AnnotateVCF {
-        input:
-            input_vcf = input_vcf,
-            output_annotated_file_name = output_annotated_file_name,
-            variants_nirvana_docker = variants_nirvana_docker,
-            use_reference_disk = use_reference_disk,
-    }
-
-    output {
-        File positions_annotation_json = AnnotateVCF.positions_annotation_json
-        File genes_annotation_json = AnnotateVCF.genes_annotation_json
-    }
-}
-
