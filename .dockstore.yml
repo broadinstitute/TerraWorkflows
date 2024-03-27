@@ -1,0 +1,6 @@
+version: 1.2
+workflows:
+
+  - name: VariantAnnotation
+    subclass: WDL
+    primaryDescriptorPath: /pipelines/cohort_screening/VariantAnnotation.wdl
