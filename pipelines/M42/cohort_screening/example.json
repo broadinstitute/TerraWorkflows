@@ -1,0 +1,7 @@
+{
+	"AnnotateVCFWorkflow.omim_annotations":"gs://broad-public-datasets/gvs/vat-annotations/Nirvana/3.18.1/SupplementaryAnnotation/GRCh38/OMIM_20220516.nga",
+	"AnnotateVCFWorkflow.input_vcf":"gs://fc-secure-46f2660f-d693-4dc1-b68c-56ea276977f4/CHMI_CHMI3_WGS2.f6c39eb5-0716-4f02-9be8-47b343c5830e.rb.g.vcf",
+	"AnnotateVCFWorkflow.output_annotated_file_name":"CHM1_CHM13_WGS2",
+	"AnnotateVCFWorkflow.use_reference_disk":"false",
+    "AnnotateVCFWorkflow.cloud_provider":"gcp"
+}
