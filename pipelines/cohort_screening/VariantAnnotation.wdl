@@ -14,23 +14,23 @@ workflow AnnotateVCFWorkflow {
     String gcr_docker_prefix = "us.gcr.io/broad-gotc-prod/"
     String acr_docker_prefix = "terraworkflows.azurecr.io/"
 
-    #TODO which gatk docker image to use for azure?
-    String gatk_gcr_docker_prefix = "us.gcr.io/broad-gatk/"
-    #String gatk_acr_docker_prefix = "terrapublic.azurecr.io/nirvana/"
-    #String gatk_acr_docker_prefix = "dsppipelinedev.azurecr.io/nirvana/"
-
     String docker_prefix = if cloud_provider == "gcp" then gcr_docker_prefix else acr_docker_prefix
+
+    #TODO which gatk docker image to use for azure?
+    String gatk_docker_path = if cloud_provider == "gcp" then gatk_gcr_docker_path else gatk_acr_docker_path
+    String gatk_gcr_docker_path= "us.gcr.io/broad-gatk/gatk:4.5.0.0"
+    String gatk_acr_docker_path= "dsppipelinedev.azurecr.io/gatk_squashed:latest"
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
-    String gatk_docker_image = "gatk:4.5.0.0"
+
 
     call FilterVCF {
         input:
             input_vcf = input_vcf,
             bed_file = bed_file,
             output_annotated_file_name = output_annotated_file_name,
-            docker_path = gatk_gcr_docker_prefix + gatk_docker_image
+            docker_path = gatk_docker_path
     }
 
     call AnnotateVCF {
