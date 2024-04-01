@@ -64,10 +64,14 @@ task filter_variants_for_gwas {
         # modify filter on missingness -- AC/AF filter yields ~25% missing GTs, probably due to multiallelic issues
         # one weird almost all het site is causing problem, but it's call rate is abyssmal, so just take it out
         #“–geno 0.1” tells PLINK to throw out every variant where more than 10% of the genotype calls are “NA”s.
-       plink2 --bgen ~{bgen} --sample ~{samples} \
-        --geno 0.9 \
-        --make-bed \
-        --out plink/missingness_filtered_data
+       test_plink2() {
+        plink2 --bgen ~{bgen} --sample ~{samples} \
+            --geno 0.9 \
+            --make-bed \
+            --out plink/missingness_filtered_data
+       }
+      
+       timeout 1m test_plink2
 
     >>>
 
