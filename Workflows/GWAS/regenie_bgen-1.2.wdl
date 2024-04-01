@@ -69,46 +69,6 @@ task filter_variants_for_gwas {
         --make-bed \
         --out plink/missingness_filtered_data
 
-       # skip remove duplicates variants and related samples
-       # skip allele frequency table no one uses
-
-        # filter on minor allele frequency
-        # --maf 0.05 removes all variants with a minor allele frequency less than 0.05
-        plink2 --bfile plink/missingness_filtered_data \
-        --maf 0.05 \
-        --make-bed \
-        --out plink/maf_filtered_data
-
-        #regenie still reports some low variance SNPs, so use AC
-        plink2 --bfile plink/maf_filtered_data \
-        --mac ~{mac_cutoff} \
-        --make-bed \
-        --out plink/max_filtered_data
-
-        # hardy weinberg filtering
-        # --hwe 1e-25 removes all variants with a Hardy-Weinberg p-value greater than 1e-25
-        plink2 --bfile plink/max_filtered_data \
-        --hwe 1e-25 keep-fewhet \
-        --make-bed \
-        --out plink/hwe_filtered_data
-
-        plink2 --bfile plink/hwe_filtered_data \
-        --set-missing-var-ids @:#\$1,\$2 \
-        --make-bed --out plink/hwe_filtered_data.newIDs \
-        --new-id-max-allele-len 1000
-
-        # linkage disequilibrium
-        # --ld-window-r2 0.5 sets the window size to 0.5
-        plink2 --bfile plink/hwe_filtered_data.newIDs \
-        --indep-pairwise 200kb 1 0.5 \
-        --out plink/ldpruned_snplist \
-        --rm-dup force-first
-
-        # prune the data
-        plink2 --bfile plink/hwe_filtered_data.newIDs \
-        --extract plink/ldpruned_snplist.prune.in \
-        --export bgen-1.2 \
-        --out plink/~{output_prefix}_ldpruned_data
     >>>
 
     output {
