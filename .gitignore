@@ -1,2 +1,3 @@
-# ignore all intellij idea files
+# dev
 .idea
+venv
