@@ -19,7 +19,7 @@ workflow AnnotateVCFWorkflow {
     #TODO which gatk docker image to use for azure?
     String gatk_docker_path = if cloud_provider == "gcp" then gatk_gcr_docker_path else gatk_acr_docker_path
     String gatk_gcr_docker_path= "us.gcr.io/broad-gatk/gatk:4.5.0.0"
-    String gatk_acr_docker_path= "dsppipelinedev.azurecr.io/gatk_squashed:latest"
+    String gatk_acr_docker_path= "dsppipelinedev.azurecr.io/gatk_reduced_layers:latest"
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
