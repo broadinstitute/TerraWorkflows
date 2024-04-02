@@ -62,6 +62,8 @@ task filter_variants_for_gwas {
         ls
         echo "Processing bgen/samples: ~{bgen}"
         ls
+        sleep 5m
+        echo "Done sleeping"
    
     >>>
 
@@ -71,7 +73,7 @@ task filter_variants_for_gwas {
     }
 
     runtime {
-        docker: "us.gcr.io/broad-dsp-gcr-public/terra-jupyter-aou:latest"
+        docker: "ubuntu:latest"
         memory: "31 GB"
         cpu: "4"
         disks: "local-disk 800 HDD"
