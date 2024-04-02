@@ -67,7 +67,7 @@ task filter_variants_for_gwas {
        plink2 --bgen ~{bgen} ref-unknown --sample ~{samples} \
         --geno 0.9 \
         --make-bed \
-        --split-par 2781479 155701383
+        --split-par 2781479 155701383 \
         --out plink/missingness_filtered_data 
 
        # skip remove duplicates variants and related samples
