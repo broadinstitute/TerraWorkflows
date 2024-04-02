@@ -67,7 +67,8 @@ task filter_variants_for_gwas {
        plink2 --bgen ~{bgen} ref-unknown --sample ~{samples} \
         --geno 0.9 \
         --make-bed \
-        --out plink/missingness_filtered_data
+        --split-par 2781479 155701383
+        --out plink/missingness_filtered_data 
 
        # skip remove duplicates variants and related samples
        # skip allele frequency table no one uses
