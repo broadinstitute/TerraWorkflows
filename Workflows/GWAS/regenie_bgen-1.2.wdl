@@ -120,7 +120,7 @@ task filter_variants_for_gwas {
     }
 
     runtime {
-        docker: "us.gcr.io/broad-gotc-prod/plink-regenie:aa-regenie"
+        docker: "terraworkflows.azurecr.io/plink-regenie:1.0.0"
         memory: "31 GB"
         cpu: "4"
         disks: "local-disk 800 HDD"
@@ -199,7 +199,7 @@ task regenie_steps {
     }
 
     runtime {
-        docker: "us.gcr.io/broad-gotc-prod/plink-regenie:aa-regenie"
+        docker: "terraworkflows.azurecr.io/plink-regenie:1.0.0"
         memory: "14 GB"
         cpu: "2"
         disks: "local-disk 500 HDD"
