@@ -59,12 +59,58 @@ task filter_variants_for_gwas {
         set -e
         set -x
         mkdir -p plink
-        ls
         echo "Processing bgen/samples: ~{bgen}"
         ls
-        sleep 5m
-        echo "Done sleeping"
-   
+        #######
+
+        # modify filter on missingness -- AC/AF filter yields ~25% missing GTs, probably due to multiallelic issues
+        # one weird almost all het site is causing problem, but it's call rate is abyssmal, so just take it out
+        #“–geno 0.1” tells PLINK to throw out every variant where more than 10% of the genotype calls are “NA”s.
+       plink2 --bgen ~{bgen} --sample ~{samples} \
+        --geno 0.9 \
+        --make-bed \
+        --out plink/missingness_filtered_data
+
+       # skip remove duplicates variants and related samples
+       # skip allele frequency table no one uses
+
+        # filter on minor allele frequency
+        # --maf 0.05 removes all variants with a minor allele frequency less than 0.05
+        plink2 --bfile plink/missingness_filtered_data \
+        --maf 0.05 \
+        --make-bed \
+        --out plink/maf_filtered_data
+
+        #regenie still reports some low variance SNPs, so use AC
+        plink2 --bfile plink/maf_filtered_data \
+        --mac ~{mac_cutoff} \
+        --make-bed \
+        --out plink/max_filtered_data
+
+        # hardy weinberg filtering
+        # --hwe 1e-25 removes all variants with a Hardy-Weinberg p-value greater than 1e-25
+        plink2 --bfile plink/max_filtered_data \
+        --hwe 1e-25 keep-fewhet \
+        --make-bed \
+        --out plink/hwe_filtered_data
+
+        plink2 --bfile plink/hwe_filtered_data \
+        --set-missing-var-ids @:#\$1,\$2 \
+        --make-bed --out plink/hwe_filtered_data.newIDs \
+        --new-id-max-allele-len 1000
+
+        # linkage disequilibrium
+        # --ld-window-r2 0.5 sets the window size to 0.5
+        plink2 --bfile plink/hwe_filtered_data.newIDs \
+        --indep-pairwise 200kb 1 0.5 \
+        --out plink/ldpruned_snplist \
+        --rm-dup force-first
+
+        # prune the data
+        plink2 --bfile plink/hwe_filtered_data.newIDs \
+        --extract plink/ldpruned_snplist.prune.in \
+        --export bgen-1.2 \
+        --out plink/~{output_prefix}_ldpruned_data
     >>>
 
     output {
@@ -73,7 +119,7 @@ task filter_variants_for_gwas {
     }
 
     runtime {
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/broad-gotc-prod/plink-regenie:aa-regenie"
         memory: "31 GB"
         cpu: "4"
         disks: "local-disk 800 HDD"
@@ -151,7 +197,7 @@ task regenie_steps {
     }
 
     runtime {
-        docker: "us.gcr.io/broad-dsp-gcr-public/terra-jupyter-aou:latest"
+        docker: "us.gcr.io/broad-gotc-prod/plink-regenie:aa-regenie"
         memory: "14 GB"
         cpu: "2"
         disks: "local-disk 500 HDD"
