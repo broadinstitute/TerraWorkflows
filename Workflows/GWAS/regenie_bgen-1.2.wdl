@@ -66,7 +66,7 @@ task filter_variants_for_gwas {
         # modify filter on missingness -- AC/AF filter yields ~25% missing GTs, probably due to multiallelic issues
         # one weird almost all het site is causing problem, but it's call rate is abyssmal, so just take it out
         #“–geno 0.1” tells PLINK to throw out every variant where more than 10% of the genotype calls are “NA”s.
-       plink2 --bgen ~{bgen} ref-last --sample ~{samples} \
+       plink2 --bgen ~{bgen} ref-unknown --sample ~{samples} \
         --geno 0.9 \
         --make-bed \
         --split-par 2781479 155701383 \
@@ -158,7 +158,7 @@ task regenie_steps {
         mkdir -p regenie
 
         plink2 \
-          --bgen ~{input_bgen} ref-last \
+          --bgen ~{input_bgen} ref-unknown \
           --sample ~{input_samples} \
           --split-par 2781479 155701383 \
           --mac ~{mac_threshold} \
