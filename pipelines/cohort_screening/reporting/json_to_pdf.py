@@ -1,10 +1,11 @@
-import family as family
 # This script generates an HTML report from a JSON file containing genomic variant data.
+import os
 import pandas as pd
 import pdfkit
 
 # dummy data
-sample_identifier = "Sample 1"
+sample_identifier = os.path.split(args.positions_json)
+# sample_identifier = "Sample 1"
 
 variants = [
     {
@@ -37,8 +38,12 @@ variants = [
     },
     # Add more variants as needed
 ]
+
+# TODO: filter for inclusion criteria
+
 # Convert the list of variant dictionaries to a DataFrame
 # TODO: create a for loop to iterate over the variants and *append* them to the DataFrame
+# TODO: see workspace for example out as well
 # df_var = df_var.append(data, ignore_index=True)
 df_var = pd.DataFrame(variants)
 
@@ -79,7 +84,7 @@ html_content = f"""
     <h1 style="font-size: 24px;">Genomic Variant Report</h1>
     <p>Sample identifier: {sample_identifier}</p>
     <p>Please note:<br>
-    <ul>
+    <ul style="font-size: 16px;">
         <li>This report is for research purposes only.</li>
         <li>This report is not meant for direct disclosure to patients.</li>
         <li>This report does not mean that the person with these variants has diabetes.</li>
@@ -89,7 +94,7 @@ html_content = f"""
     {df_var_html}
 """
 html_content += """
-    <h2>We have examined the following genes, which have been implicated in Maturity-Onset Diabetes of the Young (MODY):</h2>
+    <h2 style="font-size: 20px;">We have examined the following genes, which have been implicated in Maturity-Onset Diabetes of the Young (MODY):</h2>
     <ul>
 """
 
