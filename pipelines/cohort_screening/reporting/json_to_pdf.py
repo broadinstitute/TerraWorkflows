@@ -1,6 +1,7 @@
-
+import family as family
 # This script generates an HTML report from a JSON file containing genomic variant data.
 import pandas as pd
+import pdfkit
 
 # dummy data
 sample_identifier = "Sample 1"
@@ -42,12 +43,24 @@ variants = [
 df_var = pd.DataFrame(variants)
 
 # Apply styles to the DataFrame
-borders = [{'selector': 'td, th, table',
-            'props': [('border', '1px solid lightgrey'),
-                      ('border-collapse', 'collapse')]
-            }]
+style = [{'selector': 'th',
+          'props': [('border', '1px solid black'),
+                    ('background-color', '#f2f2f2'),
+                    ('font-size', '14px'),
+                    ('padding', '5px'),
+                    ('text-align', 'left')]
+          },
+         {'selector': 'td',
+         'props': [('border', '1px solid black'),
+                   ('border-collapse', 'collapse'),
+                   ('border-spacing', '0'),
+                   ('font-size', '14px'),
+                   ('padding', '5px'),
+                   ('text-align', 'left')]
+          }]
 # Convert the DataFrame to an HTML table
-df_var_html = df_var.style.hide().set_table_styles(borders).to_html()
+df_var_html = df_var.style.hide().set_table_styles(style).to_html()
+# df_var_html = df_var.style.hide().to_html()
 
 # MOBY (Maturity-Onset Diabetes of the Young) genes
 # obtained from Naylor 2018, https://www.ncbi.nlm.nih.gov/books/NBK500456/#mody-ov.Genetic_Causes_of_MODY
@@ -62,8 +75,8 @@ html_content = f"""
 <head>
     <title>Genomic Variant Report</title>
 </head>
-<body>
-    <h1>Genomic Variant Report</h1>
+<body style="font-family: Arial, sans-serif;">
+    <h1 style="font-size: 24px;">Genomic Variant Report</h1>
     <p>Sample identifier: {sample_identifier}</p>
     <p>Please note:<br>
     <ul>
@@ -95,9 +108,10 @@ with open('report.html', 'w') as html_file:
     html_file.write(html_content)
 print("HTML report generated successfully!")
 
-# TODO: Add code to convert the HTML report to a PDF file
-
+# convert the HTML report to a PDF file
+pdfkit.from_file('report.html', 'genomic_variant_report.pdf')
+print("PDF report generated successfully!")
 
 # Export variants dataframe as tsv
 df_var.to_csv('variants.tsv', sep='\t', index=False)
-print("Variants exported successfully!")
+print("variants.tsv exported successfully!")
