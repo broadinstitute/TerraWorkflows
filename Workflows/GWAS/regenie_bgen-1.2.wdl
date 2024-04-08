@@ -158,7 +158,7 @@ task regenie_steps {
         mkdir -p regenie
 
         plink2 \
-          --bgen ~{input_bgen} ref-unknown \
+          --bgen ~{input_bgen} ref-first \
           --sample ~{input_samples} \
           --split-par 2781479 155701383 \
           --mac ~{mac_threshold} \
