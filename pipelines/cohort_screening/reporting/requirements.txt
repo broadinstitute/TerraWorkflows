@@ -1,4 +1,5 @@
-family
+gtfparse
+gzip
 jinja2
 pandas
 pdfkit
