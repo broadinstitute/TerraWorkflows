@@ -22,7 +22,7 @@ task parsejson {
 
 	input {
 		File positions_annotation_json
-        String sampleid
+        String sample_id
 
         String docker = 'terraworkflows.azurecr.io/variantreport:testing'
         Int mem_gb = 4
@@ -33,7 +33,7 @@ task parsejson {
 
 		python3 /src/variants_report.py \
 			--positions_json ~{positions_annotation_json} \
-			--sample_identifier ~{sampleid}
+			--sample_identifier ~{sample_id}
 
 	}
 
