@@ -4,13 +4,14 @@ import argparse
 import pandas as pd
 import pdfkit
 from gtfparse import read_gtf
+from tqdm import tqdm
 
 
 def get_MANE():
-    df = read_gtf('MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz') #  TODO: change back to /src/MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz
+    df = read_gtf('/src/MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz') #  TODO: change back to /src/MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz
     df = df['transcript_id'].to_pandas() # polar dataframe to pandas dataframe
     df = pd.DataFrame(df)
-    df[['transcript','version']] = df['transcript_id'].str.split('.', expand=True)
+    df[['transcript', 'version']] = df['transcript_id'].str.split('.', expand=True)
     return df['transcript']
 
 
@@ -27,6 +28,10 @@ def filter_transcripts(positions):
     variants_field = 'variants'
     transcripts_field = 'transcripts'
 
+    print('Filtering variant transcripts...')
+    total_iterations = len(positions)*7
+    progress_bar = tqdm(total=total_iterations, unit="iteration")
+
     # filter to canonical transcripts only
     for position in positions:
         if variants_field in position:
@@ -37,11 +42,11 @@ def filter_transcripts(positions):
                         if 'isCanonical' in transcript_dict and True:
                             transcripts_to_keep.append(transcript_dict)
                     variant_dict[transcripts_field] = transcripts_to_keep
+        progress_bar.set_description('Selecting canonical transcripts...')
+        progress_bar.update(1)
 
     # select transcripts in MANE
-    # download MANE list or put it in the docker???
     MANE = get_MANE()
-
     for position in positions:
         if variants_field in position:
             for variant_dict in position[variants_field]:
@@ -51,10 +56,12 @@ def filter_transcripts(positions):
                         if isMANE(transcript_dict['transcript'], MANE):
                             transcripts_to_keep.append(transcript_dict)
                     variant_dict[transcripts_field] = transcripts_to_keep
+        progress_bar.set_description('Selecting transcripts in MANE...')
+        progress_bar.update(1)
 
     # select transcript with highest impact
-    # impact table was manually  created from https://grch37.ensembl.org/info/genome/variation/prediction/predicted_data.html --> download to docker??
-    impact_table = pd.read_csv('impact_table_with_score.csv', index_col=False) # TODO: change back to /src/impact_table_with_score.csv
+    # impact table was manually  created from https://grch37.ensembl.org/info/genome/variation/prediction/predicted_data.html
+    impact_table = pd.read_csv('/src/impact_table_with_score.csv', index_col=False) # TODO: change back to /src/impact_table_with_score.csv
 
     for position in positions:
         if variants_field in position:
@@ -70,6 +77,8 @@ def filter_transcripts(positions):
                         elif transcript_impact == highest_impact:
                             transcripts_with_highest_impact.append(transcript_dict)
                     variant_dict[transcripts_field] = transcripts_with_highest_impact
+        progress_bar.set_description('Selecting transcript with highest impact...')
+        progress_bar.update(1)
 
     # choose the ensembl transcript
     for position in positions:
@@ -81,6 +90,8 @@ def filter_transcripts(positions):
                         if 'source' in transcript_dict and transcript_dict['source']=='Ensembl':
                             transcripts_to_keep.append(transcript_dict)
                     variant_dict[transcripts_field] = transcripts_to_keep
+        progress_bar.set_description('Selecting Ensembl transcript...')
+        progress_bar.update(1)
 
     # if there are any variants with >1 transcript left, sort by transcript id and select the first one
     for position in positions:
@@ -89,6 +100,25 @@ def filter_transcripts(positions):
                 if transcripts_field in variant_dict and len(variant_dict[transcripts_field])>1:
                     sorted_transcripts = sorted(variant_dict[transcripts_field], key=lambda x: x['transcript'])
                     variant_dict[transcripts_field] = sorted_transcripts[0]
+        progress_bar.set_description('Selecting first transcript when sorted alphabetically...')
+        progress_bar.update(1)
+
+    # remove any variants that don't have any transcripts left
+    for position in positions:
+        if variants_field in position:
+            for variant_dict in position[variants_field][:]:
+                if transcripts_field in variant_dict and len(variant_dict[transcripts_field])==0:
+                    position[variants_field].remove(variant_dict)
+        progress_bar.set_description('Remove any variants that are empty...')
+        progress_bar.update(1)
+
+    # remove any positions that don't have any variants left
+    for position in positions[:]:
+        if variants_field in position and len(position[variants_field])==0:
+            positions.remove(position)
+        progress_bar.update(1)
+
+    progress_bar.close()
 
     return positions
 
@@ -112,7 +142,7 @@ def format_report():
     # dummy data
     # sample_identifier = args.sample_identifier)
     # comes from the data table - can get from args
-    sample_identifier = "Sample TEST 1"
+    sample_identifier = args.sample_identifier
 
     # mapped_variants = map_to_report(select_variants_for_report(filtered_positions))
     # TODO - replace with mapped_variants from map_to_report
@@ -236,10 +266,7 @@ def format_report():
 
 def report(args):
 
-    # load input json files
-    genes_json = gzip.open(args.genes_json, 'rt')
-    genes = json.load(genes_json) # TODO: clean up? I don't think this is used
-
+    # load input json file
     positions_json = gzip.open(args.positions_json, 'rt')
     positions = json.load(positions_json)
 
@@ -247,7 +274,7 @@ def report(args):
     filtered_positions = filter_transcripts(positions)
 
     # for testing
-    with open(args.output_file_name, 'w') as outfile:
+    with open("filtered_positions_final.json", 'w') as outfile:
         json.dump(filtered_positions, outfile, indent=4) # add indent for pretty print, remove for py reading
 
     # for testing
@@ -262,8 +289,7 @@ def report(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parse NIRVANA JSON file and create a Variant Report.')
     parser.add_argument('--positions_json', type=str, help='path to nirvana positions json', required=True)
-    parser.add_argument('--genes_json', type=str, help='path to nirvana genes json', required=True)
-    parser.add_argument('--output_file_name', type=str, help='filename for output', required=True)
+    parser.add_argument('--sample_identifier', type=str, help='sample id', required=True)
 
     args = parser.parse_args()
 
