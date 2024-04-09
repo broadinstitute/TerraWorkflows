@@ -1,6 +1,8 @@
 import gzip
 import json
 import argparse
+import logging
+
 import pandas as pd
 import pdfkit
 from gtfparse import read_gtf
@@ -122,21 +124,60 @@ def filter_transcripts(positions):
 
     return positions
 
+
 # TODO: Bobbie to implement this function
 # do this before we map to report table
 # selects the variants that meet the inclusion criteria
-# NOTE “We have identified the following variants that warrant further investigation:” in the report should be replaced with “No variants marked for further investigation”.
-# def select_variants_for_report(filtered_positions)
+def select_variants_for_report(filtered_positions):
+    selected_variants = []
+    for position in filtered_positions:
+        # check to see if we have any variants to report
+        if 'variants' not in position:
+            logging.warning('no variants found for position, creating empty report')
+            selected_variants = None
+            return selected_variants
+        else:
+            for variant_dict in position['variants']:
+                transcript = variant_dict['transcripts']
+                # check to see if we have too few or too many transcripts - should be 1 per variant
+                if 'transcripts' in variant_dict and len(transcript) == 0:
+                    logging.warning('no transcripts selected for variant, skipping variant')
+                    continue
+                elif len(transcript) > 1:
+                    logging.warning('more than one transcript selected for variant, skipping variant')
+                    continue
+                else:
+                    # Ignore if ClinVar classification is not present
+                    if 'clinvar' not in 'variants':
+                        logging.warning('no ClinVar classification found for variant, skipping variant')
+                        continue
+                    # Include if ClinVar significance includes pathogenic or likely pathogenic,
+                    # but does not include benign
+                    # TODO FIX ME
+                    elif 'clinvar' in 'variants' and 'significance' in variants['ClinVar'] and 'pathogenic' in transcript['ClinVar']['classification'] and 'benign' not in transcript['ClinVar']['classification']:
+                        selected_variants.append(variant_dict)
+                    # Disregard ClinVar classifications that are tagged with a review status of:
+                    # - no assertion criteria provided
+                    # - no classification provided
+                    # - no classification for the individual variant
+                    if 'ClinVar' in 'variants' and 'classification' in transcript['ClinVar']:
+                        if 'review_status' in transcript['ClinVar'] and transcript['ClinVar']['review_status'] not in ['no assertion criteria provided', 'no classification provided', 'no classification for the individual variant']:
+                            selected_variants.append(variant_dict)
+    if len(selected_variants) == 0:
+        selected_variants = None
+    return selected_variants
 # returns selected_variants
 
 # TODO: Bobbie to implement this function
 # maps the filtered variants to the report table
 # def map_to_report(selected_variants)
 # returns mapped_variants
+# TODO: create a for loop to iterate over the variants and *append* them to the DataFrame
+# NB this is part of the mapping
+# df_var = df_var.append(mapped_variants, ignore_index=True)
 
 
 # formats the report
-# TODO: remove after testing
 def format_report():
 # def format_report(filtered_positions):
     # dummy data
@@ -177,11 +218,15 @@ def format_report():
         },
     ]
 
-    # Convert the list of variant dictionaries to a DataFrame
-    # TODO: create a for loop to iterate over the variants and *append* them to the DataFrame
-    # NB this is part of the mapping
-    # df_var = df_var.append(mapped_variants, ignore_index=True)
-    df_var = pd.DataFrame(variants)
+    # Convert the list of dummy variant dictionaries to a DataFrame
+    # TODO replace with mapped_variants
+    if mapped_variants is None:
+        logging.info('no variants to report, creating empty report')
+        identified_variants_message = "No variants marked for further investigation"
+    else:
+        df_var = pd.DataFrame(variants)
+        identified_variants_message = "We have identified the following variants that warrant further investigation:"
+
 
     # Apply styles to the DataFrame
     style = [{'selector': 'th',
@@ -226,7 +271,7 @@ def format_report():
             <li>This report does not mean that the person with these variants has diabetes.</li>
             <li>Clinicians should confirm this result before using it as part of clinical care.</li>
         </ul>
-        <p>We have identified the following variants that warrant further investigation:</p>
+        <p>{identified_variants_message}</p>
         {df_var_html}
     """
     html_content += """
@@ -250,32 +295,36 @@ def format_report():
     # write out the HTML content to a file
     with open('report.html', 'w') as html_file:
         html_file.write(html_content)
-    print("HTML report generated successfully!")
+    logging.info("HTML report generated successfully!")
 
     # convert the HTML report to a PDF file
-    # TODO - change to args.output_file_name with string manipulation
-    pdfkit.from_file('report.html', 'genomic_variant_report.pdf')
-    # pdfkit.from_file('report.html', 'genomic_variant_report_' + args.output_file_name + '.pdf')
-    print("PDF report generated successfully!")
+    # TODO - match with WDL
+    pdf_report_name = args.sample_identifier + '_mody_variants_report.pdf'
+    pdfkit.from_file('report.html', pdf_report_name)
+    logging.info("PDF report generated successfully!")
 
     # Export variants dataframe as tsv
-    # TODO - change to args.output_file_name with string manipulation
-    df_var.to_csv('variants.tsv', sep='\t', index=False)
-    print("variants.tsv exported successfully!")
+    # TODO - match with WDL
+    table_name = args.sample_identifier + '_mody_variants_table.tsv'
+    df_var.to_csv(table_name, sep='\t', index=False)
+    logging.info("variants.tsv exported successfully!")
 
 
 def report(args):
-
-    # load input json file
+    # read in the positions json
     positions_json = gzip.open(args.positions_json, 'rt')
     positions = json.load(positions_json)
 
     # do the filtering
     filtered_positions = filter_transcripts(positions)
 
-    # for testing
-    with open("filtered_positions_final.json", 'w') as outfile:
-        json.dump(filtered_positions, outfile, indent=4) # add indent for pretty print, remove for py reading
+    # output the filtered positions to a json file if specified
+    if args.output_file_name is None:
+        pass
+    else:
+        with open("filtered_positions_final.json", 'w') as outfile:
+            json.dump(filtered_positions, outfile)
+            # json.dump(filtered_positions, outfile, indent=4) # add indent for pretty print, remove for py reading
 
     # for testing
     format_report()
