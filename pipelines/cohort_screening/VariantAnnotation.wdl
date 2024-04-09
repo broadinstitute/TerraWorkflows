@@ -7,16 +7,18 @@ workflow AnnotateVCFWorkflow {
         Boolean use_reference_disk
         String cloud_provider
         File omim_annotations
+        String sample_id
     }
 
     # Determine docker prefix based on cloud provider
     String gcr_docker_prefix = "us.gcr.io/broad-gotc-prod/"
-    String acr_docker_prefix = "dsppipelinedev.azurecr.io/"
+    String acr_docker_prefix = "terraworkflows.azurecr.io/"
 
     String docker_prefix = if cloud_provider == "gcp" then gcr_docker_prefix else acr_docker_prefix
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
+    String variantreport_docker_image = "variantreport:testing"
 
     call AnnotateVCF {
         input:
@@ -28,9 +30,16 @@ workflow AnnotateVCFWorkflow {
             docker_path = docker_prefix + nirvana_docker_image
     }
 
+    call VariantReport {
+        input:
+            positions_annotation_json = AnnotateVCF.positions_annotation_json,
+            sample_id = sample_id,
+            docker_path = docker_prefix + variantreport_docker_image
+    }
+
     output {
-        File positions_annotation_json = AnnotateVCF.positions_annotation_json
-        File genes_annotation_json = AnnotateVCF.genes_annotation_json
+        File variant_report_pdf = VariantReport.pdf_report
+        File variant_table_tsv = VariantReport.tsv_file
     }
 }
 
@@ -143,5 +152,36 @@ task AnnotateVCF {
     output {
         File genes_annotation_json = "~{gene_annotation_json_name}"
         File positions_annotation_json = "~{positions_annotation_json_name}"
+    }
+}
+
+task VariantReport {
+
+    input {
+        File positions_annotation_json
+        String sample_id
+
+        String docker_path
+        Int mem_gb = 4
+        Int disk_gb = 15
+    }
+
+    command {
+
+        python3 /src/variants_report.py \
+        --positions_json ~{positions_annotation_json} \
+        --sample_identifier ~{sample_id}
+
+    }
+
+    runtime {
+        docker: docker_path
+        memory: '${mem_gb} GB'
+        disks: 'local-disk ${disk_gb} HDD'
+    }
+
+    output {
+        File pdf_report = "{sample_id}_mody_variants_report.pdf"
+        File tsv_file = "{sample_id}_mody_variants_table.tsv"
     }
 }
