@@ -46,6 +46,7 @@ task gather_per_contig_files {
     }
 
     command <<<
+        set -euo pipefail
         head -n1 ~{per_contig_files[0]} >> ~{output_name}
         while read per_contig_file;
             do tail -n+2 $per_contig_file >> ~{output_name};
