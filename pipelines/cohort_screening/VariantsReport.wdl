@@ -3,13 +3,13 @@ version 1.0
 workflow variantsreport{
 	input {
     	File positions_annotation_json
-		String sampleid
+		String sample_id
     }
 
     call parsejson {
     	input:
     		positions_annotation_json = positions_annotation_json,
-		    sampleid = sampleid,
+		    sample_id = sample_id
     }
 
     output {
@@ -22,10 +22,9 @@ task parsejson {
 
 	input {
 		File positions_annotation_json
-        String output_file_name = 'filtered_positions.json'
-        String sampleid
+        String sample_id
 
-        String docker = 'samclairehv/variantsreport:v5'
+        String docker = 'terraworkflows.azurecr.io/variantreport:testing'
         Int mem_gb = 4
         Int disk_gb = 15
 	}
@@ -34,8 +33,7 @@ task parsejson {
 
 		python3 /src/variants_report.py \
 			--positions_json ~{positions_annotation_json} \
-			--output_file_name ~{output_file_name} \
-			--sample_identifier ~{sampleid}
+			--sample_identifier ~{sample_id}
 
 	}
 
@@ -46,7 +44,7 @@ task parsejson {
 	}
 
 	output {
-		File pdf_report = "{sampleid}_mody_variants_report.pdf"
-		File tsv_file = "{sampleid}_mody_variants.tsv"
+		File pdf_report = "{sample_id}_mody_variants_report.pdf"
+		File tsv_file = "{sample_id}_mody_variants_table.tsv"
 	}
 }
