@@ -4,11 +4,16 @@ import pandas as pd
 
 
 def stats(args):
-    with open(args.json_file) as f:
+    with open(args.json_file, "r") as f:
         jdata = json.load(f)
+        fstring = str(jdata)
+        print('Number of transcripts: ' + str(fstring.count('transcripts')))
 
     df = pd.DataFrame(jdata)
     print('Number of variants: ' + str(df.variants.count()))
+    print('other stats:')
+    print(df.describe(include='all'))
+
 
 
 if __name__ == '__main__':
