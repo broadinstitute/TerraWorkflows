@@ -3,13 +3,13 @@ version 1.0
 workflow variantsreport{
 	input {
     	File positions_annotation_json
-		String sampleid
+		String sample_id
     }
 
     call parsejson {
     	input:
     		positions_annotation_json = positions_annotation_json,
-		    sampleid = sampleid
+		    sample_id = sample_id
     }
 
     output {
