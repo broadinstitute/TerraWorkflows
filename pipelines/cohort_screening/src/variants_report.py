@@ -2,7 +2,6 @@ import gzip
 import json
 import argparse
 import logging
-
 import pandas as pd
 import pdfkit
 from gtfparse import read_gtf
@@ -10,7 +9,7 @@ from tqdm import tqdm
 
 
 def get_MANE():
-    df = read_gtf('/src/MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz') #  TODO: change back to /src/MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz
+    df = read_gtf('MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz') #  TODO: change back to /src/MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz
     df = df['transcript_id'].to_pandas() # polar dataframe to pandas dataframe
     df = pd.DataFrame(df)
     df[['transcript', 'version']] = df['transcript_id'].str.split('.', expand=True)
@@ -63,7 +62,7 @@ def filter_transcripts(positions):
 
     # select transcript with highest impact
     # impact table was manually  created from https://grch37.ensembl.org/info/genome/variation/prediction/predicted_data.html
-    impact_table = pd.read_csv('/src/impact_table_with_score.csv', index_col=False) # TODO: change back to /src/impact_table_with_score.csv
+    impact_table = pd.read_csv('impact_table_with_score.csv', index_col=False) # TODO: change back to /src/impact_table_with_score.csv
 
     for position in positions:
         if variants_field in position:
@@ -129,6 +128,12 @@ def filter_transcripts(positions):
 # do this before we map to report table
 # selects the variants that meet the inclusion criteria
 def select_variants_for_report(filtered_positions):
+    variants_field = 'variants'
+    transcripts_field = 'transcripts'
+
+    # check to see if the number of variants is equal to the number of transcripts
+    if len(filtered_positions) == 0:
+
     selected_variants = []
     for position in filtered_positions:
         # check to see if we have any variants to report
@@ -139,15 +144,13 @@ def select_variants_for_report(filtered_positions):
         else:
             for variant_dict in position['variants']:
                 transcript = variant_dict['transcripts']
-                # check to see if we have too few or too many transcripts - should be 1 per variant
+                # check to see if we have too few transcripts - should be 1 per variant
                 if 'transcripts' in variant_dict and len(transcript) == 0:
                     logging.warning('no transcripts selected for variant, skipping variant')
                     continue
-                elif len(transcript) > 1:
-                    logging.warning('more than one transcript selected for variant, skipping variant')
-                    continue
+
                 else:
-                    # Ignore if ClinVar classification is not present
+                    # remove variant if ClinVar classification is not present
                     if 'clinvar' not in 'variants':
                         logging.warning('no ClinVar classification found for variant, skipping variant')
                         continue
@@ -220,13 +223,14 @@ def format_report():
 
     # Convert the list of dummy variant dictionaries to a DataFrame
     # TODO replace with mapped_variants
-    if mapped_variants is None:
-        logging.info('no variants to report, creating empty report')
-        identified_variants_message = "No variants marked for further investigation"
-    else:
-        df_var = pd.DataFrame(variants)
-        identified_variants_message = "We have identified the following variants that warrant further investigation:"
-
+    # if mapped_variants is None:
+    #     logging.info('no variants to report, creating empty report')
+    #     identified_variants_message = "No variants marked for further investigation"
+    # else:
+    #     df_var = pd.DataFrame(variants)
+    #     identified_variants_message = "We have identified the following variants that warrant further investigation:"
+    df_var = pd.DataFrame(variants)
+    identified_variants_message = "We have identified the following variants that warrant further investigation:"
 
     # Apply styles to the DataFrame
     style = [{'selector': 'th',
@@ -319,12 +323,12 @@ def report(args):
     filtered_positions = filter_transcripts(positions)
 
     # output the filtered positions to a json file if specified
-    if args.output_file_name is None:
+    if args.output_json is False:
         pass
     else:
         with open("filtered_positions_final.json", 'w') as outfile:
             json.dump(filtered_positions, outfile)
-            # json.dump(filtered_positions, outfile, indent=4) # add indent for pretty print, remove for py reading
+            # json.dump(filtered_positions, outfile, indent=4)  # add indent for pretty print, remove for py reading
 
     # for testing
     format_report()
@@ -339,6 +343,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parse NIRVANA JSON file and create a Variant Report.')
     parser.add_argument('--positions_json', type=str, help='path to nirvana positions json', required=True)
     parser.add_argument('--sample_identifier', type=str, help='sample id', required=True)
+    parser.add_argument('--output_json', type=bool, default=False,
+                        help='Specify to output the initial filtered json', required=False)
 
     args = parser.parse_args()
 
