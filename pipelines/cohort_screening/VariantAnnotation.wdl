@@ -3,6 +3,7 @@ version 1.0
 workflow AnnotateVCFWorkflow {
     input {
         File input_vcf
+        File bed_file
         String output_annotated_file_name
         Boolean use_reference_disk
         String cloud_provider
@@ -11,16 +12,30 @@ workflow AnnotateVCFWorkflow {
 
     # Determine docker prefix based on cloud provider
     String gcr_docker_prefix = "us.gcr.io/broad-gotc-prod/"
-    String acr_docker_prefix = "dsppipelinedev.azurecr.io/"
+    String acr_docker_prefix = "terraworkflows.azurecr.io/"
 
     String docker_prefix = if cloud_provider == "gcp" then gcr_docker_prefix else acr_docker_prefix
+
+    #TODO which gatk docker image to use for azure?
+    String gatk_docker_path = if cloud_provider == "gcp" then gatk_gcr_docker_path else gatk_acr_docker_path
+    String gatk_gcr_docker_path= "us.gcr.io/broad-gatk/gatk:4.5.0.0"
+    String gatk_acr_docker_path= "dsppipelinedev.azurecr.io/gatk_reduced_layers:latest"
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
 
-    call AnnotateVCF {
+
+    call FilterVCF {
         input:
             input_vcf = input_vcf,
+            bed_file = bed_file,
+            output_annotated_file_name = output_annotated_file_name,
+            docker_path = gatk_docker_path
+    }
+
+    call AnnotateVCF {
+        input:
+            input_vcf = FilterVCF.filtered_vcf,
             output_annotated_file_name = output_annotated_file_name,
             use_reference_disk = use_reference_disk,
             cloud_provider = cloud_provider,
@@ -31,6 +46,48 @@ workflow AnnotateVCFWorkflow {
     output {
         File positions_annotation_json = AnnotateVCF.positions_annotation_json
         File genes_annotation_json = AnnotateVCF.genes_annotation_json
+    }
+}
+
+task FilterVCF {
+    input {
+        File input_vcf
+        File bed_file
+        String output_annotated_file_name
+
+        Int disk_size_gb = ceil(2*size(input_vcf, "GiB")) + 50
+        Int cpu = 1
+        Int memory_mb = 8000
+        String docker_path
+    }
+
+    Int command_mem = memory_mb - 1000
+    Int max_heap = memory_mb - 500
+
+    command <<<
+        set -euo pipefail
+
+        gatk --java-options "-Xms~{command_mem}m -Xmx~{max_heap}m" \
+            IndexFeatureFile \
+            -I ~{input_vcf}
+
+        gatk --java-options "-Xms~{command_mem}m -Xmx~{max_heap}m" \
+            SelectVariants \
+            -V ~{input_vcf} \
+            -L ~{bed_file} \
+            -O ~{output_annotated_file_name}.vcf.gz \
+
+    >>>
+    runtime {
+        docker: docker_path
+        memory: "${memory_mb} MiB"
+        cpu: cpu
+        disks: "local-disk ${disk_size_gb} HDD"
+    }
+
+    output {
+        File filtered_vcf = "~{output_annotated_file_name}.vcf.gz"
+        File filtered_vcf_index = "~{output_annotated_file_name}.vcf.gz.tbi"
     }
 }
 
@@ -55,6 +112,8 @@ task AnnotateVCF {
     String path_reference = "/References/Homo_sapiens.GRCh38.Nirvana.dat"
 
     command <<<
+        set -euo pipefail
+
         # Prepend date, time and pwd to xtrace log entries.
         PS4='\D{+%F %T} \w $ '
         set -o errexit -o nounset -o pipefail -o xtrace
