@@ -179,6 +179,7 @@ task VariantReport {
         memory: '${mem_gb} GB'
         disks: 'local-disk ${disk_gb} HDD'
         disk: '${disk_gb} GB'
+        maxRetries: 2
     }
 
     output {
