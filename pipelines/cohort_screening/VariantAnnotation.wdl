@@ -178,6 +178,7 @@ task VariantReport {
         docker: docker_path
         memory: '${mem_gb} GB'
         disks: 'local-disk ${disk_gb} HDD'
+        disk: '${disk_gb} GB'
     }
 
     output {
