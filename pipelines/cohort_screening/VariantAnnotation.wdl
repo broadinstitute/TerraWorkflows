@@ -2,7 +2,7 @@ version 1.0
 
 workflow AnnotateVCFWorkflow {
     input {
-        File input_vcf
+        Array[File] input_vcf
         File bed_file
         String output_annotated_file_name
         Boolean use_reference_disk
@@ -25,9 +25,10 @@ workflow AnnotateVCFWorkflow {
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
 
 
-    call FilterVCF {
-        input:
-            input_vcf = input_vcf,
+scatter (idx in range(length(input_vcf))) {
+        call FilterVCF as filter_vcf {
+          input:
+            input_vcf = input_vcf[idx],
             bed_file = bed_file,
             output_annotated_file_name = output_annotated_file_name,
             docker_path = gatk_docker_path
@@ -35,17 +36,18 @@ workflow AnnotateVCFWorkflow {
 
     call AnnotateVCF {
         input:
-            input_vcf = FilterVCF.filtered_vcf,
+            input_vcf = filter_vcf.filtered_vcf,
             output_annotated_file_name = output_annotated_file_name,
             use_reference_disk = use_reference_disk,
             cloud_provider = cloud_provider,
             omim_annotations = omim_annotations,
             docker_path = docker_prefix + nirvana_docker_image
     }
+}
 
     output {
-        File positions_annotation_json = AnnotateVCF.positions_annotation_json
-        File genes_annotation_json = AnnotateVCF.genes_annotation_json
+        Array[File] positions_annotation_json = AnnotateVCF.positions_annotation_json
+        Array[File] genes_annotation_json = AnnotateVCF.genes_annotation_json
     }
 }
 
