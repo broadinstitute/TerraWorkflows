@@ -18,7 +18,7 @@ workflow AnnotateVCFWorkflow {
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
-    #String variantreport_docker_image = "variantreport:testing"
+    String variantreport_docker_image = "variantreport:testing"
 
     call AnnotateVCF {
         input:
@@ -33,8 +33,8 @@ workflow AnnotateVCFWorkflow {
     call VariantReport {
         input:
             positions_annotation_json = AnnotateVCF.positions_annotation_json,
-            sample_id = sample_id
-            #docker_path = docker_prefix + variantreport_docker_image
+            sample_id = sample_id,
+            docker_path = docker_prefix + variantreport_docker_image
     }
 
     output {
@@ -161,7 +161,7 @@ task VariantReport {
         File positions_annotation_json
         String sample_id
 
-        String docker_path = 'samclairehv/variantreport:v5'
+        String docker_path
         Int mem_gb = 4
         Int disk_gb = 15
     }
@@ -181,7 +181,7 @@ task VariantReport {
     }
 
     output {
-        File pdf_report = "genomic_variant_report.pdf"
-        File tsv_file = "variants.tsv"
+        File pdf_report = "~{sample_id}_mody_variants_report.pdf"
+        File tsv_file = "~{sample_id}_mody_variants_table.tsv"
     }
 }
