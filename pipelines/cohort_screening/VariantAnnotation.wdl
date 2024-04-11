@@ -58,7 +58,7 @@ task FilterVCF {
         String output_annotated_file_name
 
         Int disk_size_gb = ceil(2*size(input_vcf, "GiB")) + 50
-        Int cpu = 1
+        Int cpu = 4
         Int memory_mb = 8000
         String docker_path
     }
@@ -69,15 +69,46 @@ task FilterVCF {
     command <<<
         set -euo pipefail
 
-        gatk --java-options "-Xms~{command_mem}m -Xmx~{max_heap}m" \
-            IndexFeatureFile \
-            -I ~{input_vcf}
+        task() {
+          local file=$1
+          sample_id=$(basename "$file" ".rb.g.vcf")
+          echo $sample_id
 
-        gatk --java-options "-Xms~{command_mem}m -Xmx~{max_heap}m" \
-            SelectVariants \
-            -V ~{input_vcf} \
-            -L ~{bed_file} \
-            -O ~{output_annotated_file_name}.vcf.gz \
+          vcf_file="${sample_id}.rb.g.vcf"
+
+          # SelectVariants run
+          start=$(date +%s)
+          echo "Run SelectVariants"
+          gatk --java-options "-Xms~{command_mem}m -Xmx~{max_heap}m" \
+          IndexFeatureFile \
+          -I $vcf_file
+
+          gatk --java-options "-Xms~{command_mem}m -Xmx~{max_heap}m" \
+          SelectVariants \
+          -V  $vcf_file \
+          -L ~{bed_file} \
+          -O ~{output_annotated_file_name}.vcf.gz \
+       }
+
+      # define lists of r1 and r2 fq files
+      vcf_files=($(ls batch*/ | grep "\rb.g.vcf"))
+
+      # run 6 instances of task in parallel
+      for file in "${vcf_files[@]}"; do
+        (
+          echo "starting task $file.."
+          du -h  batch*/$file
+          task "$file"
+          sleep $(( (RANDOM % 3) + 1))
+        ) &
+        # allow to execute up to 2 jobs in parallel
+        if [[ $(jobs -r -p | wc -l) -ge 2 ]]; then
+          wait -n
+        fi
+      done
+
+      wait
+      echo "Tasks all done."
 
     >>>
     runtime {
