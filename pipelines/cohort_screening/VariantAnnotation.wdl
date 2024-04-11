@@ -87,17 +87,17 @@ task FilterVCF {
           SelectVariants \
           -V  $vcf_file \
           -L ~{bed_file} \
-          -O ~{output_annotated_file_name}.vcf.gz \
+          -O ~{output_annotated_file_name}.vcf.gz
        }
 
-      # define lists of r1 and r2 fq files
-      vcf_files=($(ls batch*/ | grep "\rb.g.vcf"))
+      # define lists of vcf files
+      vcf_files=($(ls | grep ".rb.g.vcf"))
 
       # run 6 instances of task in parallel
       for file in "${vcf_files[@]}"; do
         (
           echo "starting task $file.."
-          du -h  batch*/$file
+          du -h  $file
           task "$file"
           sleep $(( (RANDOM % 3) + 1))
         ) &
