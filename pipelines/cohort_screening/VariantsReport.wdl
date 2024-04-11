@@ -44,7 +44,7 @@ task parsejson {
 	}
 
 	output {
-		File pdf_report = "{sample_id}_mody_variants_report.pdf"
-		File tsv_file = "{sample_id}_mody_variants_table.tsv"
+		File pdf_report = "~{sample_id}_mody_variants_report.pdf"
+		File tsv_file = "~{sample_id}_mody_variants_table.tsv"
 	}
 }
