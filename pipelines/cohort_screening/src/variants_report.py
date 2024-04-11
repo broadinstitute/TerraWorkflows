@@ -4,6 +4,7 @@ import argparse
 import logging
 import pandas as pd
 import pdfkit
+import re
 from gtfparse import read_gtf
 from tqdm import tqdm
 
@@ -124,56 +125,102 @@ def filter_transcripts(positions):
     return positions
 
 
-# TODO: Bobbie to implement this function
-# do this before we map to report table
-# selects the variants that meet the inclusion criteria
-def select_variants_for_report(filtered_positions):
+def filter_variants_for_report(filtered_positions):
     variants_field = 'variants'
-    transcripts_field = 'transcripts'
+    clinvar_field = 'clinvar'
 
-    # check to see if the number of variants is equal to the number of transcripts
-    if len(filtered_positions) == 0:
+    removed_positions = 0
 
-    selected_variants = []
-    for position in filtered_positions:
-        # check to see if we have any variants to report
-        if 'variants' not in position:
-            logging.warning('no variants found for position, creating empty report')
-            selected_variants = None
-            return selected_variants
-        else:
-            for variant_dict in position['variants']:
-                transcript = variant_dict['transcripts']
-                # check to see if we have too few transcripts - should be 1 per variant
-                if 'transcripts' in variant_dict and len(transcript) == 0:
-                    logging.warning('no transcripts selected for variant, skipping variant')
-                    continue
+    print('Filtering variants for inclusion in report based on ClinVar significance...')
+    # Variant Report Inclusion Criteria 1.a: Include if the variant has a ClinVar classification
+    for position in filtered_positions[:]:
+        for variant_dict in position[variants_field][:]:
+            # remove those variants that do not have a ClinVar classification
+            if clinvar_field not in variant_dict:
+                logging.info(f'no ClinVar classification found for variant, /'
+                             f'removing variant' + str(variant_dict))
+                position[variants_field].remove(variant_dict)
+            # Include if ClinVar significance includes pathogenic or likely pathogenic,
+            # but does not include benign
+            # unless clinvar review status is
+            # no assertion criteria provided,
+            # no classification provided,
+            # or no classification for the individual variant
+            elif clinvar_field in variant_dict:
+                for clinvar_dict in variant_dict[clinvar_field][:]:
+                    review_status_disregard = ['no assertion criteria provided',
+                                               'no classification provided',
+                                               'no classification for the individual variant']
+                    if ('benign' in clinvar_dict['significance']
+                            and clinvar_dict['reviewStatus'] not in review_status_disregard):
+                        logging.info(f'benign in significance, do not disregard, removing variant {clinvar_dict}')
+                        variant_dict[clinvar_field].remove(clinvar_dict)
+                    elif 'significance' in clinvar_dict and ('pathogenic' not in clinvar_dict['significance']
+                                                             and 'likely pathogenic'
+                                                             not in clinvar_dict['significance']) \
+                            and clinvar_dict['reviewStatus'] not in review_status_disregard:
+                        logging.info(f'ClinVar significance does not pass inclusion filters, /'
+                                     f'removing variant' + str(variant_dict))
+                        variant_dict[clinvar_field].remove(clinvar_dict)
 
-                else:
-                    # remove variant if ClinVar classification is not present
-                    if 'clinvar' not in 'variants':
-                        logging.warning('no ClinVar classification found for variant, skipping variant')
-                        continue
-                    # Include if ClinVar significance includes pathogenic or likely pathogenic,
-                    # but does not include benign
-                    # TODO FIX ME
-                    elif 'clinvar' in 'variants' and 'significance' in variants['ClinVar'] and 'pathogenic' in transcript['ClinVar']['classification'] and 'benign' not in transcript['ClinVar']['classification']:
-                        selected_variants.append(variant_dict)
-                    # Disregard ClinVar classifications that are tagged with a review status of:
-                    # - no assertion criteria provided
-                    # - no classification provided
-                    # - no classification for the individual variant
-                    if 'ClinVar' in 'variants' and 'classification' in transcript['ClinVar']:
-                        if 'review_status' in transcript['ClinVar'] and transcript['ClinVar']['review_status'] not in ['no assertion criteria provided', 'no classification provided', 'no classification for the individual variant']:
-                            selected_variants.append(variant_dict)
-    if len(selected_variants) == 0:
-        selected_variants = None
-    return selected_variants
-# returns selected_variants
+    # remove any variants that don't have any populated clinvar fields left
+    for position in filtered_positions[:]:
+        for variant_dict in position[variants_field][:]:
+            if len(variant_dict[clinvar_field]) == 0:
+                logging.info(f'no ClinVar fields remaining for variant, /'
+                             f'removing variant' + str(variant_dict))
+                position[variants_field].remove(variant_dict)
+
+    # remove any positions that don't have any variants left
+    for position in filtered_positions[:]:
+        if variants_field in position and len(position[variants_field])==0:
+            logging.info(f'no variants found for position, removing position' + str(position))
+            filtered_positions.remove(position)
+            removed_positions += 1
+
+    # Criteria 2 & 3
+    # remove any variants where genotype is 0/0, ./N, N/., or ./.
+    print('Filtering variants for inclusion in report based on genotype...')
+    pattern = r"\./|./\."
+    for position in filtered_positions[:]:
+        for samples_dict in position['samples'][:]:
+            # if any of the genotypes match the pattern, remove the variant
+            if re.match(pattern, samples_dict['genotype']) or samples_dict['genotype'] == '0/0':
+                logging.info(f'genotype does not pass inclusion filters, removing sample' + str(samples_dict))
+                position['samples'].remove(samples_dict)
+
+    # remove any positions that don't have any samples left
+    for position in filtered_positions[:]:
+        if 'samples' in position and len(position['samples']) == 0:
+            logging.info(f'position has no samples left, removing position' + str(position))
+            filtered_positions.remove(position)
+            removed_positions += 1
+
+    # # for testing
+    # with open("filtered_positions_criteria_1.json", 'w') as outfile:
+    #     json.dump(filtered_positions, outfile, indent=4)
+
+    # check len transcripts vs len variants
+    print('Checking number of variants == number of transcripts...')
+    filtered_positions_str = str(filtered_positions)
+    num_variants = filtered_positions_str.count('variants')
+    num_transcripts = filtered_positions_str.count('transcripts')
+    print('Number of variants: ' + str(num_variants))
+    print('Number of transcripts: ' + str(num_transcripts))
+
+    if not num_variants == num_transcripts:
+        raise ValueError('number of variants and transcripts do not match')
+    elif num_variants == 0:
+        variants_to_include = None
+    else:
+        print(f'removed_positions = {removed_positions}')
+        variants_to_include = filtered_positions
+
+    return variants_to_include
 
 # TODO: Bobbie to implement this function
 # maps the filtered variants to the report table
-# def map_to_report(selected_variants)
+# def map_to_report(variants_to_include):
 # returns mapped_variants
 # TODO: create a for loop to iterate over the variants and *append* them to the DataFrame
 # NB this is part of the mapping
@@ -181,7 +228,7 @@ def select_variants_for_report(filtered_positions):
 
 
 # formats the report
-def format_report():
+def format_report(mapped_variants):
 # def format_report(filtered_positions):
     # dummy data
     # sample_identifier = args.sample_identifier)
@@ -192,32 +239,33 @@ def format_report():
     # TODO - replace with mapped_variants from map_to_report
     variants = [
         {
-            "Gene": "Gene 1",
-            "contig": "contig 1",
-            "position": "position 1",
-            "Ref allele": "Ref allele 1",
-            "Alt Allele": "Alt Allele 1",
-            "dbSNP": "dbSNP 1",
-            "Zygosity": "Zygosity 1",
-            "consequence": "consequence 1",
-            "Protein change": "Protein change 1",
-            "gnomAD AF": "gnomAD AF 1",
-            "ClinVar classification": "ClinVar classification 1",
-            "ClinVar phenotypes": "ClinVar phenotypes 1",
+            "Gene": "BLK",
+            "contig": "chr8",
+            "position": "11556728",
+            "Ref allele": "T",
+            "Alt Allele": "C, <NON_REF>",
+            "dbSNP": "rs2306234",
+            "HGSVG": "NC_000008.11:g.11556728T>C",
+            "Zygosity": "homozygous alternate",
+            "consequence": "synonymous_variant",
+            "Protein change": "ENST00000259089.8:c.843T>C(p.(Phe281=))",
+            "gnomAD AF": "0.814359",
+            "ClinVar classification": "association",
+            "ClinVar phenotypes": "Systemic lupus erythematosus",
         },
         {
-            "Gene": "Gene 2",
-            "contig": "contig 2",
-            "position": "position 2",
-            "Ref allele": "Ref allele 2",
-            "Alt Allele": "Alt Allele 2",
-            "dbSNP": "dbSNP 2",
-            "Zygosity": "Zygosity 2",
-            "consequence": "consequence 2",
-            "Protein change": "Protein change 2",
-            "gnomAD AF": "gnomAD AF 2",
-            "ClinVar classification": "ClinVar classification 2",
-            "ClinVar phenotypes": "ClinVar phenotypes 2",
+            "Gene": "CEL",
+            "contig": "chr9",
+            "position": "133071212",
+            "Ref allele": "C",
+            "Alt Allele": "T, <NON_REF>",
+            "dbSNP": "rs488087",
+            "Zygosity": "heterozygous",
+            "consequence": "synonymous_variant",
+            "Protein change": "ENST00000372080.6:c.1719C>T(p.(Pro573=))",
+            "gnomAD AF": "0.254305",
+            "ClinVar classification": "likely benign",
+            "ClinVar phenotypes": "not specified",
         },
     ]
 
@@ -326,17 +374,16 @@ def report(args):
     if args.output_json is False:
         pass
     else:
-        with open("filtered_positions_final.json", 'w') as outfile:
+        with open("filtered_positions_final_test.json", 'w') as outfile:
             json.dump(filtered_positions, outfile)
             # json.dump(filtered_positions, outfile, indent=4)  # add indent for pretty print, remove for py reading
 
     # for testing
-    format_report()
-    # format_report(
-    #     map_to_report(
-    #         select_variants_for_report(filtered_positions)
-    #     )
-    # )
+    format_report(
+        # map_to_report(
+        filter_variants_for_report(filtered_positions)
+        # )
+    )
 
 
 if __name__ == '__main__':
