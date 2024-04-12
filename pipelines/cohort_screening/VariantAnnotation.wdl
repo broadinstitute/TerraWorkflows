@@ -26,24 +26,25 @@ workflow AnnotateVCFWorkflow {
 
 
 
-   call FilterVCF as filter_vcf {
+   scatter (vcf in input_vcf) {
+    call FilterVCF as filter_vcf {
      input:
-       input_vcf = input_vcf,
+       input_vcf = vcf,
        bed_file = bed_file,
        output_annotated_file_name = output_annotated_file_name,
        docker_path = gatk_docker_path
-   }
-
+     }
 
     call AnnotateVCF {
         input:
-            input_vcf = filter_vcf.filtered_vcf,
+            input_vcf = [filter_vcf.filtered_vcf],
             output_annotated_file_name = output_annotated_file_name,
             use_reference_disk = use_reference_disk,
             cloud_provider = cloud_provider,
             omim_annotations = omim_annotations,
             docker_path = docker_prefix + nirvana_docker_image
     }
+   }
 
     output {
         Array[File] positions_annotation_json = AnnotateVCF.positions_annotation_json
@@ -53,7 +54,7 @@ workflow AnnotateVCFWorkflow {
 
 task FilterVCF {
     input {
-        Array[File] input_vcf
+        File input_vcf
         File bed_file
         String output_annotated_file_name
 
@@ -142,7 +143,7 @@ task FilterVCF {
 
 task AnnotateVCF {
     input {
-        File input_vcf
+        Array[File] input_vcf
         String output_annotated_file_name
         Boolean use_reference_disk
         File omim_annotations
@@ -219,7 +220,7 @@ task AnnotateVCF {
         # Create Nirvana annotations:
 
         dotnet ~{nirvana_location} \
-            -i ~{input_vcf} \
+            -i "~{sep=' ' input_vcf}" \
             -c $DATA_SOURCES_FOLDER~{path} \
             --sd $DATA_SOURCES_FOLDER~{path_supplementary_annotations} \
             -r $DATA_SOURCES_FOLDER~{path_reference} \
@@ -249,7 +250,7 @@ task AnnotateVCF {
     }
 
     output {
-        Array[File] genes_annotation_json = "~{gene_annotation_json_name}"
-        Array[File] positions_annotation_json = "~{positions_annotation_json_name}"
+        File genes_annotation_json = "~{gene_annotation_json_name}"
+        File positions_annotation_json = "~{positions_annotation_json_name}"
     }
 }
