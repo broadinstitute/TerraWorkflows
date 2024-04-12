@@ -73,9 +73,10 @@ task FilterVCF {
         echo "ls everything"
         ls -lhR
         cd ../
-        ls -lhr
         echo "doing a pwdup a dir "
         pwd
+        ls -lhR
+
 
         task() {
           local file=$1
