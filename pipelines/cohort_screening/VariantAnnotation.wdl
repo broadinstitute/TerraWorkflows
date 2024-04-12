@@ -89,7 +89,6 @@ task FilterVCF {
           -O ~{output_annotated_file_name}.vcf.gz
         }
 
-      echo $file
       # define lists of vcf files
       vcf_files=($(ls *.rb.g.vcf | grep ".rb.g.vcf"))
       task ${vcf_files[0]}
