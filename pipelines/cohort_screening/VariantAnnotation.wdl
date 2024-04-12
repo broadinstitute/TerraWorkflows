@@ -67,6 +67,9 @@ task FilterVCF {
     Int max_heap = memory_mb - 500
 
     command <<<
+
+        cp ~{input_vcf} .
+
         set -euo pipefail
         echo "doing a pwd"
         pwd
