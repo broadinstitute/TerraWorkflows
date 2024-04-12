@@ -28,7 +28,7 @@ workflow AnnotateVCFWorkflow {
 scatter (idx in range(length(input_vcf))) {
         call FilterVCF as filter_vcf {
           input:
-            input_vcf = input_vcf[idx],
+            input_vcf = input_vcf,
             bed_file = bed_file,
             output_annotated_file_name = output_annotated_file_name,
             docker_path = gatk_docker_path
@@ -53,7 +53,7 @@ scatter (idx in range(length(input_vcf))) {
 
 task FilterVCF {
     input {
-        File input_vcf
+        Array[File] input_vcf
         File bed_file
         String output_annotated_file_name
 
