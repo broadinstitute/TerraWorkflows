@@ -68,6 +68,10 @@ task FilterVCF {
 
     command <<<
         set -euo pipefail
+        echo "doing a pwd"
+        pwd
+        echo "ls everything"
+        ls -lh
 
         task() {
           local file=$1
