@@ -88,10 +88,12 @@ task FilterVCF {
           -L ~{bed_file} \
           -O ~{output_annotated_file_name}.vcf.gz
         }
+       echo "ls everything"
+       ls -lh
 
-      # define lists of vcf files
-      vcf_files=($(ls *.rb.g.vcf | grep ".rb.g.vcf"))
-      task ${vcf_files[0]}
+       # define lists of vcf files
+       vcf_files=($(ls *.rb.g.vcf))
+       task ${vcf_files[0]}
 
       ## run 6 instances of task in parallel
       #for file in "${vcf_files[@]}"; do
