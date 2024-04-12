@@ -69,8 +69,6 @@ task FilterVCF {
 
     command <<<
 
-        cp ~{sep=' ' input_vcf}} .
-
         set -euo pipefail
         echo "doing a pwd"
         pwd
