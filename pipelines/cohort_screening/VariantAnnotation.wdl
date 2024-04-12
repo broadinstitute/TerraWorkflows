@@ -74,8 +74,7 @@ task FilterVCF {
           sample_id=$(basename "$file" ".rb.g.vcf")
           echo $sample_id
 
-          vcf_file="${sample_id}.rb.g.vcf"
-
+          vcf_file="$file"
           # SelectVariants run
           start=$(date +%s)
           echo "Run SelectVariants"
@@ -88,7 +87,7 @@ task FilterVCF {
           -V  $vcf_file \
           -L ~{bed_file} \
           -O ~{output_annotated_file_name}.vcf.gz
-       }
+        }
 
       # define lists of vcf files
       vcf_files=($(ls | grep ".rb.g.vcf"))
@@ -109,6 +108,8 @@ task FilterVCF {
 
       wait
       echo "Tasks all done."
+      echo "ls everything"
+      ls -lh
 
     >>>
     runtime {
