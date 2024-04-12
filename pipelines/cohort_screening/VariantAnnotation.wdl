@@ -25,26 +25,25 @@ workflow AnnotateVCFWorkflow {
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
 
 
-
-   scatter (vcf in input_vcf) {
-    call FilterVCF as filter_vcf {
-     input:
-       input_vcf = vcf,
-       bed_file = bed_file,
-       output_annotated_file_name = output_annotated_file_name,
-       docker_path = gatk_docker_path
-     }
+scatter (idx in range(length(input_vcf))) {
+        call FilterVCF as filter_vcf {
+          input:
+            input_vcf = input_vcf[idx],
+            bed_file = bed_file,
+            output_annotated_file_name = output_annotated_file_name,
+            docker_path = gatk_docker_path
+    }
 
     call AnnotateVCF {
         input:
-            input_vcf = [filter_vcf.filtered_vcf],
+            input_vcf = filter_vcf.filtered_vcf,
             output_annotated_file_name = output_annotated_file_name,
             use_reference_disk = use_reference_disk,
             cloud_provider = cloud_provider,
             omim_annotations = omim_annotations,
             docker_path = docker_prefix + nirvana_docker_image
     }
-   }
+}
 
     output {
         Array[File] positions_annotation_json = AnnotateVCF.positions_annotation_json
@@ -59,7 +58,7 @@ task FilterVCF {
         String output_annotated_file_name
 
         Int disk_size_gb = ceil(2*size(input_vcf, "GiB")) + 50
-        Int cpu = 4
+        Int cpu = 1
         Int memory_mb = 8000
         String docker_path
     }
@@ -68,62 +67,17 @@ task FilterVCF {
     Int max_heap = memory_mb - 500
 
     command <<<
-
         set -euo pipefail
-        echo "doing a pwd"
-        pwd
-        echo "ls everything"
-        ls -lhR
-        cd ../
-        echo "doing a pwdup a dir "
-        pwd
-        ls -lhR
 
+        gatk --java-options "-Xms~{command_mem}m -Xmx~{max_heap}m" \
+            IndexFeatureFile \
+            -I ~{input_vcf}
 
-        task() {
-          local file=$1
-          sample_id=$(basename "$file" ".rb.g.vcf")
-          echo $sample_id
-
-          vcf_file="$file"
-          # SelectVariants run
-          start=$(date +%s)
-          echo "Run SelectVariants"
-          gatk --java-options "-Xms~{command_mem}m -Xmx~{max_heap}m" \
-          IndexFeatureFile \
-          -I $vcf_file
-
-          gatk --java-options "-Xms~{command_mem}m -Xmx~{max_heap}m" \
-          SelectVariants \
-          -V  $vcf_file \
-          -L ~{bed_file} \
-          -O ~{output_annotated_file_name}.vcf.gz
-        }
-       echo "ls everything"
-       ls -lh
-
-       # define lists of vcf files
-       vcf_files=($(ls *.rb.g.vcf))
-       task ${vcf_files[0]}
-
-      ## run 6 instances of task in parallel
-      #for file in "${vcf_files[@]}"; do
-      #  (
-      #    echo "starting task $file.."
-      #    du -h  $file
-      #    task "$file"
-      #    sleep $(( (RANDOM % 3) + 1))
-      #  ) &
-      #  # allow to execute up to 2 jobs in parallel
-      #  if [[ $(jobs -r -p | wc -l) -ge 2 ]]; then
-      #    wait -n
-      #  fi
-      #done
-#
-      #wait
-      #echo "Tasks all done."
-      echo "ls everything"
-      ls -lh
+        gatk --java-options "-Xms~{command_mem}m -Xmx~{max_heap}m" \
+            SelectVariants \
+            -V ~{input_vcf} \
+            -L ~{bed_file} \
+            -O ~{output_annotated_file_name}.vcf.gz \
 
     >>>
     runtime {
@@ -141,7 +95,7 @@ task FilterVCF {
 
 task AnnotateVCF {
     input {
-        Array[File] input_vcf
+        File input_vcf
         String output_annotated_file_name
         Boolean use_reference_disk
         File omim_annotations
@@ -218,7 +172,7 @@ task AnnotateVCF {
         # Create Nirvana annotations:
 
         dotnet ~{nirvana_location} \
-            -i "~{sep=' ' input_vcf}" \
+            -i ~{input_vcf} \
             -c $DATA_SOURCES_FOLDER~{path} \
             --sd $DATA_SOURCES_FOLDER~{path_supplementary_annotations} \
             -r $DATA_SOURCES_FOLDER~{path_reference} \
