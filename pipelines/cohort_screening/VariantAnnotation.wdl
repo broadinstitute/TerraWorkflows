@@ -89,25 +89,27 @@ task FilterVCF {
           -O ~{output_annotated_file_name}.vcf.gz
         }
 
+      echo $file
       # define lists of vcf files
-      vcf_files=($(ls | grep ".rb.g.vcf"))
+      vcf_files=($(ls *.rb.g.vcf | grep ".rb.g.vcf"))
+      task ${vcf_files[0]}
 
-      # run 6 instances of task in parallel
-      for file in "${vcf_files[@]}"; do
-        (
-          echo "starting task $file.."
-          du -h  $file
-          task "$file"
-          sleep $(( (RANDOM % 3) + 1))
-        ) &
-        # allow to execute up to 2 jobs in parallel
-        if [[ $(jobs -r -p | wc -l) -ge 2 ]]; then
-          wait -n
-        fi
-      done
-
-      wait
-      echo "Tasks all done."
+      ## run 6 instances of task in parallel
+      #for file in "${vcf_files[@]}"; do
+      #  (
+      #    echo "starting task $file.."
+      #    du -h  $file
+      #    task "$file"
+      #    sleep $(( (RANDOM % 3) + 1))
+      #  ) &
+      #  # allow to execute up to 2 jobs in parallel
+      #  if [[ $(jobs -r -p | wc -l) -ge 2 ]]; then
+      #    wait -n
+      #  fi
+      #done
+#
+      #wait
+      #echo "Tasks all done."
       echo "ls everything"
       ls -lh
 
