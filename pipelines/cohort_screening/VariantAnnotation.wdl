@@ -25,14 +25,15 @@ workflow AnnotateVCFWorkflow {
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
 
 
-scatter (vcf in input_vcf) {
-        call FilterVCF as filter_vcf {
-          input:
-            input_vcf = vcf,
-            bed_file = bed_file,
-            output_annotated_file_name = output_annotated_file_name,
-            docker_path = gatk_docker_path
-    }
+
+   call FilterVCF as filter_vcf {
+     input:
+       input_vcf = input_vcf,
+       bed_file = bed_file,
+       output_annotated_file_name = output_annotated_file_name,
+       docker_path = gatk_docker_path
+   }
+
 
     call AnnotateVCF {
         input:
@@ -43,7 +44,6 @@ scatter (vcf in input_vcf) {
             omim_annotations = omim_annotations,
             docker_path = docker_prefix + nirvana_docker_image
     }
-}
 
     output {
         Array[File] positions_annotation_json = AnnotateVCF.positions_annotation_json
@@ -53,7 +53,7 @@ scatter (vcf in input_vcf) {
 
 task FilterVCF {
     input {
-        File input_vcf
+        Array[File] input_vcf
         File bed_file
         String output_annotated_file_name
 
@@ -71,7 +71,11 @@ task FilterVCF {
         echo "doing a pwd"
         pwd
         echo "ls everything"
-        ls -lh
+        ls -lhR
+        cd ../
+        ls -lhr
+        echo "doing a pwdup a dir "
+        pwd
 
         task() {
           local file=$1
@@ -241,7 +245,7 @@ task AnnotateVCF {
     }
 
     output {
-        File genes_annotation_json = "~{gene_annotation_json_name}"
-        File positions_annotation_json = "~{positions_annotation_json_name}"
+        Array[File] genes_annotation_json = "~{gene_annotation_json_name}"
+        Array[File] positions_annotation_json = "~{positions_annotation_json_name}"
     }
 }
