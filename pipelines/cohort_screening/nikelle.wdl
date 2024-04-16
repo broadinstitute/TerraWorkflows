@@ -121,7 +121,7 @@ task AnnotateVCF {
         PS4='\D{+%F %T} \w $ '
         set -o errexit -o nounset -o pipefail -o xtrace
 
-        echo ~{input_vcf}}
+        echo ~{input_vcf}
 
 
         if [[ "~{use_reference_disk}" == "true" ]]
