@@ -121,9 +121,6 @@ task AnnotateVCF {
         PS4='\D{+%F %T} \w $ '
         set -o errexit -o nounset -o pipefail -o xtrace
 
-        echo ~{input_vcf}
-
-
         if [[ "~{use_reference_disk}" == "true" ]]
         then
             # There's an issue with how the projects/broad-dsde-cromwell-dev/global/images/nirvana-3-18-1-references-2023-01-03
@@ -175,7 +172,7 @@ task AnnotateVCF {
         # Create Nirvana annotations:
 
         dotnet ~{nirvana_location} \
-            -i ~{sep=' ' input_vcf} \
+            -i "~{sep=' ' input_vcf}" \
             -c $DATA_SOURCES_FOLDER~{path} \
             --sd $DATA_SOURCES_FOLDER~{path_supplementary_annotations} \
             -r $DATA_SOURCES_FOLDER~{path_reference} \
