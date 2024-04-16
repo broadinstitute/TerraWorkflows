@@ -130,7 +130,7 @@ task ScoreVcf {
   }
 
   runtime {
-    docker: "terraworkflows.azurecr.io/plink2:@sha256:0ced514e651b08a93684ec6b0670e1a21380fecb6e07e725a9f9ec0d2c4a0e72"
+    docker: "terraworkflows.azurecr.io/plink2@sha256:0ced514e651b08a93684ec6b0670e1a21380fecb6e07e725a9f9ec0d2c4a0e72"
     disks: "local-disk " + disk_space + " HDD"
     memory: runtime_mem + " GB"
   }
