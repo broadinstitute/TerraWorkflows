@@ -218,146 +218,180 @@ def filter_variants_for_report(filtered_positions):
 
     return variants_to_include
 
-# TODO: Bobbie to implement this function
-# maps the filtered variants to the report table
-# def map_to_report(variants_to_include):
-# returns mapped_variants
-# TODO: create a for loop to iterate over the variants and *append* them to the DataFrame
-# NB this is part of the mapping
-# df_var = df_var.append(mapped_variants, ignore_index=True)
+
+# calculate the zygosity of a genotype
+def calculate_zygosity(genotype):
+    alleles = genotype.split("/")
+    if len(set(alleles)) == 1:
+        if alleles[0] == "0":
+            return "Homozygous reference"
+        else:
+            return "Homozygous alternative"
+    else:
+        if "0" in alleles:
+            return "Heterozygous"
+        else:
+            return "Heterozygous alternative"
+
+
+# get an index for sorting the classifications
+def classification_sort(classification):
+    classification_order = ["benign",
+                            "likely benign",
+                            "uncertain significance",
+                            "likely pathogenic",
+                            "pathogenic",
+                            "drug response",
+                            "association",
+                            "risk factor",
+                            "protective",
+                            "affects",
+                            "conflicting data from submitters",
+                            "other",
+                            "not provided",
+                            "'-'"]
+    return classification_order.index(classification)
+
+
+def map_variants_to_table(variants_to_include):
+    variants = []
+    for variant in variants_to_include:
+
+        genotype = variant["samples"][0]["genotype"]
+        zygosity = calculate_zygosity(genotype)
+
+        # sort the classifications
+        clinvar_classification = variant.get("variants", [{}])[0].get("clinvar", [{}])[0].get("significance", "")
+        sorted_classification = sorted(clinvar_classification, key=classification_sort)
+
+        # map the variant data to a dictionary
+        # nullable uses get() to avoid KeyError
+        data = {
+            "gene": variant["variants"][0]["transcripts"][0]["hgnc"],
+            "contig": variant["variants"][0]["chromosome"],
+            "position": variant["position"],
+            "Reference allele": variant["refAllele"],
+            "Alternate Allele": ', '.join(map(str, variant["altAlleles"])),
+            "dbSNP": ', '.join(map(
+                str, variant.get("variants", [{}])[0].get("dbsnp", ""))
+            ),
+            "HGVSG": variant.get("variants", [{}])[0].get("hgvsg", ""),
+            "Zygosity": zygosity,
+            "consequence": ', '.join(map(
+                str, variant.get("variants", [{}])[0].get("transcripts", [{}])[0].get("consequence", ""))
+            ),
+            "Protein change": variant.get("variants", [{}])[0].get("transcripts", [{}])[0].get("hgvsp", ""),
+            "gnomAD AF": variant.get("variants", [{}])[0].get("gnomad", {}).get("allAf", ""),
+            "ClinVar classification": ', '.join(map(str, sorted_classification)),
+            "ClinVar Phenotype": ', '.join(map(
+                str, variant.get("variants", [{}])[0].get("clinvar", [{}])[0].get("phenotypes", ""))
+            ),
+        }
+        variants.append(data)
+
+    # Convert the list of variant dictionaries to a DataFrame
+    mapped_variants = pd.DataFrame(variants)
+    return mapped_variants
 
 
 # formats the report
 def format_report(mapped_variants):
-# def format_report(filtered_positions):
-    # dummy data
-    # sample_identifier = args.sample_identifier)
-    # comes from the data table - can get from args
     sample_identifier = args.sample_identifier
 
-    # mapped_variants = map_to_report(select_variants_for_report(filtered_positions))
-    # TODO - replace with mapped_variants from map_to_report
-    variants = [
-        {
-            "Gene": "BLK",
-            "contig": "chr8",
-            "position": "11556728",
-            "Ref allele": "T",
-            "Alt Allele": "C, <NON_REF>",
-            "dbSNP": "rs2306234",
-            "HGSVG": "NC_000008.11:g.11556728T>C",
-            "Zygosity": "homozygous alternate",
-            "consequence": "synonymous_variant",
-            "Protein change": "ENST00000259089.8:c.843T>C(p.(Phe281=))",
-            "gnomAD AF": "0.814359",
-            "ClinVar classification": "association",
-            "ClinVar phenotypes": "Systemic lupus erythematosus",
-        },
-        {
-            "Gene": "CEL",
-            "contig": "chr9",
-            "position": "133071212",
-            "Ref allele": "C",
-            "Alt Allele": "T, <NON_REF>",
-            "dbSNP": "rs488087",
-            "Zygosity": "heterozygous",
-            "consequence": "synonymous_variant",
-            "Protein change": "ENST00000372080.6:c.1719C>T(p.(Pro573=))",
-            "gnomAD AF": "0.254305",
-            "ClinVar classification": "likely benign",
-            "ClinVar phenotypes": "not specified",
-        },
-    ]
+    if mapped_variants.empty:
+        logging.info('no variants to report, creating empty report')
+        identified_variants_message = ""
+        df_var_html = "<h3>No variants marked for further investigation</h3>"
+    else:
+        identified_variants_message = "We have identified the following variants that warrant further investigation:"
+        df_var = mapped_variants
 
-    # Convert the list of dummy variant dictionaries to a DataFrame
-    # TODO replace with mapped_variants
-    # if mapped_variants is None:
-    #     logging.info('no variants to report, creating empty report')
-    #     identified_variants_message = "No variants marked for further investigation"
-    # else:
-    #     df_var = pd.DataFrame(variants)
-    #     identified_variants_message = "We have identified the following variants that warrant further investigation:"
-    df_var = pd.DataFrame(variants)
-    identified_variants_message = "We have identified the following variants that warrant further investigation:"
-
-    # Apply styles to the DataFrame
-    style = [{'selector': 'th',
-              'props': [('border', '1px solid black'),
-                        ('background-color', '#f2f2f2'),
-                        ('font-size', '14px'),
-                        ('padding', '5px'),
-                        ('text-align', 'left')]
-              },
-             {'selector': 'td',
-              'props': [('border', '1px solid black'),
-                        ('border-collapse', 'collapse'),
-                        ('border-spacing', '0'),
-                        ('font-size', '14px'),
-                        ('padding', '5px'),
-                        ('text-align', 'left')]
-              }]
-    # Convert the DataFrame to an HTML table
-    df_var_html = df_var.style.hide().set_table_styles(style).to_html()
-    # df_var_html = df_var.style.hide().to_html()
+        # Apply styles to the DataFrame
+        style = [{'selector': 'th',
+                  'props': [('border', '1px solid black'),
+                            ('background-color', '#f2f2f2'),
+                            ('font-size', '12px'),
+                            ('padding', '5px'),
+                            ('text-align', 'left')]
+                  },
+                 {'selector': 'td',
+                  'props': [('border', '1px solid black'),
+                            ('border-collapse', 'collapse'),
+                            ('border-spacing', '0'),
+                            ('font-size', '12px'),
+                            ('padding', '5px'),
+                            ('text-align', 'left')]
+                  }]
+        # Convert the DataFrame to an HTML table
+        df_var_html = df_var.style.hide().set_table_styles(style).to_html()
 
     # MOBY (Maturity-Onset Diabetes of the Young) genes
     # obtained from Naylor 2018, https://www.ncbi.nlm.nih.gov/books/NBK500456/#mody-ov.Genetic_Causes_of_MODY
-    # TODO: Add FAQ#2 in this comment and to report
-    # see spec
+    # FAQ:
+    # Why are HNF1A and KLF11 missing from the MODY list?
+    # While these two genes are included in the list of fourteen MODY genes,
+    # they are also included in the list of Challenging Medically Relevant Genes (CMRG) (bed file).
+    # The CMRG genes are difficult to call in hg38,
+    # which is the reference genome for the proposed reports in this document.
+    # In order to call variants in these genes effectively,
+    # we would need to implement and run another annotation pipeline, which is out of scope for this project.
     mody_genes = ["ABCC8", "APPL1", "BLK", "CEL", "GCK", "HNF1B", "HNF4A", "INS", "KCNJ11", "NEUROD1", "PAX4", "PDX1"]
 
     # Generate HTML report
     html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Genomic Variant Report</title>
-    </head>
-    <body style="font-family: Arial, sans-serif;">
-        <h1 style="font-size: 24px;">Genomic Variant Report</h1>
-        <p>Sample identifier: {sample_identifier}</p>
-        <p>Please note:<br>
-        <ul style="font-size: 16px;">
-            <li>This report is for research purposes only.</li>
-            <li>This report is not meant for direct disclosure to patients.</li>
-            <li>This report does not mean that the person with these variants has diabetes.</li>
-            <li>Clinicians should confirm this result before using it as part of clinical care.</li>
-        </ul>
-        <p>{identified_variants_message}</p>
-        {df_var_html}
-    """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Genomic Variant Report</title>
+        </head>
+        <body style="font-family: Arial, sans-serif;">
+            <h1 style="font-size: 24px;">Genomic Variant Report</h1>
+            <p>Sample identifier: {sample_identifier}</p>
+            <p style="font-size: 14px;">Please note:<br>
+            <ul style="font-size: 14px;">
+                <li>This report is for research purposes only.</li>
+                <li>This report is not meant for direct disclosure to patients.</li>
+                <li>This report does not mean that the person with these variants has diabetes.</li>
+                <li>Clinicians should confirm this result before using it as part of clinical care.</li>
+            </ul>
+            </p>
+            <p>{identified_variants_message}</p>
+            {df_var_html}
+        """
     html_content += """
-        <h2 style="font-size: 20px;">We have examined the following genes, which have been implicated in 
-        Maturity-Onset Diabetes of the Young (MODY):</h2>
-        <ul>
-    """
+            <h3 style="font-size: 16px;">We have examined the following genes*, which have been implicated in 
+            Maturity-Onset Diabetes of the Young (MODY):</h3>
+            <ul>
+        """
 
     for gene in mody_genes:
         html_content += f"<li>{gene}</li>"
 
     html_content += """
-        </ul>
-        <p>The analysis to identify these variants has limitations, which include potentially missing pathogenic 
-        variants, missing variants that are not yet associated with MODY, and missing variants that are associated 
-        with MODY as part of a polygenic effect.  This analysis did not use any familial genomic information 
-        to confirm variants.</p>
-    </body>
-    </html>
-    """
+            </ul>
+            <p style="font-size: 14px;">The analysis to identify these variants has limitations, which include potentially missing pathogenic 
+            variants, missing variants that are not yet associated with MODY, and missing variants that are associated 
+            with MODY as part of a polygenic effect.  This analysis did not use any familial genomic information 
+            to confirm variants.</p>
+            <p style="font-size: 14px;">Please note that we do not include HNF1A and KLF11, two MODY genes, in this report, 
+            due to difficulties calling these genes on the hg38 reference 
+            (<a href="http://dx.doi.org/10.1038/s41587-021-01158-1">10.1038/s41587-021-01158-1</a>).</p>
+        </body>
+        </html>
+        """
+
     # write out the HTML content to a file
     with open('report.html', 'w') as html_file:
         html_file.write(html_content)
     logging.info("HTML report generated successfully!")
 
     # convert the HTML report to a PDF file
-    # TODO - match with WDL
-    pdf_report_name = args.sample_identifier + '_mody_variants_report.pdf'
+    pdf_report_name = sample_identifier + '_mody_variants_report.pdf'
     pdfkit.from_file('report.html', pdf_report_name)
     logging.info("PDF report generated successfully!")
 
     # Export variants dataframe as tsv
-    # TODO - match with WDL
-    table_name = args.sample_identifier + '_mody_variants_table.tsv'
+    table_name = sample_identifier + '_mody_variants_table.tsv'
     df_var.to_csv(table_name, sep='\t', index=False)
     logging.info("variants.tsv exported successfully!")
 
@@ -378,11 +412,10 @@ def report(args):
             json.dump(filtered_positions, outfile)
             # json.dump(filtered_positions, outfile, indent=4)  # add indent for pretty print, remove for py reading
 
-    # for testing
     format_report(
-        # map_to_report(
-        filter_variants_for_report(filtered_positions)
-        # )
+        map_variants_to_table(
+            filter_variants_for_report(filtered_positions)
+        )
     )
 
 
