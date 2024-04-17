@@ -359,7 +359,7 @@ def format_report(mapped_variants):
             {df_var_html}
         """
     html_content += """
-            <h3 style="font-size: 16px;">We have examined the following genes*, which have been implicated in 
+            <h3 style="font-size: 16px;">We have examined the following genes, which have been implicated in 
             Maturity-Onset Diabetes of the Young (MODY):</h3>
             <ul>
         """
