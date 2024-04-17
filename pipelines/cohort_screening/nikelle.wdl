@@ -37,7 +37,7 @@ workflow AnnotateVCFWorkflow {
 
         call AnnotateVCF {
             input:
-                input_vcf = flatten(filter_vcf.filtered_vcf),
+                input_vcf = filter_vcf.filtered_vcf,
                 output_annotated_file_name = output_annotated_file_name,
                 use_reference_disk = use_reference_disk,
                 cloud_provider = cloud_provider,
@@ -89,8 +89,8 @@ task FilterVCF {
     }
 
     output {
-        Array[File] filtered_vcf = glob("*~{output_annotated_file_name}.vcf.gz")
-        Array[File] filtered_vcf_index = glob("*~{output_annotated_file_name}.vcf.gz.tbi")
+        File filtered_vcf = "~{output_annotated_file_name}.vcf.gz"
+        File filtered_vcf_index = "~{output_annotated_file_name}.vcf.gz.tbi"
     }
 }
 
@@ -172,7 +172,7 @@ task AnnotateVCF {
         # Create Nirvana annotations:
 
         dotnet ~{nirvana_location} \
-            -i "~{sep=' ' input_vcf}" \
+            -i ~{sep=' ' input_vcf} \
             -c $DATA_SOURCES_FOLDER~{path} \
             --sd $DATA_SOURCES_FOLDER~{path_supplementary_annotations} \
             -r $DATA_SOURCES_FOLDER~{path_reference} \
