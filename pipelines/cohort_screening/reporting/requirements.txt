@@ -1,5 +1,0 @@
-gtfparse
-jinja2
-pandas
-pdfkit
-tqdm
