@@ -1,3 +1,6 @@
+# useful for getting some stats on the positions file after converting to df
+
+
 import argparse
 import json
 import pandas as pd
