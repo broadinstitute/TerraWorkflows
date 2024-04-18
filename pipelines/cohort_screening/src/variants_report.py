@@ -10,15 +10,15 @@ from tqdm import tqdm
 
 
 def get_MANE():
-    df = read_gtf('MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz') #  TODO: change back to /src/MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz
-    df = df['transcript_id'].to_pandas() # polar dataframe to pandas dataframe
+    df = read_gtf('/src/MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz')
+    df = df['transcript_id'].to_pandas()  # polar dataframe to pandas dataframe
     df = pd.DataFrame(df)
     df[['transcript', 'version']] = df['transcript_id'].str.split('.', expand=True)
     return df['transcript']
 
 
 def isMANE(transcript_id, MANE_list):
-    transcript = transcript_id.split('.')[0] # remove version
+    transcript = transcript_id.split('.')[0]  # remove version
     return MANE_list.str.contains(transcript).any()
 
 
@@ -53,7 +53,7 @@ def filter_transcripts(positions):
         if variants_field in position:
             for variant_dict in position[variants_field]:
                 transcripts_to_keep = []
-                if transcripts_field in variant_dict and len(variant_dict[transcripts_field])>1:
+                if transcripts_field in variant_dict and len(variant_dict[transcripts_field]) > 1:
                     for transcript_dict in variant_dict[transcripts_field]:
                         if isMANE(transcript_dict['transcript'], MANE):
                             transcripts_to_keep.append(transcript_dict)
@@ -62,17 +62,18 @@ def filter_transcripts(positions):
         progress_bar.update(1)
 
     # select transcript with highest impact
-    # impact table was manually  created from https://grch37.ensembl.org/info/genome/variation/prediction/predicted_data.html
-    impact_table = pd.read_csv('impact_table_with_score.csv', index_col=False) # TODO: change back to /src/impact_table_with_score.csv
-
+    # impact table was manually created from
+    # https://grch37.ensembl.org/info/genome/variation/prediction/predicted_data.html
+    impact_table = pd.read_csv('/src/impact_table_with_score.csv', index_col=False)
     for position in positions:
         if variants_field in position:
             for variant_dict in position[variants_field]:
-                if transcripts_field in variant_dict and len(variant_dict[transcripts_field])>1:
+                if transcripts_field in variant_dict and len(variant_dict[transcripts_field]) > 1:
                     transcripts_with_highest_impact = []
                     highest_impact = 0
                     for transcript_dict in variant_dict[transcripts_field]:
-                        transcript_impact = max([get_impact_score(consequence, impact_table) for consequence in transcript_dict['consequence']])
+                        transcript_impact = max([get_impact_score(consequence, impact_table)
+                                                 for consequence in transcript_dict['consequence']])
                         if transcript_impact > highest_impact:
                             highest_impact = transcript_impact
                             transcripts_with_highest_impact = [transcript_dict]
@@ -87,9 +88,9 @@ def filter_transcripts(positions):
         if variants_field in position:
             for variant_dict in position[variants_field]:
                 transcripts_to_keep = []
-                if transcripts_field in variant_dict and len(variant_dict[transcripts_field])>1:
+                if transcripts_field in variant_dict and len(variant_dict[transcripts_field]) > 1:
                     for transcript_dict in variant_dict[transcripts_field]:
-                        if 'source' in transcript_dict and transcript_dict['source']=='Ensembl':
+                        if 'source' in transcript_dict and transcript_dict['source'] == 'Ensembl':
                             transcripts_to_keep.append(transcript_dict)
                     variant_dict[transcripts_field] = transcripts_to_keep
         progress_bar.set_description('Selecting Ensembl transcript...')
@@ -99,7 +100,7 @@ def filter_transcripts(positions):
     for position in positions:
         if variants_field in position:
             for variant_dict in position[variants_field]:
-                if transcripts_field in variant_dict and len(variant_dict[transcripts_field])>1:
+                if transcripts_field in variant_dict and len(variant_dict[transcripts_field]) > 1:
                     sorted_transcripts = sorted(variant_dict[transcripts_field], key=lambda x: x['transcript'])
                     variant_dict[transcripts_field] = sorted_transcripts[0]
         progress_bar.set_description('Selecting first transcript when sorted alphabetically...')
@@ -109,14 +110,14 @@ def filter_transcripts(positions):
     for position in positions:
         if variants_field in position:
             for variant_dict in position[variants_field][:]:
-                if transcripts_field in variant_dict and len(variant_dict[transcripts_field])==0:
+                if transcripts_field in variant_dict and len(variant_dict[transcripts_field]) == 0:
                     position[variants_field].remove(variant_dict)
         progress_bar.set_description('Remove any variants that are empty...')
         progress_bar.update(1)
 
     # remove any positions that don't have any variants left
     for position in positions[:]:
-        if variants_field in position and len(position[variants_field])==0:
+        if variants_field in position and len(position[variants_field]) == 0:
             positions.remove(position)
         progress_bar.update(1)
 
@@ -173,7 +174,7 @@ def filter_variants_for_report(filtered_positions):
 
     # remove any positions that don't have any variants left
     for position in filtered_positions[:]:
-        if variants_field in position and len(position[variants_field])==0:
+        if variants_field in position and len(position[variants_field]) == 0:
             logging.info(f'no variants found for position, removing position' + str(position))
             filtered_positions.remove(position)
             removed_positions += 1
@@ -369,12 +370,13 @@ def format_report(mapped_variants):
 
     html_content += """
             </ul>
-            <p style="font-size: 14px;">The analysis to identify these variants has limitations, which include potentially missing pathogenic 
-            variants, missing variants that are not yet associated with MODY, and missing variants that are associated 
+            <p style="font-size: 14px;">The analysis to identify these variants has limitations, 
+            which include potentially missing pathogenic variants, 
+            missing variants that are not yet associated with MODY, and missing variants that are associated 
             with MODY as part of a polygenic effect.  This analysis did not use any familial genomic information 
             to confirm variants.</p>
-            <p style="font-size: 14px;">Please note that we do not include HNF1A and KLF11, two MODY genes, in this report, 
-            due to difficulties calling these genes on the hg38 reference 
+            <p style="font-size: 14px;">Please note that we do not include HNF1A and KLF11, two MODY genes, 
+            in this report, due to difficulties calling these genes on the hg38 reference 
             (<a href="http://dx.doi.org/10.1038/s41587-021-01158-1">10.1038/s41587-021-01158-1</a>).</p>
         </body>
         </html>
@@ -408,7 +410,7 @@ def report(args):
     if args.output_json is False:
         pass
     else:
-        with open("filtered_positions_final_test.json", 'w') as outfile:
+        with open("../local_testing/filtered_positions_final_test.json", 'w') as outfile:
             json.dump(filtered_positions, outfile)
             # json.dump(filtered_positions, outfile, indent=4)  # add indent for pretty print, remove for py reading
 
