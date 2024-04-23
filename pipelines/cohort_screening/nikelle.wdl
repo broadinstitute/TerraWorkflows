@@ -8,7 +8,7 @@ workflow AnnotateVCFWorkflow {
         Boolean use_reference_disk
         String cloud_provider
         File omim_annotations
-        Int batch_number = 2
+        Int batch_size
     }
 
     # Determine docker prefix based on cloud provider
@@ -26,14 +26,23 @@ workflow AnnotateVCFWorkflow {
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
 
 
+call BatchVCFs as batch_vcfs {
+    input:
+        input_vcfs = input_vcf,
+        batch_size = batch_size
+}
+
+scatter(tar in batch_vcfs.batch_tars) {
     call FilterVCF as filter_vcf {
-        input:
-            input_vcf = input_vcf,
-            bed_file = bed_file,
-            output_annotated_file_name = output_annotated_file_name,
-            batch_number = batch_number,
-            docker_path = gatk_docker_path
-    }
+            input:
+                batch_tars = tar,
+                bed_file = bed_file,
+                output_annotated_file_name = output_annotated_file_name,
+                batch_size = batch_size,
+                docker_path = gatk_docker_path
+        }
+}
+
 
 scatter(tar in filter_vcf.tarred_filtered_vcfs) {
     call AnnotateVCF as AnnotateVCF {
@@ -53,14 +62,77 @@ scatter(tar in filter_vcf.tarred_filtered_vcfs) {
     }
 }
 
+
+
+task BatchVCFs {
+    input {
+        Array[File] input_vcfs
+        Int batch_size
+        Int additional_memory_mb = 0
+        Int additional_disk_gb = 0
+    }
+
+    Int mem_size = ceil(size(input_vcfs, "MiB")) + 2000 + additional_memory_mb
+    Int disk_size = ceil(size(input_vcfs, "GiB")) + 20 + additional_disk_gb
+
+    command <<<
+        set -euo pipefail
+
+        declare -a input_vcfs=(~{sep=' ' input_vcfs})
+
+        # Get the size of the input_vcfs array
+        num_vcfs=${#input_vcfs[@]}
+
+        # Split input_vcfs into batches based on batch_sizes
+        # Calculate the number of batches based on the batch size
+        batch_size=~{batch_size}
+        num_batches=$(( ($num_vcfs + $batch_size - 1) / $batch_size ))
+
+
+        echo "Total VCF files: $num_vcfs"
+        echo "Batch size (the number of files we will process in a batch): ~{batch_size}"
+        echo "Number of batches: $num_batches"
+
+        # Process each batch
+        for ((i=0; i<num_batches; i++)); do
+            start_idx=$((i * batch_size))
+            end_idx=$((start_idx + batch_size - 1))
+
+            # Create a directory for the current batch
+            batch_dir="batch_${i}"
+            mkdir $batch_dir
+
+            echo "Processing batch $i..."
+            for ((j=start_idx; j<=end_idx && j<num_vcfs; j++)); do
+                vcf="${input_vcfs[j]}"
+                mv $vcf $batch_dir
+            done
+
+            # Tar the batch directory
+            tar_name="batch_${i}.tar.gz"
+            tar czf $tar_name $batch_dir
+            echo "Created tar: $tar_name"
+        done
+    >>>
+    runtime {
+        docker: "gcr.io/gcp-runtimes/ubuntu_16_0_4:latest"
+        disks: "local-disk " + disk_size + " HDD"
+        memory: mem_size + " MiB"
+    }
+
+    output {
+        Array[File] batch_tars = glob("*.tar.gz")
+    }
+}
+
 task FilterVCF {
     input {
-        Array[File] input_vcf
+        File batch_tars
         File bed_file
         String output_annotated_file_name
-        Int batch_number
+        Int batch_size
 
-        Int disk_size_gb = ceil(2*size(input_vcf, "GiB")) + 50
+        Int disk_size_gb = ceil(2*size(batch_tars, "GiB")) + 50
         Int cpu = 1
         Int memory_mb = 8000
         String docker_path
@@ -68,58 +140,88 @@ task FilterVCF {
 
     Int command_mem = memory_mb - 1000
     Int max_heap = memory_mb - 500
-
     command <<<
         set -euo pipefail
-        declare -a input_vcfs=(~{sep=' ' input_vcf})
+
+        # Function to perform the task on a single VCF file
+        task() {
+            local vcf_file=$1
+
+            echo "Starting task for $vcf_file.."
+            sample_id=$(basename "$vcf_file" ".rb.g.vcf")
+
+            # perform indexing
+            echo "Indexing VCF file: $vcf_file"
+            gatk \
+            IndexFeatureFile \
+            -I "$vcf_file"
+
+            # perform filtering
+            echo "Filtering VCF file: $vcf_file"
+            gatk \
+            SelectVariants \
+            -V  "$vcf_file" \
+            -L ~{bed_file} \
+            -O "$sample_id.filtered.vcf"
+        }
+
+        # declare array of vcf tars
+        declare -a batch_tars=(~{sep=' ' batch_tars})
+        echo "batch_tars: ${batch_tars[@]}"
+
+        # untar the tarred inputs
+        tar -xf $batch_tars --strip-components=1
+
+        declare -a input_vcfs=($(ls | grep ".rb.g.vcf$"))
         echo "input_vcfs: ${input_vcfs[@]}"
 
-        # loop through vcf.gz files and run gatk index on them
-        echo "start indexing vcf files.."
-        for vcf in "${input_vcfs[@]}"; do
-            sample_id=$(basename "$vcf" ".rb.g.vcf")
-            echo $sample_id
-            vcf_file="${sample_id}.rb.g.vcf"
-            echo "vcffile is $vcf_file"
-            gatk --java-options "-Xms~{command_mem}m -Xmx~{max_heap}m" \
-            IndexFeatureFile \
-            -I $vcf
+
+        for ((i = 0; i < ${#input_vcfs[@]}; i += 2)); do
+            # Launch tasks in parallel for the current batch of VCF files
+            task "${input_vcfs[i]}" &
+
+            # Check if there's another file available in the batch
+            if [[ $((i + 1)) -lt ${#input_vcfs[@]} ]]; then
+                echo "Next file to process: ${input_vcfs[i + 1]}"
+                task "${input_vcfs[i + 1]}" &
+            fi
+
+            # Limit the number of concurrent tasks to 2 (adjust as needed)
+            if [[ $(jobs -p | wc -l) -ge 2 ]]; then
+                wait -n # Wait for any background job to finish
+            fi
         done
 
-        echo "start filtering vcf files.."
-        for vcf in "${input_vcfs[@]}"; do
-            sample_id=$(basename "$vcf" ".rb.g.vcf")
-            echo $sample_id
-            vcf_file="${sample_id}.rb.g.vcf"
-            gatk --java-options "-Xms~{command_mem}m -Xmx~{max_heap}m" \
-            SelectVariants \
-            -V  $vcf \
-            -L ~{bed_file} \
-            -O $sample_id.filtered.vcf
-        done
+        wait
 
-        batch_number=~{batch_number}
-        for i in $(seq 1 "${batch_number}"); do
+        echo "Tasks all done."
+        ls -lR
+
+        batch_size=~{batch_size}
+        for i in $(seq 1 "${batch_size}"); do
             mkdir -p "batch${i}"
         done
 
+
         folder_index=1
 
-        filtered_vcf_files=($(ls | grep "filtered.vcf$"))
+        filtered_vcf_files=($(ls | grep ".filtered.vcf$"))
         echo "filtered_vcf_files: ${filtered_vcf_files[@]}"
 
         for file in "${filtered_vcf_files[@]}"; do
-            sample_id=$(basename "$file" "filtered.vcf")
             mv $file batch$((folder_index))/$file
-            folder_index=$(( (folder_index % $batch_number) + 1 ))
+            folder_index=$(( (folder_index % $batch_size) + 1 ))
         done
 
-        for i in $(seq 1 "${batch_number}"); do
-          tar -czf "${i}.filtered_vcf_files.tar.gz" "batch${i}"/*.filtered.vcf
+
+        for i in $(seq 1 "${batch_size}"); do
+        # Check if files exist in batch directory before creating tar archive
+            if [ -n "$(find "batch${i}" -maxdepth 1 -name '*.filtered.vcf')" ]; then
+                tar -czf "${i}.filtered_vcf_files.tar.gz" "batch${i}"/*.filtered.vcf
+            else
+                echo "No files found in batch${i}. Skipping tar creation."
+            fi
         done
-
-        echo "TAR files created successfully."
-
 
     >>>
     runtime {
@@ -136,7 +238,7 @@ task FilterVCF {
 
 task AnnotateVCF {
     input {
-        File input_filtered_vcf_tars
+        Array[File] input_filtered_vcf_tars
         String output_annotated_file_name
         Boolean use_reference_disk
         File omim_annotations
@@ -144,20 +246,23 @@ task AnnotateVCF {
         String docker_path
     }
 
-
-
     String nirvana_location = "/Nirvana/Nirvana.dll"
     String jasix_location = "/Nirvana/Jasix.dll"
     String path = "/Cache/GRCh38/Both"
     String path_supplementary_annotations = "/SupplementaryAnnotation/GRCh38"
     String path_reference = "/References/Homo_sapiens.GRCh38.Nirvana.dat"
 
+
     command <<<
         set -euo pipefail
 
+        #declare array of filtered vcf tars
+
+        filtered_vcf_files=(~{sep=' ' input_filtered_vcf_tars})
+
         # untar the tarred inputs
-        tar -xf ~{input_filtered_vcf_tars} --strip-components=1
-        rm ~{input_filtered_vcf_tars}
+        tar -xf $filtered_vcf_files --strip-components=1
+        rm $filtered_vcf_files
 
       if [[ "~{use_reference_disk}" == "true" ]]
       then
