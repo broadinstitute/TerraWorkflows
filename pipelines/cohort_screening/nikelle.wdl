@@ -15,12 +15,17 @@ workflow AnnotateVCFWorkflow {
     String gcr_docker_prefix = "us.gcr.io/broad-gotc-prod/"
     String acr_docker_prefix = "terraworkflows.azurecr.io/"
 
+
     String docker_prefix = if cloud_provider == "gcp" then gcr_docker_prefix else acr_docker_prefix
 
     #TODO which gatk docker image to use for azure?
     String gatk_docker_path = if cloud_provider == "gcp" then gatk_gcr_docker_path else gatk_acr_docker_path
     String gatk_gcr_docker_path= "us.gcr.io/broad-gatk/gatk:4.5.0.0"
     String gatk_acr_docker_path= "dsppipelinedev.azurecr.io/gatk_reduced_layers:latest"
+
+    String ubuntu_docker_path = if cloud_provider == "gcp" then gcr_ubuntu_docker_path else azure_ubuntu_docker_path
+    String gcr_ubuntu_docker_path = "gcr.io/gcp-runtimes/ubuntu_16_0_4:latest"
+    String azure_ubuntu_docker_path = "dsppipelinedev.azurecr.io/ubuntu_16_0_4:latest"
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
@@ -29,7 +34,8 @@ workflow AnnotateVCFWorkflow {
 call BatchVCFs as batch_vcfs {
     input:
         input_vcfs = input_vcf,
-        batch_size = batch_size
+        batch_size = batch_size,
+        docker_path = ubuntu_docker_path
 }
 
 scatter(tar in batch_vcfs.batch_tars) {
@@ -70,6 +76,7 @@ task BatchVCFs {
         Int batch_size
         Int additional_memory_mb = 0
         Int additional_disk_gb = 0
+        String docker_path
     }
 
     Int mem_size = ceil(size(input_vcfs, "MiB")) + 2000 + additional_memory_mb
@@ -115,7 +122,7 @@ task BatchVCFs {
         done
     >>>
     runtime {
-        docker: "gcr.io/gcp-runtimes/ubuntu_16_0_4:latest"
+        docker: docker_path
         disks: "local-disk " + disk_size + " HDD"
         memory: mem_size + " MiB"
     }
