@@ -80,7 +80,7 @@ task BatchVCFs {
     }
 
     Int mem_size = ceil(size(input_vcfs, "MiB")) + 2000 + additional_memory_mb
-    Int disk_size = ceil(size(input_vcfs, "GiB")) + 20 + additional_disk_gb
+    Int disk_size = ceil(size(input_vcfs, "GiB")) + 200 + additional_disk_gb
 
     command <<<
         set -euo pipefail
@@ -155,7 +155,7 @@ task FilterVCF {
             local vcf_file=$1
 
             echo "Starting task for $vcf_file.."
-            sample_id=$(basename "$vcf_file" ".rb.g.vcf")
+            sample_id=$(basename "$vcf_file" ".vcf")
 
             # perform indexing
             echo "Indexing VCF file: $vcf_file"
@@ -179,7 +179,7 @@ task FilterVCF {
         # untar the tarred inputs
         tar -xf $batch_tars --strip-components=1
 
-        declare -a input_vcfs=($(ls | grep ".rb.g.vcf$"))
+        declare -a input_vcfs=($(ls | grep ".vcf$"))
         echo "input_vcfs: ${input_vcfs[@]}"
 
 

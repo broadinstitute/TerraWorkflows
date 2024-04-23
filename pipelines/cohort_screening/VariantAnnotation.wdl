@@ -5,15 +5,15 @@ workflow AnnotateVCFWorkflow {
         Array[File] input_vcf
         File bed_file
         String output_annotated_file_name
-        Boolean use_reference_disk
         String cloud_provider
         File omim_annotations
-        Int batch_number = 2
+        Int batch_size
     }
 
     # Determine docker prefix based on cloud provider
     String gcr_docker_prefix = "us.gcr.io/broad-gotc-prod/"
     String acr_docker_prefix = "terraworkflows.azurecr.io/"
+
 
     String docker_prefix = if cloud_provider == "gcp" then gcr_docker_prefix else acr_docker_prefix
 
@@ -22,30 +22,43 @@ workflow AnnotateVCFWorkflow {
     String gatk_gcr_docker_path= "us.gcr.io/broad-gatk/gatk:4.5.0.0"
     String gatk_acr_docker_path= "dsppipelinedev.azurecr.io/gatk_reduced_layers:latest"
 
+    String ubuntu_docker_path = if cloud_provider == "gcp" then gcr_ubuntu_docker_path else azure_ubuntu_docker_path
+    String gcr_ubuntu_docker_path = "gcr.io/gcp-runtimes/ubuntu_16_0_4:latest"
+    String azure_ubuntu_docker_path = "dsppipelinedev.azurecr.io/ubuntu_16_0_4:latest"
+
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
 
 
-    call FilterVCF as filter_vcf {
+    call BatchVCFs as batch_vcfs {
         input:
-            input_vcf = input_vcf,
-            bed_file = bed_file,
-            output_annotated_file_name = output_annotated_file_name,
-            batch_number = batch_number,
-            docker_path = gatk_docker_path
+            input_vcfs = input_vcf,
+            batch_size = batch_size,
+            docker_path = ubuntu_docker_path
     }
 
-scatter(tar in filter_vcf.tarred_filtered_vcfs) {
-    call AnnotateVCF as AnnotateVCF {
-            input:
-                input_filtered_vcf_tars = tar,
-                output_annotated_file_name = output_annotated_file_name,
-                use_reference_disk = use_reference_disk,
-                cloud_provider = cloud_provider,
-                omim_annotations = omim_annotations,
-                docker_path = docker_prefix + nirvana_docker_image
-        }
+    scatter(tar in batch_vcfs.batch_tars) {
+        call FilterVCF as filter_vcf {
+                input:
+                    batch_tars = tar,
+                    bed_file = bed_file,
+                    output_annotated_file_name = output_annotated_file_name,
+                    batch_size = batch_size,
+                    docker_path = gatk_docker_path
+            }
     }
+
+
+    scatter(tar in filter_vcf.tarred_filtered_vcfs) {
+        call AnnotateVCF as AnnotateVCF {
+                input:
+                    input_filtered_vcf_tars = tar,
+                    output_annotated_file_name = output_annotated_file_name,
+                    cloud_provider = cloud_provider,
+                    omim_annotations = omim_annotations,
+                    docker_path = docker_prefix + nirvana_docker_image
+            }
+        }
 
     output {
         Array[File] positions_annotation_json = AnnotateVCF.positions_annotation_json
@@ -53,14 +66,75 @@ scatter(tar in filter_vcf.tarred_filtered_vcfs) {
     }
 }
 
+
+
+task BatchVCFs {
+    input {
+        Array[File] input_vcfs
+        Int batch_size
+        Int additional_memory_mb = 0
+        Int additional_disk_gb = 0
+        String docker_path
+    }
+
+    Int mem_size = ceil(size(input_vcfs, "MiB")) + 2000 + additional_memory_mb
+    Int disk_size = ceil(size(input_vcfs, "GiB")) + 200 + additional_disk_gb
+
+    command <<<
+        set -euo pipefail
+
+        # Get the size of the input_vcfs array
+        declare -a input_vcfs=(~{sep=' ' input_vcfs})
+        num_vcfs=${#input_vcfs[@]}
+
+        # Calculate the number of batches based on the batch size
+        batch_size=~{batch_size}
+        num_batches=$(( ($num_vcfs + $batch_size - 1) / $batch_size ))
+
+        echo "Total VCF files: $num_vcfs"
+        echo "Batch size (the number of files we will process in a batch): ~{batch_size}"
+        echo "Number of batches: $num_batches"
+
+        # Process each batch. Move the VCF files to a batch directory and tar the directory
+        for ((i=0; i<num_batches; i++)); do
+            start_idx=$((i * batch_size))
+            end_idx=$((start_idx + batch_size - 1))
+
+            # Create a directory for the current batch
+            batch_dir="batch_${i}"
+            mkdir $batch_dir
+
+            echo "Processing batch $i..."
+            for ((j=start_idx; j<=end_idx && j<num_vcfs; j++)); do
+                vcf="${input_vcfs[j]}"
+                mv $vcf $batch_dir
+            done
+
+            # Tar the batch directory
+            tar_name="batch_${i}.tar.gz"
+            tar czf $tar_name $batch_dir
+            echo "Created tar: $tar_name"
+        done
+    >>>
+    runtime {
+        docker: docker_path
+        disks: "local-disk " + disk_size + " HDD"
+        memory: mem_size + " MiB"
+    }
+
+    output {
+        Array[File] batch_tars = glob("*.tar.gz")
+    }
+}
+
 task FilterVCF {
     input {
-        Array[File] input_vcf
+        File batch_tars
         File bed_file
         String output_annotated_file_name
-        Int batch_number
+        Int batch_size
 
-        Int disk_size_gb = ceil(2*size(input_vcf, "GiB")) + 50
+        Int disk_size_gb = ceil(2*size(batch_tars, "GiB")) + 50
         Int cpu = 1
         Int memory_mb = 8000
         String docker_path
@@ -68,58 +142,88 @@ task FilterVCF {
 
     Int command_mem = memory_mb - 1000
     Int max_heap = memory_mb - 500
-
     command <<<
         set -euo pipefail
-        declare -a input_vcfs=(~{sep=' ' input_vcf})
+
+        # Bash function to perform the filtering/indexing task on a single VCF file
+
+        task() {
+            local vcf_file=$1
+
+            echo "Starting task for $vcf_file.."
+            sample_id=$(basename "$vcf_file" ".vcf")
+
+            # Perform indexing
+            echo "Indexing VCF file: $vcf_file"
+            gatk \
+            IndexFeatureFile \
+            -I "$vcf_file"
+
+            # Perform filtering
+            echo "Filtering VCF file: $vcf_file"
+            gatk \
+            SelectVariants \
+            -V  "$vcf_file" \
+            -L ~{bed_file} \
+            -O "$sample_id.filtered.vcf"
+        }
+
+        # Declare array of input batched tars
+        declare -a batch_tars=(~{sep=' ' batch_tars})
+        echo "batch_tars: ${batch_tars[@]}"
+
+        # Untar the tarred inputs
+        tar -xf $batch_tars --strip-components=1
+
+        # Declare array of vcf files
+        declare -a input_vcfs=($(ls | grep ".vcf$"))
         echo "input_vcfs: ${input_vcfs[@]}"
 
-        # loop through vcf.gz files and run gatk index on them
-        echo "start indexing vcf files.."
-        for vcf in "${input_vcfs[@]}"; do
-            sample_id=$(basename "$vcf" ".rb.g.vcf")
-            echo $sample_id
-            vcf_file="${sample_id}.rb.g.vcf"
-            echo "vcffile is $vcf_file"
-            gatk --java-options "-Xms~{command_mem}m -Xmx~{max_heap}m" \
-            IndexFeatureFile \
-            -I $vcf
+        # Launch tasks in parallel for each VCF file
+        for ((i = 0; i < ${#input_vcfs[@]}; i += 2)); do
+
+            task "${input_vcfs[i]}" &
+
+            # Check if there's another file available in the batch
+            if [[ $((i + 1)) -lt ${#input_vcfs[@]} ]]; then
+                echo "Next file to process: ${input_vcfs[i + 1]}"
+                task "${input_vcfs[i + 1]}" &
+            fi
+
+            # Limit the number of concurrent tasks to 2 (adjust as needed)
+            if [[ $(jobs -p | wc -l) -ge 2 ]]; then
+                wait -n # Wait for any background job to finish
+            fi
         done
 
-        echo "start filtering vcf files.."
-        for vcf in "${input_vcfs[@]}"; do
-            sample_id=$(basename "$vcf" ".rb.g.vcf")
-            echo $sample_id
-            vcf_file="${sample_id}.rb.g.vcf"
-            gatk --java-options "-Xms~{command_mem}m -Xmx~{max_heap}m" \
-            SelectVariants \
-            -V  $vcf \
-            -L ~{bed_file} \
-            -O $sample_id.filtered.vcf
-        done
+        wait
+        echo "Tasks all done."
 
-        batch_number=~{batch_number}
-        for i in $(seq 1 "${batch_number}"); do
+        # Create a directory for each batch and move the filtered VCF files to the corresponding directory
+        batch_size=~{batch_size}
+        for i in $(seq 1 "${batch_size}"); do
             mkdir -p "batch${i}"
         done
 
         folder_index=1
 
-        filtered_vcf_files=($(ls | grep "filtered.vcf$"))
+        filtered_vcf_files=($(ls | grep ".filtered.vcf$"))
         echo "filtered_vcf_files: ${filtered_vcf_files[@]}"
 
         for file in "${filtered_vcf_files[@]}"; do
-            sample_id=$(basename "$file" "filtered.vcf")
             mv $file batch$((folder_index))/$file
-            folder_index=$(( (folder_index % $batch_number) + 1 ))
+            folder_index=$(( (folder_index % $batch_size) + 1 ))
         done
 
-        for i in $(seq 1 "${batch_number}"); do
-          tar -czf "${i}.filtered_vcf_files.tar.gz" "batch${i}"/*.filtered.vcf
+        # Create a tar for each batch directory
+        for i in $(seq 1 "${batch_size}"); do
+        # Check if files exist in batch directory before creating a tar
+            if [ -n "$(find "batch${i}" -maxdepth 1 -name '*.filtered.vcf')" ]; then
+                tar -czf "${i}.filtered_vcf_files.tar.gz" "batch${i}"/*.filtered.vcf
+            else
+                echo "No files found in batch${i}. Skipping tar creation."
+            fi
         done
-
-        echo "TAR files created successfully."
-
 
     >>>
     runtime {
@@ -136,15 +240,12 @@ task FilterVCF {
 
 task AnnotateVCF {
     input {
-        File input_filtered_vcf_tars
+        Array[File] input_filtered_vcf_tars
         String output_annotated_file_name
-        Boolean use_reference_disk
         File omim_annotations
         String cloud_provider
         String docker_path
     }
-
-
 
     String nirvana_location = "/Nirvana/Nirvana.dll"
     String jasix_location = "/Nirvana/Jasix.dll"
@@ -152,61 +253,38 @@ task AnnotateVCF {
     String path_supplementary_annotations = "/SupplementaryAnnotation/GRCh38"
     String path_reference = "/References/Homo_sapiens.GRCh38.Nirvana.dat"
 
+
     command <<<
         set -euo pipefail
 
-        # untar the tarred inputs
-        tar -xf ~{input_filtered_vcf_tars} --strip-components=1
-        rm ~{input_filtered_vcf_tars}
+        # Declare array of filtered vcf tars
+        filtered_vcf_files=(~{sep=' ' input_filtered_vcf_tars})
 
-      if [[ "~{use_reference_disk}" == "true" ]]
-      then
-          # There's an issue with how the projects/broad-dsde-cromwell-dev/global/images/nirvana-3-18-1-references-2023-01-03
-          # disk image was built: while all the reference files do exist on the image they are not at the expected
-          # locations. The following code works around this issue and should continue to work even after a corrected
-          # version of the Nirvana reference image is deployed into Terra.
+        # Untar the tarred filtered vcf inputs and remove the tar files
+        tar -xf $filtered_vcf_files --strip-components=1
+        rm $filtered_vcf_files
 
-          # Find where the reference disk should have been mounted on this VM.  Note this is referred to as a "candidate
-          # mount point" because we do not actually confirm this is a reference disk until the following code block.
-          CANDIDATE_MOUNT_POINT=$(lsblk | sed -E -n 's!.*(/mnt/[a-f0-9]+).*!\1!p')
-          if [[ -z ${CANDIDATE_MOUNT_POINT} ]]; then
-              >&2 echo "Could not find a mounted volume that looks like a reference disk, exiting."
-              exit 1
-          fi
+        # Choose where to create the Nirvana DATA_SOURCES_FOLDER based on cloud_provider
+        if [[ "~{cloud_provider}" == "azure" ]]; then
+            DATA_SOURCES_FOLDER=/cromwell-executions/nirvana_references
+        elif [[ "~{cloud_provider}" == "gcp" ]]; then
+            DATA_SOURCES_FOLDER=/cromwell_root/nirvana_references
+        else
+            >&2 echo "Invalid cloud_provider value. Please specify either 'azure' or 'gcp'."
+            exit 1
+        fi
 
-          # Find one particular reference under the mount path. Note this is not the same reference as was specified in the
-          # `inputs` section, so this would only be present if the volume we're looking at is in fact a reference disk.
-          REFERENCE_FILE="Homo_sapiens.GRCh38.Nirvana.dat"
-          REFERENCE_PATH=$(find ${CANDIDATE_MOUNT_POINT} -name "${REFERENCE_FILE}")
-          if [[ -z ${REFERENCE_PATH} ]]; then
-              >&2 echo "Could not find reference file '${REFERENCE_FILE}' under candidate reference disk mount point '${CANDIDATE_MOUNT_POINT}', exiting."
-              exit 1
-          fi
+        mkdir ${DATA_SOURCES_FOLDER}
 
-          # Take the parent of the parent directory of this file as root of the locally mounted  references:
-          DATA_SOURCES_FOLDER="$(dirname $(dirname ${REFERENCE_PATH}))"
-      else
-          if [[ "~{cloud_provider}" == "azure" ]]; then
-              DATA_SOURCES_FOLDER=/cromwell-executions/nirvana_references
-          elif [[ "~{cloud_provider}" == "gcp" ]]; then
-              DATA_SOURCES_FOLDER=/cromwell_root/nirvana_references
-          else
-              >&2 echo "Invalid cloud_provider value. Please specify either 'azure' or 'gcp'."
-              exit 1
-          fi
+        # Download the references
+        dotnet /Nirvana/Downloader.dll --ga GRCh38 --out ${DATA_SOURCES_FOLDER}
 
-          mkdir ${DATA_SOURCES_FOLDER}
+        # As of 2024-01-24 OMIM is no longer included among the bundle of annotation resources pulled down by the
+        # Nirvana downloader. As this annotation set is currently central for our VAT logic, special-case link in
+        # the OMIM .nsa bundle we downloaded back when we made the Delta reference disk:
+        ln ~{omim_annotations} ${DATA_SOURCES_FOLDER}/SupplementaryAnnotation/GRCh38/
 
-          # Download the references
-          dotnet /Nirvana/Downloader.dll --ga GRCh38 --out ${DATA_SOURCES_FOLDER}
-
-          # As of 2024-01-24 OMIM is no longer included among the bundle of annotation resources pulled down by the
-          # Nirvana downloader. As this annotation set is currently central for our VAT logic, special-case link in
-          # the OMIM .nsa bundle we downloaded back when we made the Delta reference disk:
-          ln ~{omim_annotations} ${DATA_SOURCES_FOLDER}/SupplementaryAnnotation/GRCh38/
-
-      fi
-
+        # Bash function to perform the annotation task on a single VCF file
         task() {
             local file=$1
             sample_id=$(basename "$file" ".filtered.vcf")
@@ -234,10 +312,10 @@ task AnnotateVCF {
               --out ${sample_id}.positions.json.gz
         }
 
-         # define lists of vcf files
+         # Define lists of vcf files
           vcf_files=($(ls | grep "filtered.vcf$"))
 
-         # run 2 instances of task in parallel
+         # Run 2 instances of the task in parallel
          for file in "${vcf_files[@]}"; do
            (
              echo "starting task $file.."
@@ -253,7 +331,7 @@ task AnnotateVCF {
          wait
          echo "Tasks all done."
 
-        #tar up the genes.json and positions.json files
+        # Tar up the genes.json and positions.json files
         tar -czf genes_annotation_json.tar.gz *.genes.json.gz
         tar -czf positions_annotation_json.tar.gz *.positions.json.gz
     >>>
