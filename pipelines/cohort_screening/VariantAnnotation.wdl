@@ -24,7 +24,7 @@ workflow AnnotateVCFWorkflow {
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
-    String variantreport_docker_image = "variantreport:testing"
+    String variantreport_docker_image = "variantreport:latest"
 
 
     call FilterVCF {
