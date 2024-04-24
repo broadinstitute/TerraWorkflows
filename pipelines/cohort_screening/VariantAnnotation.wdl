@@ -28,6 +28,7 @@ workflow AnnotateVCFWorkflow {
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
+    String variantreport_docker_image = "variantreport:latest"
 
 
     call BatchVCFs as batch_vcfs {
@@ -60,9 +61,17 @@ workflow AnnotateVCFWorkflow {
             }
         }
 
+    call VariantReport {
+        input:
+            positions_annotation_json = AnnotateVCF.positions_annotation_json,
+            docker_path = docker_prefix + variantreport_docker_image
+    }
+
     output {
         Array[File] positions_annotation_json = AnnotateVCF.positions_annotation_json
         Array[File] genes_annotation_json = AnnotateVCF.genes_annotation_json
+        Array[File] variant_report_pdf = VariantReport.pdf_report
+        Array[File] variant_table_tsv = VariantReport.tsv_file
     }
 }
 
@@ -348,5 +357,51 @@ task AnnotateVCF {
     output {
         File genes_annotation_json = "genes_annotation_json.tar.gz"
         File positions_annotation_json = "positions_annotation_json.tar.gz"
+    }
+}
+
+task VariantReport {
+
+    input {
+        Array[File] positions_annotation_json
+
+        String docker_path
+        Int memory_mb = 4000
+        Int disk_size_gb = 15
+        Int cpu = 1
+    }
+
+    command <<<
+
+        set -euo pipefail
+
+        # Loop through the json files and unpack them
+        declare -a input_jsons=(~{sep=' ' positions_annotation_json})
+
+        for json in "${input_jsons[@]}"; do
+            tar -xzf $json
+        done
+
+        # Loop through the json.gz files and get the sample_id by using basename
+        for json in $(ls *.json.gz); do
+            sample_id=$(basename "$json" ".positions.json.gz")
+            echo "Creating the report for $sample_id"
+            python3 /src/variants_report.py \
+            --positions_json $json \
+            --sample_identifier $sample_id
+        done
+
+    >>>
+
+    runtime {
+        docker: docker_path
+        memory: "${memory_mb} MiB"
+        cpu: cpu
+        disks: 'local-disk ${disk_size_gb} HDD'
+        maxRetries: 2
+    }
+    output {
+        Array[File] pdf_report = glob("*.pdf")
+        Array[File] tsv_file = glob("*.tsv")
     }
 }
