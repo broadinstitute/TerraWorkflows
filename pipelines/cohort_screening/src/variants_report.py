@@ -212,7 +212,7 @@ def filter_variants_for_report(filtered_positions):
     if not num_variants == num_transcripts:
         raise ValueError('number of variants and transcripts do not match')
     elif num_variants == 0:
-        variants_to_include = None
+        variants_to_include = []
     else:
         print(f'removed_positions = {removed_positions}')
         variants_to_include = filtered_positions
