@@ -4,7 +4,6 @@ workflow AnnotateVCFWorkflow {
     input {
         Array[File] input_vcf
         File bed_file
-        String output_annotated_file_name
         String cloud_provider
         File omim_annotations
         Int batch_size
@@ -28,7 +27,7 @@ workflow AnnotateVCFWorkflow {
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
-    String variantreport_docker_image = "variantreport:latest"
+    String variantreport_docker_image = "variantreport:6dd62b"
 
 
     call BatchVCFs as batch_vcfs {
@@ -43,7 +42,6 @@ workflow AnnotateVCFWorkflow {
                 input:
                     batch_tars = tar,
                     bed_file = bed_file,
-                    output_annotated_file_name = output_annotated_file_name,
                     batch_size = batch_size,
                     docker_path = gatk_docker_path
             }
@@ -54,7 +52,6 @@ workflow AnnotateVCFWorkflow {
         call AnnotateVCF as AnnotateVCF {
                 input:
                     input_filtered_vcf_tars = tar,
-                    output_annotated_file_name = output_annotated_file_name,
                     cloud_provider = cloud_provider,
                     omim_annotations = omim_annotations,
                     docker_path = docker_prefix + nirvana_docker_image
@@ -140,7 +137,6 @@ task FilterVCF {
     input {
         File batch_tars
         File bed_file
-        String output_annotated_file_name
         Int batch_size
 
         Int disk_size_gb = ceil(2*size(batch_tars, "GiB")) + 50
@@ -250,7 +246,6 @@ task FilterVCF {
 task AnnotateVCF {
     input {
         Array[File] input_filtered_vcf_tars
-        String output_annotated_file_name
         File omim_annotations
         String cloud_provider
         String docker_path
