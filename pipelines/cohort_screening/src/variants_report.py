@@ -302,6 +302,7 @@ def format_report(mapped_variants):
     if mapped_variants.empty:
         logging.info('no variants to report, creating empty report')
         identified_variants_message = ""
+        df_var = mapped_variants
         df_var_html = "<h3>No variants marked for further investigation</h3>"
     else:
         identified_variants_message = "We have identified the following variants that warrant further investigation:"
