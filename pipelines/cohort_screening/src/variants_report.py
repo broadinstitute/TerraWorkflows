@@ -413,7 +413,6 @@ def report(args):
     else:
         with open("../local_testing/filtered_positions_final_test.json", 'w') as outfile:
             json.dump(filtered_positions, outfile)
-            # json.dump(filtered_positions, outfile, indent=4)  # add indent for pretty print, remove for py reading
 
     format_report(
         map_variants_to_table(
