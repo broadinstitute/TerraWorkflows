@@ -197,10 +197,6 @@ def filter_variants_for_report(filtered_positions):
             filtered_positions.remove(position)
             removed_positions += 1
 
-    # # for testing
-    # with open("filtered_positions_criteria_1.json", 'w') as outfile:
-    #     json.dump(filtered_positions, outfile, indent=4)
-
     # check len transcripts vs len variants
     print('Checking number of variants == number of transcripts...')
     filtered_positions_str = str(filtered_positions)
