@@ -411,7 +411,7 @@ def report(args):
     if args.output_json is False:
         pass
     else:
-        with open("../local_testing/filtered_positions_final_test.json", 'w') as outfile:
+        with open("filtered_positions.json", 'w') as outfile:
             json.dump(filtered_positions, outfile)
 
     format_report(
