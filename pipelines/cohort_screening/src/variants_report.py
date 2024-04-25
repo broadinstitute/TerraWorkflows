@@ -8,7 +8,7 @@ import re
 from gtfparse import read_gtf
 from tqdm import tqdm
 
-
+# static file because we are using this for filtering and do not want it to change.
 def get_MANE():
     df = read_gtf('/src/MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz')
     df = df['transcript_id'].to_pandas()  # polar dataframe to pandas dataframe
