@@ -410,11 +410,9 @@ def report(args):
         with open("filtered_positions.json", 'w') as outfile:
             json.dump(filtered_positions, outfile)
 
-    format_report(
-        map_variants_to_table(
-            filter_variants_for_report(filtered_positions)
-        )
-    )
+    variants_to_include = filter_variants_for_report(filtered_positions)
+    mapped_variants = map_variants_to_table(variants_to_include)
+    format_report(mapped_variants)
 
 
 if __name__ == '__main__':
