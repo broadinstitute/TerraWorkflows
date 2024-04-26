@@ -41,6 +41,7 @@ if 'cyp2d6' in file_lookup:
         cyp2d6_activity_score = match.group(1)
     else:
         cyp2d6_activity_score = 'NaN'
+    call_data_cyrius.iloc[0]['activity_score'] = cyp2d6_activity_score
 else:
     print('ERROR: Call file for cyp2d6 not found')
     exit_code = 1
@@ -80,7 +81,7 @@ for gene_name, file_path in file_lookup.items():
         df['genotype'] = df['hap1_main'] + '/' + df['hap2_main']
         df['phenotype'] = df['phenotype'].str.replace('_', ' ').str.title()
         if not gene_name.startswith('cyp') or df.iloc[0]['activity_score'] < 0:
-            df['activity_score'] = 'NaN'
+            df['activity_score'] = ''
         dfs.append(df)
 
 # Concatenate all DataFrames into a single DataFrame

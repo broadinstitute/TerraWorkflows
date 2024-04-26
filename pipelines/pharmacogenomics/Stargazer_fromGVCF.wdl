@@ -39,13 +39,32 @@ workflow StargazerStarAlleleCalling {
             gene_names = gene_names,
             control_gene_name = control_gene_name,
             panel_vcf_override = panel_vcf_override,
-            stargazer_docker = stargazer_docker,
-            memory_in_mb = stargazer_mem_in_mb
+            stargazer_docker = stargazer_docker
     }
 
+
+
+    call RunStargazer as Stargazer_DPYD {
+        input:
+            input_vcf = GenotypeGVCF.output_vcf,
+            input_vcf_index = GenotypeGVCF.output_vcf_index,
+            ref_fasta = ref_fasta,
+            ref_fasta_index = ref_fasta_index,
+            sample_name = sample_name,
+            gene_names = ["dpyd"],
+            control_gene_name = control_gene_name,
+             panel_vcf_override = panel_vcf_override,
+            stargazer_docker = stargazer_docker,
+            memory_in_mb = 7500
+    }
+
+    Array[File] star_allele_output = flatten([RunStargazer.stargazer_output, Stargazer_DPYD.stargazer_output])
+    Array[File] star_allele_details = flatten([RunStargazer.stargazer_details, Stargazer_DPYD.stargazer_details])
+
+
     output {
-        Array[File] stargazer_output = RunStargazer.stargazer_output
-        Array[File] stargazer_details = RunStargazer.stargazer_details
+        Array[File] stargazer_output = star_allele_output
+        Array[File] stargazer_details = star_allele_details
         File genotyped_vcf = GenotypeGVCF.output_vcf
         File genotyped_vcf_index = GenotypeGVCF.output_vcf_index
     }

@@ -253,7 +253,7 @@ def assign_dpyd_cols(calls):
         .groupby("person_id")
         .agg(activity_score=("allele", get_dpyd_activity_score))
     )
-    calls.loc[:, 'activity_score'] = "DPYD Activity Score " + dpyd_activity_score.reset_index()['activity_score'].astype(str)
+    calls.loc[:, 'activity_score'] = dpyd_activity_score.reset_index()['activity_score'].astype(str)
     calls.loc[:, 'possible_genotype'] = np.nan
     calls.loc[:, 'possible_phenotype'] = np.nan
     

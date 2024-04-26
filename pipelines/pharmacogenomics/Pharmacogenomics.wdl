@@ -45,26 +45,9 @@ workflow Pharmacogenomics {
             stargazer_docker = stargazer_docker
     }
 
-    call StargazerWorkflow.StargazerStarAlleleCalling as Stargazer_DPYD {
-        input:
-            input_gvcf = input_gvcf,
-            input_gvcf_index = input_gvcf_index,
-            intervals_file = intervals_file,
-            panel_vcf_override = panel_vcf_override,
-            sample_name = sample_name,
-            gene_names = ["dpyd"],
-            ref_fasta = ref_fasta,
-            ref_fasta_index = ref_fasta_index,
-            ref_dict = ref_dict,
-            stargazer_docker = stargazer_docker,
-            stargazer_mem_in_mb = 7500
-    }
-
-    Array[File] star_allele_calls = flatten([StargazerStarAlleleCalling.stargazer_details, Stargazer_DPYD.stargazer_details, [CyriusStarAlleleCalling.cyrius_output]])
-
     call MakePGxReport.MakePGxReport {
         input:
-            pharmacogenomics_details = star_allele_calls,
+            pharmacogenomics_details = flatten([StargazerStarAlleleCalling.star_allele_details, [CyriusStarAlleleCalling.cyrius_output]]),
             sample_name = sample_name,
             gene_names = gene_names,
             docker_override = report_docker_override
