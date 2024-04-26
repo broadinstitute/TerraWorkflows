@@ -27,7 +27,7 @@ workflow AnnotateVCFWorkflow {
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
-    String variantreport_docker_image = "variantreport:6dd62b"
+    String variantreport_docker_image = "variantreport:latest"
 
 
     call BatchVCFs as batch_vcfs {
