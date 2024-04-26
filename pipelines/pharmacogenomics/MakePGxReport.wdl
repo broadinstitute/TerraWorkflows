@@ -43,6 +43,6 @@ task MakePGxReport {
         disk: "100 GB"
         bootDiskSizeGb: 15
         preemptible: 3
-        docker: select_first([docker_override, "terraworkflows.azurecr.io/make_pgx_report@sha256:d66d1c0fef3e3d46a008ff2033771eb5d245cdbfc70bb79e7612b6f2fe0892b3"])
+        docker: select_first([docker_override, "terraworkflows.azurecr.io/make_pgx_report@sha256:e1ee73602da3707d9d04fd2a533a39017ed542b8b1c80b43c670cd8c2e0d5acb"])
     }
 }
