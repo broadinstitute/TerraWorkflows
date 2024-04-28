@@ -47,7 +47,7 @@ workflow Pharmacogenomics {
 
     call MakePGxReport.MakePGxReport {
         input:
-            pharmacogenomics_details = flatten([StargazerStarAlleleCalling.star_allele_details, [CyriusStarAlleleCalling.cyrius_output]]),
+            pharmacogenomics_details = flatten([StargazerStarAlleleCalling.stargazer_details, [CyriusStarAlleleCalling.cyrius_output]]),
             sample_name = sample_name,
             gene_names = gene_names,
             docker_override = report_docker_override
