@@ -1,0 +1,2346 @@
+[
+{
+  "chromosome": "chr3",
+  "position": 57238111,
+  "refAllele": "G",
+  "altAlleles": [
+    "A"
+  ],
+  "fisherStrandBias": 0,
+  "cytogeneticBand": "3p14.3",
+  "samples": [
+    {
+      "genotype": "0/1",
+      "genotypeQuality": 99
+    }
+  ],
+  "variants": [
+    {
+      "vid": "3-57238111-G-A",
+      "chromosome": "chr3",
+      "begin": 57238111,
+      "end": 57238111,
+      "refAllele": "G",
+      "altAllele": "A",
+      "variantType": "SNV",
+      "hgvsg": "NC_000003.12:g.57238111G>A",
+      "phylopScore": 1,
+      "clinvar": [
+        {
+          "id": "VCV000208075.1",
+          "reviewStatus": "no assertion criteria provided",
+          "significance": [
+            "pathogenic"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "lastUpdatedDate": "2022-04-25",
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "RCV000190337.2",
+          "variationId": "VCV000208075.1",
+          "reviewStatus": "no assertion criteria provided",
+          "alleleOrigins": [
+            "germline"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "phenotypes": [
+            "Maturity-onset diabetes of the young type 14"
+          ],
+          "medGenIds": [
+            "C4225299"
+          ],
+          "omimIds": [
+            "616511",
+            "604299.0002"
+          ],
+          "orphanetIds": [
+            "552"
+          ],
+          "significance": [
+            "pathogenic"
+          ],
+          "lastUpdatedDate": "2022-04-23",
+          "pubMedIds": [
+            "26073777"
+          ],
+          "isAlleleSpecific": true
+        }
+      ],
+      "clinvar-preview": [
+        {
+          "variantType": "SNV",
+          "accession": "VCV000208075",
+          "version": "1",
+          "recordType": "classified",
+          "dateLastUpdated": "2022-04-25",
+          "rcvs": [
+            {
+              "accession": "RCV000190337",
+              "version": "2",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "no assertion criteria provided",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2015-07-02",
+                      "classification": "Pathogenic"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Maturity-onset diabetes of the young type 14",
+                  "db": "MedGen",
+                  "id": "C4225299"
+                }
+              ]
+            }
+          ],
+          "classifications": {
+            "germlineClassification": {
+              "classification": "Pathogenic",
+              "reviewStatus": "no assertion criteria provided",
+              "dateLastEvaluated": "2015-07-02",
+              "mostRecentSubmission": "2015-08-13",
+              "conditions": [
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "33967",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0014674"
+                          }
+                        ],
+                        "value": "Maturity-onset diabetes of the young type 14"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "pubMedIds": [
+                "26073777"
+              ]
+            }
+          },
+          "clinicalAssertions": [
+            {
+              "accession": "SCV000243869"
+            }
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "isAlleleSpecific": true
+        }
+      ],
+      "dbsnp": [
+        "rs796065047"
+      ],
+      "gnomad-exome": {
+        "coverage": 0,
+        "allAf": 8E-06,
+        "allAn": 624976,
+        "allAc": 5,
+        "allHc": 0,
+        "afrAf": 0,
+        "afrAn": 17552,
+        "afrAc": 0,
+        "afrHc": 0,
+        "amrAf": 0,
+        "amrAn": 43226,
+        "amrAc": 0,
+        "amrHc": 0,
+        "easAf": 0,
+        "easAn": 35930,
+        "easAc": 0,
+        "easHc": 0,
+        "finAf": 0,
+        "finAn": 53052,
+        "finAc": 0,
+        "finHc": 0,
+        "nfeAf": 1.4E-05,
+        "nfeAn": 349030,
+        "nfeAc": 5,
+        "nfeHc": 0,
+        "asjAf": 0,
+        "asjAn": 20920,
+        "asjAc": 0,
+        "asjHc": 0,
+        "sasAf": 0,
+        "sasAn": 68392,
+        "sasAc": 0,
+        "sasHc": 0,
+        "midAf": 0,
+        "midAn": 3946,
+        "midAc": 0,
+        "midHc": 0,
+        "remainingAf": 0,
+        "remainingAn": 32928,
+        "remainingAc": 0,
+        "remainingHc": 0,
+        "maleAf": 1.2E-05,
+        "maleAn": 340304,
+        "maleAc": 4,
+        "maleHc": 0,
+        "femaleAf": 4E-06,
+        "femaleAn": 284672,
+        "femaleAc": 1,
+        "femaleHc": 0
+      },
+      "revel": {
+        "score": 0.177
+      },
+      "dannScore": 1,
+      "transcripts": [
+        {
+          "transcript": "ENST00000288266.7",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "Gat/Aat",
+          "aminoAcids": "D/N",
+          "cdnaPos": "427",
+          "cdsPos": "280",
+          "exons": "4/22",
+          "proteinPos": "94",
+          "geneId": "ENSG00000157500",
+          "hgnc": "APPL1",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "ENST00000288266.7:c.280G>A",
+          "hgvsp": "ENSP00000288266.3:p.(Asp94Asn)",
+          "isCanonical": true,
+          "polyPhenScore": 0.47,
+          "polyPhenPrediction": "possibly damaging",
+          "proteinId": "ENSP00000288266.3",
+          "siftScore": 0.01,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "NM_012096.2",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "codons": "Gat/Aat",
+          "aminoAcids": "D/N",
+          "cdnaPos": "427",
+          "cdsPos": "280",
+          "exons": "4/22",
+          "proteinPos": "94",
+          "geneId": "26060",
+          "hgnc": "APPL1",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "NM_012096.2:c.280G>A",
+          "hgvsp": "NP_036228.1:p.(Asp94Asn)",
+          "isCanonical": true,
+          "polyPhenScore": 0.47,
+          "polyPhenPrediction": "possibly damaging",
+          "proteinId": "NP_036228.1",
+          "siftScore": 0.01,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "ENST00000482800.5",
+          "source": "Ensembl",
+          "bioType": "retained_intron",
+          "cdnaPos": "375",
+          "exons": "4/20",
+          "geneId": "ENSG00000157500",
+          "hgnc": "APPL1",
+          "consequence": [
+            "non_coding_transcript_exon_variant"
+          ],
+          "hgvsc": "ENST00000482800.5:n.375G>A"
+        },
+        {
+          "transcript": "ENST00000495803.5",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "introns": "3/4",
+          "geneId": "ENSG00000157500",
+          "hgnc": "APPL1",
+          "consequence": [
+            "intron_variant"
+          ],
+          "hgvsc": "ENST00000495803.5:c.213+560G>A",
+          "proteinId": "ENSP00000419644.1"
+        },
+        {
+          "transcript": "ENST00000468342.1",
+          "source": "Ensembl",
+          "bioType": "retained_intron",
+          "cdnaPos": "325",
+          "exons": "4/4",
+          "geneId": "ENSG00000157500",
+          "hgnc": "APPL1",
+          "consequence": [
+            "non_coding_transcript_exon_variant"
+          ],
+          "hgvsc": "ENST00000468342.1:n.325G>A"
+        },
+        {
+          "transcript": "ENST00000444459.1",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "Gat/Aat",
+          "aminoAcids": "D/N",
+          "cdnaPos": "344",
+          "cdsPos": "229",
+          "exons": "5/8",
+          "proteinPos": "77",
+          "geneId": "ENSG00000157500",
+          "hgnc": "APPL1",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "ENST00000444459.1:c.229G>A",
+          "hgvsp": "ENSP00000406095.1:p.(Asp77Asn)",
+          "polyPhenScore": 0.12,
+          "polyPhenPrediction": "benign",
+          "proteinId": "ENSP00000406095.1",
+          "siftScore": 0.01,
+          "siftPrediction": "deleterious"
+        }
+      ]
+    }
+  ]
+},
+{
+  "chromosome": "chr13",
+  "position": 27920364,
+  "refAllele": "G",
+  "altAlleles": [
+    "A"
+  ],
+  "fisherStrandBias": 0,
+  "cytogeneticBand": "13q12.2",
+  "samples": [
+    {
+      "genotype": "0/1",
+      "genotypeQuality": 99
+    }
+  ],
+  "variants": [
+    {
+      "vid": "13-27920364-G-A",
+      "chromosome": "chr13",
+      "begin": 27920364,
+      "end": 27920364,
+      "refAllele": "G",
+      "altAllele": "A",
+      "variantType": "SNV",
+      "hgvsg": "NC_000013.11:g.27920364G>A",
+      "phylopScore": 1,
+      "clinvar": [
+        {
+          "id": "RCV000445407.7",
+          "variationId": "VCV000008859.24",
+          "reviewStatus": "criteria provided, single submitter",
+          "alleleOrigins": [
+            "unknown"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "phenotypes": [
+            "Monogenic diabetes"
+          ],
+          "medGenIds": [
+            "C3888631"
+          ],
+          "omimIds": [
+            "600733.0002"
+          ],
+          "significance": [
+            "benign"
+          ],
+          "lastUpdatedDate": "2023-12-30",
+          "pubMedIds": [
+            "17592437",
+            "21569088",
+            "25741868"
+          ],
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "RCV000030077.7",
+          "variationId": "VCV000008859.24",
+          "reviewStatus": "criteria provided, single submitter",
+          "alleleOrigins": [
+            "germline"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "phenotypes": [
+            "Maturity-onset diabetes of the young type 4"
+          ],
+          "medGenIds": [
+            "C1833382"
+          ],
+          "omimIds": [
+            "606392",
+            "600733.0002"
+          ],
+          "orphanetIds": [
+            "552"
+          ],
+          "significance": [
+            "benign"
+          ],
+          "lastUpdatedDate": "2023-12-30",
+          "pubMedIds": [
+            "10545531",
+            "15277425",
+            "17592437",
+            "24097065",
+            "25741868"
+          ],
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "RCV000948405.11",
+          "variationId": "VCV000008859.24",
+          "reviewStatus": "criteria provided, multiple submitters, no conflicts",
+          "alleleOrigins": [
+            "germline"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "phenotypes": [
+            "not provided"
+          ],
+          "medGenIds": [
+            "C3661900"
+          ],
+          "omimIds": [
+            "600733.0002"
+          ],
+          "significance": [
+            "benign",
+            "likely benign"
+          ],
+          "lastUpdatedDate": "2023-12-30",
+          "pubMedIds": [
+            "10545530",
+            "10545531",
+            "10720084",
+            "11022198",
+            "11270685",
+            "11315851",
+            "11914043",
+            "15001545",
+            "15170499",
+            "15277425",
+            "15754742",
+            "16741735",
+            "17592437",
+            "19515026",
+            "21569088",
+            "24097065",
+            "26058934",
+            "26467025",
+            "28492532"
+          ],
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "RCV001799501.4",
+          "variationId": "VCV000008859.24",
+          "reviewStatus": "no assertion criteria provided",
+          "alleleOrigins": [
+            "germline"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "phenotypes": [
+            "Diabetes mellitus type 2, susceptibility to"
+          ],
+          "medGenIds": [
+            "C3837967"
+          ],
+          "omimIds": [
+            "600733.0002"
+          ],
+          "significance": [
+            "risk factor"
+          ],
+          "lastUpdatedDate": "2023-12-30",
+          "pubMedIds": [
+            "10545530",
+            "10545531"
+          ],
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "RCV000009409.11",
+          "variationId": "VCV000008859.24",
+          "reviewStatus": "criteria provided, single submitter",
+          "alleleOrigins": [
+            "inherited"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "phenotypes": [
+            "Type II diabetes mellitus"
+          ],
+          "medGenIds": [
+            "C0011860"
+          ],
+          "omimIds": [
+            "125853",
+            "600733.0002"
+          ],
+          "significance": [
+            "benign"
+          ],
+          "lastUpdatedDate": "2023-12-30",
+          "pubMedIds": [
+            "25741868"
+          ],
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "VCV000008859.24",
+          "reviewStatus": "criteria provided, multiple submitters, no conflicts",
+          "significance": [
+            "benign",
+            "likely benign"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "lastUpdatedDate": "2023-12-30",
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "RCV000246150.12",
+          "variationId": "VCV000008859.24",
+          "reviewStatus": "criteria provided, multiple submitters, no conflicts",
+          "alleleOrigins": [
+            "germline"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "phenotypes": [
+            "not specified"
+          ],
+          "medGenIds": [
+            "CN169374"
+          ],
+          "omimIds": [
+            "600733.0002"
+          ],
+          "significance": [
+            "benign",
+            "likely benign"
+          ],
+          "lastUpdatedDate": "2023-12-30",
+          "pubMedIds": [
+            "25741868"
+          ],
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "RCV000626294.9",
+          "variationId": "VCV000008859.24",
+          "reviewStatus": "criteria provided, multiple submitters, no conflicts",
+          "alleleOrigins": [
+            "inherited",
+            "germline"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "phenotypes": [
+            "Maturity onset diabetes mellitus in young"
+          ],
+          "medGenIds": [
+            "C0342276"
+          ],
+          "omimIds": [
+            "606391",
+            "600733.0002"
+          ],
+          "orphanetIds": [
+            "552"
+          ],
+          "significance": [
+            "benign",
+            "likely benign"
+          ],
+          "lastUpdatedDate": "2023-12-30",
+          "pubMedIds": [
+            "10545530",
+            "10545531",
+            "21569088",
+            "25741868"
+          ],
+          "isAlleleSpecific": true
+        }
+      ],
+      "clinvar-preview": [
+        {
+          "variantType": "SNV",
+          "accession": "VCV000008859",
+          "version": "25",
+          "recordType": "classified",
+          "dateLastUpdated": "2024-01-26",
+          "rcvs": [
+            {
+              "accession": "RCV000030077",
+              "version": "7",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, single submitter",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2020-01-22",
+                      "classification": "Benign"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Maturity-onset diabetes of the young type 4",
+                  "db": "MedGen",
+                  "id": "C1833382"
+                }
+              ]
+            },
+            {
+              "accession": "RCV000009409",
+              "version": "11",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, single submitter",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2023-12-10",
+                      "classification": "Benign"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Type 2 diabetes mellitus",
+                  "db": "MedGen",
+                  "id": "C0011860"
+                }
+              ]
+            },
+            {
+              "accession": "RCV000246150",
+              "version": "13",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, multiple submitters, no conflicts",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2020-01-08",
+                      "classification": "Benign/Likely benign"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "not specified",
+                  "db": "MedGen",
+                  "id": "CN169374"
+                }
+              ]
+            },
+            {
+              "accession": "RCV000445407",
+              "version": "7",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, single submitter",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2018-10-12",
+                      "classification": "Benign"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Monogenic diabetes",
+                  "db": "MedGen",
+                  "id": "C3888631"
+                }
+              ]
+            },
+            {
+              "accession": "RCV000626294",
+              "version": "9",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, multiple submitters, no conflicts",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2023-12-10",
+                      "classification": "Benign/Likely benign"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Maturity onset diabetes mellitus in young",
+                  "db": "MedGen",
+                  "id": "C0342276"
+                }
+              ]
+            },
+            {
+              "accession": "RCV000948405",
+              "version": "11",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, multiple submitters, no conflicts",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2022-09-21",
+                      "classification": "Benign/Likely benign"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "not provided",
+                  "db": "MedGen",
+                  "id": "C3661900"
+                }
+              ]
+            },
+            {
+              "accession": "RCV001799501",
+              "version": "5",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "no assertion criteria provided",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "1999-11-01",
+                      "classification": "Uncertain significance"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Diabetes mellitus type 2, susceptibility to",
+                  "db": "MedGen",
+                  "id": "C3837967"
+                }
+              ]
+            }
+          ],
+          "classifications": {
+            "germlineClassification": {
+              "classification": "Benign/Likely benign",
+              "reviewStatus": "criteria provided, multiple submitters, no conflicts",
+              "dateLastEvaluated": "2023-12-10",
+              "mostRecentSubmission": "2024-01-26",
+              "conditions": [
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "37052",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0015967"
+                          },
+                          {
+                            "db": "Personalized Diabetes Medicine Program, University of Maryland School of Medicine",
+                            "id": "PDMP0008"
+                          }
+                        ],
+                        "value": "Monogenic diabetes"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "16789",
+                      "name": {
+                        "value": "not specified"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "5457",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "SNOMED CT",
+                            "id": "28453007"
+                          }
+                        ],
+                        "value": "Maturity onset diabetes mellitus in young"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "17556",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "Department Of Translational Genomics (developmental Genetics Section), King Faisal Specialist Hospital & Research Centre",
+                            "id": "13DG0619"
+                          }
+                        ],
+                        "value": "not provided"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Disease",
+                  "traits": [
+                    {
+                      "id": "16924",
+                      "name": {
+                        "value": "Diabetes mellitus type 2, susceptibility to"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "2867",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0011667"
+                          }
+                        ],
+                        "value": "Maturity-onset diabetes of the young type 4"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "4949",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "Genetic Alliance",
+                            "id": "Diabetes+mellitus+type+2/8215"
+                          },
+                          {
+                            "db": "Human Phenotype Ontology",
+                            "id": "HP:0005978"
+                          },
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0005148"
+                          },
+                          {
+                            "db": "SNOMED CT",
+                            "id": "44054006"
+                          }
+                        ],
+                        "value": "Type 2 diabetes mellitus"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "pubMedIds": [
+                "10545530",
+                "10545531",
+                "10720084",
+                "11022198",
+                "11270685",
+                "11315851",
+                "11914043",
+                "15001545",
+                "15170499",
+                "15277425",
+                "15754742",
+                "16741735",
+                "17592437",
+                "19515026",
+                "21569088",
+                "24097065",
+                "26058934"
+              ]
+            }
+          },
+          "clinicalAssertions": [
+            {
+              "accession": "SCV000052732"
+            },
+            {
+              "accession": "SCV000302992",
+              "pubMedIds": [
+                "25741868"
+              ]
+            },
+            {
+              "accession": "SCV002068921",
+              "pubMedIds": [
+                "25741868"
+              ]
+            },
+            {
+              "accession": "SCV001423109",
+              "pubMedIds": [
+                "25741868"
+              ]
+            },
+            {
+              "accession": "SCV001094610",
+              "pubMedIds": [
+                "28492532"
+              ]
+            },
+            {
+              "accession": "SCV003799703"
+            },
+            {
+              "accession": "SCV000029627"
+            },
+            {
+              "accession": "SCV001144244",
+              "pubMedIds": [
+                "26467025"
+              ]
+            },
+            {
+              "accession": "SCV000537091",
+              "pubMedIds": [
+                "25741868"
+              ]
+            },
+            {
+              "accession": "SCV002733265"
+            },
+            {
+              "accession": "SCV000518497"
+            },
+            {
+              "accession": "SCV000746931",
+              "pubMedIds": [
+                "25741868"
+              ]
+            },
+            {
+              "accession": "SCV000746953",
+              "pubMedIds": [
+                "25741868"
+              ]
+            }
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "isAlleleSpecific": true
+        }
+      ],
+      "dbsnp": [
+        "rs137852783"
+      ],
+      "globalAllele": {
+        "globalMinorAllele": "A",
+        "globalMinorAlleleFrequency": 0.001997
+      },
+      "gmeVariome": {
+        "allAc": 3,
+        "allAn": 1780,
+        "allAf": 0.0017
+      },
+      "gnomad": {
+        "coverage": 0,
+        "allAf": 0.003195,
+        "allAn": 152124,
+        "allAc": 486,
+        "allHc": 3,
+        "afrAf": 0.001156,
+        "afrAn": 41508,
+        "afrAc": 48,
+        "afrHc": 0,
+        "amiAf": 0.001099,
+        "amiAn": 910,
+        "amiAc": 1,
+        "amiHc": 0,
+        "amrAf": 0.004249,
+        "amrAn": 15298,
+        "amrAc": 65,
+        "amrHc": 1,
+        "easAf": 0,
+        "easAn": 5134,
+        "easAc": 0,
+        "easHc": 0,
+        "finAf": 0.000283,
+        "finAn": 10612,
+        "finAc": 3,
+        "finHc": 0,
+        "nfeAf": 0.004885,
+        "nfeAn": 67962,
+        "nfeAc": 332,
+        "nfeHc": 1,
+        "asjAf": 0.002594,
+        "asjAn": 3470,
+        "asjAc": 9,
+        "asjHc": 0,
+        "sasAf": 0.003733,
+        "sasAn": 4822,
+        "sasAc": 18,
+        "sasHc": 0,
+        "midAf": 0,
+        "midAn": 294,
+        "midAc": 0,
+        "midHc": 0,
+        "remainingAf": 0.00473,
+        "remainingAn": 2114,
+        "remainingAc": 10,
+        "remainingHc": 1,
+        "maleAf": 0.002542,
+        "maleAn": 74364,
+        "maleAc": 189,
+        "maleHc": 1,
+        "femaleAf": 0.003819,
+        "femaleAn": 77760,
+        "femaleAc": 297,
+        "femaleHc": 2
+      },
+      "gnomad-exome": {
+        "coverage": 0,
+        "allAf": 0.00507,
+        "allAn": 1393306,
+        "allAc": 7064,
+        "allHc": 23,
+        "afrAf": 0.000985,
+        "afrAn": 31458,
+        "afrAc": 31,
+        "afrHc": 0,
+        "amrAf": 0.003091,
+        "amrAn": 35590,
+        "amrAc": 110,
+        "amrHc": 1,
+        "easAf": 0,
+        "easAn": 35672,
+        "easAc": 0,
+        "easHc": 0,
+        "finAf": 0.000693,
+        "finAn": 47604,
+        "finAc": 33,
+        "finHc": 0,
+        "nfeAf": 0.005927,
+        "nfeAn": 1076684,
+        "nfeAc": 6382,
+        "nfeHc": 18,
+        "asjAf": 0.002392,
+        "asjAn": 25082,
+        "asjAc": 60,
+        "asjHc": 0,
+        "sasAf": 0.002088,
+        "sasAn": 79024,
+        "sasAc": 165,
+        "sasHc": 0,
+        "midAf": 0.00222,
+        "midAn": 4504,
+        "midAc": 10,
+        "midHc": 0,
+        "remainingAf": 0.004732,
+        "remainingAn": 57688,
+        "remainingAc": 273,
+        "remainingHc": 4,
+        "maleAf": 0.004895,
+        "maleAn": 686990,
+        "maleAc": 3363,
+        "maleHc": 9,
+        "femaleAf": 0.00524,
+        "femaleAn": 706316,
+        "femaleAc": 3701,
+        "femaleHc": 14
+      },
+      "oneKg": {
+        "allAf": 0.001997,
+        "afrAf": 0,
+        "amrAf": 0.002882,
+        "easAf": 0,
+        "eurAf": 0.002982,
+        "sasAf": 0.005112,
+        "allAn": 5008,
+        "afrAn": 1322,
+        "amrAn": 694,
+        "easAn": 1008,
+        "eurAn": 1006,
+        "sasAn": 978,
+        "allAc": 10,
+        "afrAc": 0,
+        "amrAc": 2,
+        "easAc": 0,
+        "eurAc": 3,
+        "sasAc": 5
+      },
+      "revel": {
+        "score": 0.245
+      },
+      "topmed": {
+        "allAf": 0.003807,
+        "allAn": 125568,
+        "allAc": 478,
+        "allHc": 3
+      },
+      "dannScore": 1,
+      "gerpScore": 2.13,
+      "transcripts": [
+        {
+          "transcript": "ENST00000499662.3",
+          "source": "Ensembl",
+          "bioType": "lincRNA",
+          "geneId": "ENSG00000247381",
+          "hgnc": "PLUT",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "isCanonical": true
+        },
+        {
+          "transcript": "NR_047484.1",
+          "source": "RefSeq",
+          "bioType": "lncRNA",
+          "introns": "1/3",
+          "geneId": "100861550",
+          "hgnc": "PLUT",
+          "consequence": [
+            "intron_variant",
+            "non_coding_transcript_variant"
+          ],
+          "hgvsc": "NR_047484.1:n.241+800C>T",
+          "isCanonical": true
+        },
+        {
+          "transcript": "ENST00000381033.4",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "Gac/Aac",
+          "aminoAcids": "D/N",
+          "cdnaPos": "345",
+          "cdsPos": "226",
+          "exons": "1/2",
+          "proteinPos": "76",
+          "geneId": "ENSG00000139515",
+          "hgnc": "PDX1",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "ENST00000381033.4:c.226G>A",
+          "hgvsp": "ENSP00000370421.4:p.(Asp76Asn)",
+          "isCanonical": true,
+          "polyPhenScore": 0.13,
+          "polyPhenPrediction": "benign",
+          "proteinId": "ENSP00000370421.4",
+          "siftScore": 0.01,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "NM_000209.3",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "codons": "Gac/Aac",
+          "aminoAcids": "D/N",
+          "cdnaPos": "334",
+          "cdsPos": "226",
+          "exons": "1/2",
+          "proteinPos": "76",
+          "geneId": "3651",
+          "hgnc": "PDX1",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "NM_000209.3:c.226G>A",
+          "hgvsp": "NP_000200.1:p.(Asp76Asn)",
+          "isCanonical": true,
+          "polyPhenScore": 0.13,
+          "polyPhenPrediction": "benign",
+          "proteinId": "NP_000200.1",
+          "siftScore": 0.01,
+          "siftPrediction": "deleterious"
+        }
+      ]
+    }
+  ]
+},
+{
+  "chromosome": "chr17",
+  "position": 37699167,
+  "refAllele": "TG",
+  "altAlleles": [
+    "T"
+  ],
+  "fisherStrandBias": 0,
+  "cytogeneticBand": "17q12",
+  "samples": [
+    {
+      "genotype": "1/1",
+      "genotypeQuality": 99
+    }
+  ],
+  "variants": [
+    {
+      "vid": "17-37699167-TG-T",
+      "chromosome": "chr17",
+      "begin": 37699168,
+      "end": 37699168,
+      "refAllele": "G",
+      "altAllele": "-",
+      "variantType": "deletion",
+      "hgvsg": "NC_000017.11:g.37699174del",
+      "clinvar": [
+        {
+          "id": "RCV002464197.1",
+          "variationId": "VCV000392411.4",
+          "reviewStatus": "criteria provided, single submitter",
+          "alleleOrigins": [
+            "unknown"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "phenotypes": [
+            "Maturity onset diabetes mellitus in young"
+          ],
+          "medGenIds": [
+            "C0342276"
+          ],
+          "omimIds": [
+            "606391"
+          ],
+          "orphanetIds": [
+            "552"
+          ],
+          "significance": [
+            "pathogenic"
+          ],
+          "lastUpdatedDate": "2023-07-29",
+          "pubMedIds": [
+            "19639018",
+            "24897035",
+            "25536396",
+            "25741167",
+            "26340261",
+            "27615128",
+            "28215227",
+            "33434175"
+          ]
+        },
+        {
+          "id": "RCV000787057.1",
+          "variationId": "VCV000392411.4",
+          "reviewStatus": "criteria provided, single submitter",
+          "alleleOrigins": [
+            "germline"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "phenotypes": [
+            "Renal cysts and diabetes syndrome"
+          ],
+          "medGenIds": [
+            "C0431693"
+          ],
+          "omimIds": [
+            "137920"
+          ],
+          "orphanetIds": [
+            "93111"
+          ],
+          "significance": [
+            "pathogenic"
+          ],
+          "lastUpdatedDate": "2023-07-29",
+          "pubMedIds": [
+            "25741868"
+          ]
+        },
+        {
+          "id": "VCV000595461.4",
+          "reviewStatus": "criteria provided, single submitter",
+          "significance": [
+            "likely pathogenic"
+          ],
+          "refAllele": "G",
+          "altAllele": "-",
+          "lastUpdatedDate": "2023-04-02",
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "RCV000731011.4",
+          "variationId": "VCV000595461.4",
+          "reviewStatus": "criteria provided, single submitter",
+          "alleleOrigins": [
+            "germline"
+          ],
+          "refAllele": "G",
+          "altAllele": "-",
+          "phenotypes": [
+            "not provided"
+          ],
+          "medGenIds": [
+            "CN517202"
+          ],
+          "significance": [
+            "likely pathogenic"
+          ],
+          "lastUpdatedDate": "2023-04-01",
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "RCV000787058.1",
+          "variationId": "VCV000635577.1",
+          "reviewStatus": "criteria provided, single submitter",
+          "alleleOrigins": [
+            "germline"
+          ],
+          "refAllele": "-",
+          "altAllele": "G",
+          "phenotypes": [
+            "Renal cysts and diabetes syndrome"
+          ],
+          "medGenIds": [
+            "C0431693"
+          ],
+          "omimIds": [
+            "137920"
+          ],
+          "orphanetIds": [
+            "93111"
+          ],
+          "significance": [
+            "pathogenic"
+          ],
+          "lastUpdatedDate": "2023-07-29",
+          "pubMedIds": [
+            "24097065",
+            "25536396",
+            "25700310",
+            "25741868"
+          ]
+        },
+        {
+          "id": "RCV000429830.1",
+          "variationId": "VCV000392411.4",
+          "reviewStatus": "criteria provided, single submitter",
+          "alleleOrigins": [
+            "germline"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "phenotypes": [
+            "not provided"
+          ],
+          "medGenIds": [
+            "CN517202"
+          ],
+          "significance": [
+            "likely pathogenic"
+          ],
+          "lastUpdatedDate": "2023-07-29"
+        },
+        {
+          "id": "VCV000392411.4",
+          "reviewStatus": "criteria provided, multiple submitters, no conflicts",
+          "significance": [
+            "pathogenic",
+            "likely pathogenic"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "lastUpdatedDate": "2023-07-29"
+        },
+        {
+          "id": "VCV000635577.1",
+          "reviewStatus": "criteria provided, single submitter",
+          "significance": [
+            "pathogenic"
+          ],
+          "refAllele": "-",
+          "altAllele": "G",
+          "lastUpdatedDate": "2023-07-29"
+        }
+      ],
+      "clinvar-preview": [
+        {
+          "variantType": "deletion",
+          "accession": "VCV000595461",
+          "version": "4",
+          "recordType": "classified",
+          "dateLastUpdated": "2023-04-02",
+          "rcvs": [
+            {
+              "accession": "RCV000731011",
+              "version": "4",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, single submitter",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2017-12-21",
+                      "classification": "Likely pathogenic"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "not provided",
+                  "db": "MedGen",
+                  "id": "CN517202"
+                }
+              ]
+            }
+          ],
+          "classifications": {
+            "germlineClassification": {
+              "classification": "Likely pathogenic",
+              "reviewStatus": "criteria provided, single submitter",
+              "dateLastEvaluated": "2017-12-21",
+              "mostRecentSubmission": "2018-12-16",
+              "conditions": [
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "17556",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "Developmental Genetics Unit, King Faisal Specialist Hospital & Research Centre",
+                            "id": "13DG0619"
+                          }
+                        ],
+                        "value": "not provided"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "clinicalAssertions": [
+            {
+              "accession": "SCV000858781"
+            }
+          ],
+          "refAllele": "G",
+          "altAllele": "-",
+          "isAlleleSpecific": true
+        },
+        {
+          "variantType": "SNV",
+          "accession": "VCV000392411",
+          "version": "4",
+          "recordType": "classified",
+          "dateLastUpdated": "2023-07-29",
+          "rcvs": [
+            {
+              "accession": "RCV000429830",
+              "version": "1",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, single submitter",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2017-01-09",
+                      "classification": "Likely pathogenic"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "not provided",
+                  "db": "MedGen",
+                  "id": "CN517202"
+                }
+              ]
+            },
+            {
+              "accession": "RCV000787057",
+              "version": "1",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, single submitter",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2019-07-06",
+                      "classification": "Pathogenic"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Renal cysts and diabetes syndrome",
+                  "db": "MedGen",
+                  "id": "C0431693"
+                }
+              ]
+            },
+            {
+              "accession": "RCV002464197",
+              "version": "1",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, single submitter",
+                  "descriptions": [
+                    {
+                      "classification": "Pathogenic"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Maturity onset diabetes mellitus in young",
+                  "db": "MedGen",
+                  "id": "C0342276"
+                }
+              ]
+            }
+          ],
+          "classifications": {
+            "germlineClassification": {
+              "classification": "Pathogenic/Likely pathogenic",
+              "reviewStatus": "criteria provided, multiple submitters, no conflicts",
+              "dateLastEvaluated": "2019-07-06",
+              "mostRecentSubmission": "2022-12-11",
+              "conditions": [
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "4321",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0007669"
+                          },
+                          {
+                            "db": "NCBI for submitter",
+                            "id": "vr002"
+                          }
+                        ],
+                        "value": "Renal cysts and diabetes syndrome"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "5457",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "SNOMED CT",
+                            "id": "28453007"
+                          }
+                        ],
+                        "value": "Maturity onset diabetes mellitus in young"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "17556",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "Developmental Genetics Unit, King Faisal Specialist Hospital & Research Centre",
+                            "id": "13DG0619"
+                          }
+                        ],
+                        "value": "not provided"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "pubMedIds": [
+                "19639018",
+                "24897035",
+                "25536396",
+                "25741167",
+                "26340261",
+                "27615128",
+                "28215227",
+                "33434175"
+              ]
+            }
+          },
+          "clinicalAssertions": [
+            {
+              "accession": "SCV000535677"
+            },
+            {
+              "accession": "SCV000925984",
+              "pubMedIds": [
+                "25741868"
+              ]
+            },
+            {
+              "accession": "SCV002605433"
+            }
+          ],
+          "refAllele": "G",
+          "altAllele": "A"
+        },
+        {
+          "variantType": "duplication",
+          "accession": "VCV000635577",
+          "version": "1",
+          "recordType": "classified",
+          "dateLastUpdated": "2023-07-29",
+          "rcvs": [
+            {
+              "accession": "RCV000787058",
+              "version": "1",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, single submitter",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2019-07-06",
+                      "classification": "Pathogenic"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Renal cysts and diabetes syndrome",
+                  "db": "MedGen",
+                  "id": "C0431693"
+                }
+              ]
+            }
+          ],
+          "classifications": {
+            "germlineClassification": {
+              "classification": "Pathogenic",
+              "reviewStatus": "criteria provided, single submitter",
+              "dateLastEvaluated": "2019-07-06",
+              "mostRecentSubmission": "2019-07-14",
+              "conditions": [
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "4321",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0007669"
+                          },
+                          {
+                            "db": "NCBI for submitter",
+                            "id": "vr002"
+                          }
+                        ],
+                        "value": "Renal cysts and diabetes syndrome"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "pubMedIds": [
+                "24097065",
+                "25536396",
+                "25700310"
+              ]
+            }
+          },
+          "clinicalAssertions": [
+            {
+              "accession": "SCV000925985",
+              "pubMedIds": [
+                "25741868"
+              ]
+            }
+          ],
+          "refAllele": "-",
+          "altAllele": "G"
+        }
+      ],
+      "dbsnp": [
+        "rs764042837"
+      ],
+      "gnomad-exome": {
+        "coverage": 0,
+        "allAf": 1E-06,
+        "allAn": 1461800,
+        "allAc": 2,
+        "allHc": 0,
+        "afrAf": 0,
+        "afrAn": 33480,
+        "afrAc": 0,
+        "afrHc": 0,
+        "amrAf": 0,
+        "amrAn": 44724,
+        "amrAc": 0,
+        "amrHc": 0,
+        "easAf": 0,
+        "easAn": 39700,
+        "easAc": 0,
+        "easHc": 0,
+        "finAf": 0,
+        "finAn": 53410,
+        "finAc": 0,
+        "finHc": 0,
+        "nfeAf": 1E-06,
+        "nfeAn": 1111932,
+        "nfeAc": 1,
+        "nfeHc": 0,
+        "asjAf": 0,
+        "asjAn": 26136,
+        "asjAc": 0,
+        "asjHc": 0,
+        "sasAf": 1.2E-05,
+        "sasAn": 86258,
+        "sasAc": 1,
+        "sasHc": 0,
+        "midAf": 0,
+        "midAn": 5768,
+        "midAc": 0,
+        "midHc": 0,
+        "remainingAf": 0,
+        "remainingAn": 60392,
+        "remainingAc": 0,
+        "remainingHc": 0,
+        "maleAf": 1E-06,
+        "maleAn": 727216,
+        "maleAc": 1,
+        "maleHc": 0,
+        "femaleAf": 1E-06,
+        "femaleAn": 734584,
+        "femaleAc": 1,
+        "femaleHc": 0
+      },
+      "transcripts": [
+        {
+          "transcript": "NM_001165923.3",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "codons": "Cag/ag",
+          "aminoAcids": "Q/X",
+          "cdnaPos": "1677",
+          "cdsPos": "1483",
+          "exons": "8/9",
+          "proteinPos": "495",
+          "geneId": "6928",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "frameshift_variant"
+          ],
+          "hgvsc": "NM_001165923.3:c.1483del",
+          "hgvsp": "NP_001159395.1:p.(Gln495SerfsTer70)",
+          "proteinId": "NP_001159395.1"
+        },
+        {
+          "transcript": "NM_000458.3",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "codons": "Cag/ag",
+          "aminoAcids": "Q/X",
+          "cdnaPos": "1755",
+          "cdsPos": "1561",
+          "exons": "8/9",
+          "proteinPos": "521",
+          "geneId": "6928",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "frameshift_variant"
+          ],
+          "hgvsc": "NM_000458.3:c.1561del",
+          "hgvsp": "NP_000449.1:p.(Gln521SerfsTer70)",
+          "isCanonical": true,
+          "proteinId": "NP_000449.1"
+        },
+        {
+          "transcript": "NM_001304286.1",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "introns": "6/6",
+          "geneId": "6928",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "intron_variant"
+          ],
+          "hgvsc": "NM_001304286.1:c.1261+5749del",
+          "proteinId": "NP_001291215.1"
+        },
+        {
+          "transcript": "ENST00000617811.4",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "Cag/ag",
+          "aminoAcids": "Q/X",
+          "cdnaPos": "1924",
+          "cdsPos": "1561",
+          "exons": "8/9",
+          "proteinPos": "521",
+          "geneId": "ENSG00000275410",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "frameshift_variant"
+          ],
+          "hgvsc": "ENST00000617811.4:c.1561del",
+          "hgvsp": "ENSP00000480291.1:p.(Gln521SerfsTer70)",
+          "isCanonical": true,
+          "proteinId": "ENSP00000480291.1"
+        },
+        {
+          "transcript": "ENST00000621123.4",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "Cag/ag",
+          "aminoAcids": "Q/X",
+          "cdnaPos": "1658",
+          "cdsPos": "1483",
+          "exons": "8/9",
+          "proteinPos": "495",
+          "geneId": "ENSG00000275410",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "frameshift_variant"
+          ],
+          "hgvsc": "ENST00000621123.4:c.1483del",
+          "hgvsp": "ENSP00000482711.1:p.(Gln495SerfsTer70)",
+          "proteinId": "ENSP00000482711.1"
+        },
+        {
+          "transcript": "ENST00000614313.4",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "introns": "7/7",
+          "geneId": "ENSG00000275410",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "intron_variant"
+          ],
+          "hgvsc": "ENST00000614313.4:c.1534+1815del",
+          "proteinId": "ENSP00000482529.1"
+        },
+        {
+          "transcript": "ENST00000613727.4",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "introns": "6/6",
+          "geneId": "ENSG00000275410",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "intron_variant"
+          ],
+          "hgvsc": "ENST00000613727.4:c.1261+5749del",
+          "proteinId": "ENSP00000477524.1"
+        },
+        {
+          "transcript": "ENST00000617272.4",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "introns": "7/7",
+          "geneId": "ENSG00000275410",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "intron_variant"
+          ],
+          "hgvsc": "ENST00000617272.4:c.*257+1815del",
+          "proteinId": "ENSP00000478682.1"
+        }
+      ]
+    }
+  ]
+},
+{
+  "chromosome": "chr17",
+  "position": 37701013,
+  "refAllele": "C",
+  "altAlleles": [
+    "T"
+  ],
+  "fisherStrandBias": 0,
+  "cytogeneticBand": "17q12",
+  "samples": [
+    {
+      "genotype": "0/1",
+      "genotypeQuality": 99
+    }
+  ],
+  "variants": [
+    {
+      "vid": "17-37701013-C-T",
+      "chromosome": "chr17",
+      "begin": 37701013,
+      "end": 37701013,
+      "refAllele": "C",
+      "altAllele": "T",
+      "variantType": "SNV",
+      "hgvsg": "NC_000017.11:g.37701013C>T",
+      "phylopScore": 0.9,
+      "regulatoryRegions": [
+        {
+          "id": "ENSR00000093690",
+          "type": "open_chromatin_region",
+          "consequence": [
+            "regulatory_region_variant"
+          ]
+        },
+        {
+          "id": "ENSR00000283280",
+          "type": "CTCF_binding_site",
+          "consequence": [
+            "regulatory_region_variant"
+          ]
+        }
+      ],
+      "clinvar": [
+        {
+          "id": "VCV000635581.1",
+          "reviewStatus": "criteria provided, single submitter",
+          "significance": [
+            "likely pathogenic"
+          ],
+          "refAllele": "C",
+          "altAllele": "T",
+          "lastUpdatedDate": "2023-07-29",
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "RCV000787062.1",
+          "variationId": "VCV000635581.1",
+          "reviewStatus": "criteria provided, single submitter",
+          "alleleOrigins": [
+            "germline"
+          ],
+          "refAllele": "C",
+          "altAllele": "T",
+          "phenotypes": [
+            "Renal cysts and diabetes syndrome"
+          ],
+          "medGenIds": [
+            "C0431693"
+          ],
+          "omimIds": [
+            "137920"
+          ],
+          "orphanetIds": [
+            "93111"
+          ],
+          "significance": [
+            "likely pathogenic"
+          ],
+          "lastUpdatedDate": "2023-07-29",
+          "pubMedIds": [
+            "25741868"
+          ],
+          "isAlleleSpecific": true
+        }
+      ],
+      "clinvar-preview": [
+        {
+          "variantType": "SNV",
+          "accession": "VCV000635581",
+          "version": "1",
+          "recordType": "classified",
+          "dateLastUpdated": "2023-07-29",
+          "rcvs": [
+            {
+              "accession": "RCV000787062",
+              "version": "1",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, single submitter",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2019-07-06",
+                      "classification": "Likely pathogenic"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Renal cysts and diabetes syndrome",
+                  "db": "MedGen",
+                  "id": "C0431693"
+                }
+              ]
+            }
+          ],
+          "classifications": {
+            "germlineClassification": {
+              "classification": "Likely pathogenic",
+              "reviewStatus": "criteria provided, single submitter",
+              "dateLastEvaluated": "2019-07-06",
+              "mostRecentSubmission": "2019-07-15",
+              "conditions": [
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "4321",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0007669"
+                          },
+                          {
+                            "db": "NCBI for submitter",
+                            "id": "vr002"
+                          }
+                        ],
+                        "value": "Renal cysts and diabetes syndrome"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "clinicalAssertions": [
+            {
+              "accession": "SCV000925989",
+              "pubMedIds": [
+                "25741868"
+              ]
+            }
+          ],
+          "refAllele": "C",
+          "altAllele": "T",
+          "isAlleleSpecific": true
+        }
+      ],
+      "dbsnp": [
+        "rs772362107"
+      ],
+      "gnomad": {
+        "coverage": 0,
+        "allAf": 1.3E-05,
+        "allAn": 152158,
+        "allAc": 2,
+        "allHc": 0,
+        "afrAf": 0,
+        "afrAn": 41432,
+        "afrAc": 0,
+        "afrHc": 0,
+        "amiAf": 0,
+        "amiAn": 912,
+        "amiAc": 0,
+        "amiHc": 0,
+        "amrAf": 0,
+        "amrAn": 15276,
+        "amrAc": 0,
+        "amrHc": 0,
+        "easAf": 0,
+        "easAn": 5190,
+        "easAc": 0,
+        "easHc": 0,
+        "finAf": 0,
+        "finAn": 10616,
+        "finAc": 0,
+        "finHc": 0,
+        "nfeAf": 2.9E-05,
+        "nfeAn": 68032,
+        "nfeAc": 2,
+        "nfeHc": 0,
+        "asjAf": 0,
+        "asjAn": 3472,
+        "asjAc": 0,
+        "asjHc": 0,
+        "sasAf": 0,
+        "sasAn": 4822,
+        "sasAc": 0,
+        "sasHc": 0,
+        "midAf": 0,
+        "midAn": 316,
+        "midAc": 0,
+        "midHc": 0,
+        "remainingAf": 0,
+        "remainingAn": 2090,
+        "remainingAc": 0,
+        "remainingHc": 0,
+        "maleAf": 0,
+        "maleAn": 74328,
+        "maleAc": 0,
+        "maleHc": 0,
+        "femaleAf": 2.6E-05,
+        "femaleAn": 77830,
+        "femaleAc": 2,
+        "femaleHc": 0
+      },
+      "gnomad-exome": {
+        "coverage": 0,
+        "allAf": 1.4E-05,
+        "allAn": 1405746,
+        "allAc": 19,
+        "allHc": 0,
+        "afrAf": 0,
+        "afrAn": 32152,
+        "afrAc": 0,
+        "afrHc": 0,
+        "amrAf": 0,
+        "amrAn": 36912,
+        "amrAc": 0,
+        "amrHc": 0,
+        "easAf": 0,
+        "easAn": 36750,
+        "easAc": 0,
+        "easHc": 0,
+        "finAf": 0,
+        "finAn": 49578,
+        "finAc": 0,
+        "finHc": 0,
+        "nfeAf": 1.8E-05,
+        "nfeAn": 1082426,
+        "nfeAc": 19,
+        "nfeHc": 0,
+        "asjAf": 0,
+        "asjAn": 25366,
+        "asjAc": 0,
+        "asjHc": 0,
+        "sasAf": 0,
+        "sasAn": 79706,
+        "sasAc": 0,
+        "sasHc": 0,
+        "midAf": 0,
+        "midAn": 4640,
+        "midAc": 0,
+        "midHc": 0,
+        "remainingAf": 0,
+        "remainingAn": 58216,
+        "remainingAc": 0,
+        "remainingHc": 0,
+        "maleAf": 1.2E-05,
+        "maleAn": 694044,
+        "maleAc": 8,
+        "maleHc": 0,
+        "femaleAf": 1.5E-05,
+        "femaleAn": 711702,
+        "femaleAc": 11,
+        "femaleHc": 0
+      },
+      "revel": {
+        "score": 0.848
+      },
+      "topmed": {
+        "allAf": 8E-06,
+        "allAn": 125568,
+        "allAc": 1,
+        "allHc": 0
+      },
+      "transcripts": [
+        {
+          "transcript": "NM_001165923.3",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "codons": "Gca/Aca",
+          "aminoAcids": "A/T",
+          "cdnaPos": "1620",
+          "cdsPos": "1426",
+          "exons": "7/9",
+          "proteinPos": "476",
+          "geneId": "6928",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "NM_001165923.3:c.1426G>A",
+          "hgvsp": "NP_001159395.1:p.(Ala476Thr)",
+          "polyPhenScore": 0.985,
+          "polyPhenPrediction": "probably damaging",
+          "proteinId": "NP_001159395.1",
+          "siftScore": 0,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "NM_000458.3",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "codons": "Gca/Aca",
+          "aminoAcids": "A/T",
+          "cdnaPos": "1698",
+          "cdsPos": "1504",
+          "exons": "7/9",
+          "proteinPos": "502",
+          "geneId": "6928",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "NM_000458.3:c.1504G>A",
+          "hgvsp": "NP_000449.1:p.(Ala502Thr)",
+          "isCanonical": true,
+          "polyPhenScore": 1,
+          "polyPhenPrediction": "probably damaging",
+          "proteinId": "NP_000449.1",
+          "siftScore": 0,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "NM_001304286.1",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "introns": "6/6",
+          "geneId": "6928",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "intron_variant"
+          ],
+          "hgvsc": "NM_001304286.1:c.1261+3904G>A",
+          "proteinId": "NP_001291215.1"
+        },
+        {
+          "transcript": "ENST00000617811.4",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "Gca/Aca",
+          "aminoAcids": "A/T",
+          "cdnaPos": "1867",
+          "cdsPos": "1504",
+          "exons": "7/9",
+          "proteinPos": "502",
+          "geneId": "ENSG00000275410",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "ENST00000617811.4:c.1504G>A",
+          "hgvsp": "ENSP00000480291.1:p.(Ala502Thr)",
+          "isCanonical": true,
+          "polyPhenScore": 1,
+          "polyPhenPrediction": "probably damaging",
+          "proteinId": "ENSP00000480291.1",
+          "siftScore": 0,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "ENST00000621123.4",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "Gca/Aca",
+          "aminoAcids": "A/T",
+          "cdnaPos": "1601",
+          "cdsPos": "1426",
+          "exons": "7/9",
+          "proteinPos": "476",
+          "geneId": "ENSG00000275410",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "ENST00000621123.4:c.1426G>A",
+          "hgvsp": "ENSP00000482711.1:p.(Ala476Thr)",
+          "polyPhenScore": 0.985,
+          "polyPhenPrediction": "probably damaging",
+          "proteinId": "ENSP00000482711.1",
+          "siftScore": 0,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "ENST00000614313.4",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "Gca/Aca",
+          "aminoAcids": "A/T",
+          "cdnaPos": "1638",
+          "cdsPos": "1504",
+          "exons": "7/8",
+          "proteinPos": "502",
+          "geneId": "ENSG00000275410",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "ENST00000614313.4:c.1504G>A",
+          "hgvsp": "ENSP00000482529.1:p.(Ala502Thr)",
+          "polyPhenScore": 0.56,
+          "polyPhenPrediction": "possibly damaging",
+          "proteinId": "ENSP00000482529.1",
+          "siftScore": 0,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "ENST00000613727.4",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "introns": "6/6",
+          "geneId": "ENSG00000275410",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "intron_variant"
+          ],
+          "hgvsc": "ENST00000613727.4:c.1261+3904G>A",
+          "proteinId": "ENSP00000477524.1"
+        },
+        {
+          "transcript": "ENST00000617272.4",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "cdnaPos": "1639",
+          "exons": "7/8",
+          "geneId": "ENSG00000275410",
+          "hgnc": "HNF1B",
+          "consequence": [
+            "3_prime_UTR_variant"
+          ],
+          "hgvsc": "ENST00000617272.4:c.*227G>A",
+          "proteinId": "ENSP00000478682.1"
+        }
+      ]
+    }
+  ]
+}]
