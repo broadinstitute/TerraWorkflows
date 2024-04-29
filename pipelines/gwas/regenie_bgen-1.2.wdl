@@ -65,9 +65,9 @@ task filter_variants_for_gwas {
 
         # modify filter on missingness -- AC/AF filter yields ~25% missing GTs, probably due to multiallelic issues
         # we'll be really conservative here and only exclude variants where the majority of samples are missing
-        #“–geno 0.1” tells PLINK to throw out every variant where more than 10% of the genotype calls are “NA”s.
+        #“–geno 0.5” tells PLINK to throw out every variant where more than 50% of the genotype calls are “NA”s.
        plink2 --bgen ~{bgen} ref-first --sample ~{samples} \
-        --geno 0.8 \
+        --geno 0.5 \
         --make-bed \
         --split-par 2781479 155701383 \
         --out plink/missingness_filtered_data 
