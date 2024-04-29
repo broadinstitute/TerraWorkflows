@@ -318,6 +318,7 @@ task AnnotateVCF {
 
          # Define lists of vcf files
           vcf_files=($(ls | grep "filtered.vcf$"))
+          echo "vcf_files: ${vcf_files[@]}"
 
          # Run 2 instances of the task in parallel
          for file in "${vcf_files[@]}"; do
