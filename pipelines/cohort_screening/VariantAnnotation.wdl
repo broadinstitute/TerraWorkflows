@@ -128,13 +128,6 @@ task BatchVCFs {
         memory: mem_size + " MiB"
     }
 
-    call VariantReport {
-        input:
-            positions_annotation_json = AnnotateVCF.positions_annotation_json,
-            sample_id = sample_id,
-            docker_path = docker_prefix + variantreport_docker_image
-    }
-
     output {
         Array[File] batch_tars = glob("*.tar.gz")
     }
