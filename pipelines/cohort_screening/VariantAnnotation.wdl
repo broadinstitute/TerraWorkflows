@@ -28,6 +28,7 @@ workflow AnnotateVCFWorkflow {
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
+    String variantreport_docker_image = "variantreport:latest"
 
 
     call BatchVCFs as batch_vcfs {
@@ -120,6 +121,13 @@ task BatchVCFs {
         docker: docker_path
         disks: "local-disk " + disk_size + " HDD"
         memory: mem_size + " MiB"
+    }
+
+    call VariantReport {
+        input:
+            positions_annotation_json = AnnotateVCF.positions_annotation_json,
+            sample_id = sample_id,
+            docker_path = docker_prefix + variantreport_docker_image
     }
 
     output {
@@ -348,5 +356,38 @@ task AnnotateVCF {
     output {
         File genes_annotation_json = "genes_annotation_json.tar.gz"
         File positions_annotation_json = "positions_annotation_json.tar.gz"
+    }
+}
+
+task VariantReport {
+
+    input {
+        File positions_annotation_json
+        String sample_id
+
+        String docker_path
+        Int mem_gb = 4
+        Int disk_gb = 15
+    }
+
+    command {
+
+        python3 /src/variants_report.py \
+        --positions_json ~{positions_annotation_json} \
+        --sample_identifier ~{sample_id}
+
+    }
+
+    runtime {
+        docker: docker_path
+        memory: '${mem_gb} GB'
+        disks: 'local-disk ${disk_gb} HDD'
+        disk: '${disk_gb} GB'
+        maxRetries: 2
+    }
+
+    output {
+        File pdf_report = "~{sample_id}_mody_variants_report.pdf"
+        File tsv_file = "~{sample_id}_mody_variants_table.tsv"
     }
 }
