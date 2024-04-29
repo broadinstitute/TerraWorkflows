@@ -64,10 +64,10 @@ task filter_variants_for_gwas {
         #######
 
         # modify filter on missingness -- AC/AF filter yields ~25% missing GTs, probably due to multiallelic issues
-        # one weird almost all het site is causing problem, but it's call rate is abyssmal, so just take it out
-        #“–geno 0.1” tells PLINK to throw out every variant where more than 10% of the genotype calls are “NA”s.
+        # we'll be really conservative here and only exclude variants where the majority of samples are missing
+        #“–geno 0.5” tells PLINK to throw out every variant where more than 50% of the genotype calls are “NA”s.
        plink2 --bgen ~{bgen} ref-first --sample ~{samples} \
-        --geno 0.9 \
+        --geno 0.5 \
         --make-bed \
         --split-par 2781479 155701383 \
         --out plink/missingness_filtered_data 
@@ -89,9 +89,9 @@ task filter_variants_for_gwas {
         --out plink/max_filtered_data
 
         # hardy weinberg filtering
-        # --hwe 1e-25 removes all variants with a Hardy-Weinberg p-value greater than 1e-25
+        # --hwe 1e-10 removes all variants with a Hardy-Weinberg p-value greater than 1e-10
         plink2 --bfile plink/max_filtered_data \
-        --hwe 1e-25 keep-fewhet \
+        --hwe 1e-10 keep-fewhet \
         --make-bed \
         --out plink/hwe_filtered_data
 
@@ -110,7 +110,7 @@ task filter_variants_for_gwas {
         # prune the data
         plink2 --bfile plink/hwe_filtered_data.newIDs \
         --extract plink/ldpruned_snplist.prune.in \
-        --export bgen-1.2 \
+        --export bgen-1.2 ref-first \
         --out plink/~{output_prefix}_ldpruned_data
     >>>
 
@@ -160,7 +160,6 @@ task regenie_steps {
         plink2 \
           --bgen ~{input_bgen} ref-first \
           --sample ~{input_samples} \
-          --split-par 2781479 155701383 \
           --mac ~{mac_threshold} \
           --make-bed \
           --out high_mac_variants
