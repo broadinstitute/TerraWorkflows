@@ -101,7 +101,7 @@ task AnnotateVCF {
 
             # Create Nirvana annotations:
             dotnet ~{nirvana_location} \
-                -i ~{input_filtered_vcf_tars} \
+                -i $filtered_vcf_files \
                 -c $DATA_SOURCES_FOLDER~{path} \
                 --sd $DATA_SOURCES_FOLDER~{path_supplementary_annotations} \
                 -r $DATA_SOURCES_FOLDER~{path_reference} \
