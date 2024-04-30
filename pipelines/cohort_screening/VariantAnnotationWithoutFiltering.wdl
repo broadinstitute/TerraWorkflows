@@ -120,9 +120,9 @@ task AnnotateVCF {
               --out diabetes_pathogenic_variant.positions.json.gz
 
 
-        # Tar up the genes.json and positions.json files
-        tar -czf genes_annotation_json.tar.gz *.genes.json.gz
-        tar -czf positions_annotation_json.tar.gz *.positions.json.gz
+          # Tar up the genes.json and positions.json files
+          tar -czf genes_annotation_json.tar.gz *.genes.json.gz
+          tar -czf positions_annotation_json.tar.gz *.positions.json.gz
     >>>
 
     runtime {
