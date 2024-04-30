@@ -246,15 +246,6 @@ task AnnotateVCF {
         # Declare array of filtered vcf tars
         filtered_vcf_files=(~{sep=' ' input_filtered_vcf_tars})
 
-        # Loop through the filtered_vcf_files and untar them
-        for file in "${filtered_vcf_files[@]}"; do
-        (
-            echo "extracting $file"
-            tar -xf $file --strip-components=1
-            rm $file
-        )
-        done
-
         # Choose where to create the Nirvana DATA_SOURCES_FOLDER based on cloud_provider
         if [[ "~{cloud_provider}" == "azure" ]]; then
             DATA_SOURCES_FOLDER=/cromwell-executions/nirvana_references
