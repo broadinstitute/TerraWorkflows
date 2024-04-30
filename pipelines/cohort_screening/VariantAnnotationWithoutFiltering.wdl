@@ -2,7 +2,7 @@ version 1.0
 
 workflow AnnotateVCFWorkflow {
     input {
-        Array[File] input_vcf
+        File input_vcf
         File bed_file
         String cloud_provider
         File omim_annotations
@@ -58,7 +58,7 @@ workflow AnnotateVCFWorkflow {
 
 task BatchVCFs {
     input {
-        Array[File] input_vcfs
+        File input_vcfs
         Int batch_size
         Int additional_memory_mb = 0
         Int additional_disk_gb = 0
@@ -71,12 +71,9 @@ task BatchVCFs {
     command <<<
         set -euo pipefail
 
-        # Get the size of the input_vcfs array
-        declare -a input_vcfs=(~{sep=' ' input_vcfs})
-        num_vcfs=${#input_vcfs[@]}
-
         # Calculate the number of batches based on the batch size
         batch_size=~{batch_size}
+        num_vcfs=1
         num_batches=$(( ($num_vcfs + $batch_size - 1) / $batch_size ))
 
         echo "Total VCF files: $num_vcfs"
@@ -84,25 +81,17 @@ task BatchVCFs {
         echo "Number of batches: $num_batches"
 
         # Process each batch. Move the VCF files to a batch directory and tar the directory
-        for ((i=0; i<num_batches; i++)); do
-            start_idx=$((i * batch_size))
-            end_idx=$((start_idx + batch_size - 1))
 
-            # Create a directory for the current batch
-            batch_dir="batch_${i}"
-            mkdir $batch_dir
+        mkdir batch_1
 
-            echo "Processing batch $i..."
-            for ((j=start_idx; j<=end_idx && j<num_vcfs; j++)); do
-                vcf="${input_vcfs[j]}"
-                mv $vcf $batch_dir
-            done
+        echo "Processing batch $i..."
+        mv ~{input_vcfs} batch_1
 
-            # Tar the batch directory
-            tar_name="batch_${i}.tar.gz"
-            tar czf $tar_name $batch_dir
-            echo "Created tar: $tar_name"
-        done
+        tar_name="batch_1.tar.gz"
+        tar czf $tar_name batch_1
+        echo "Created tar: $tar_name"
+        cp $tar_name /cromwell-executions/
+
     >>>
     runtime {
         docker: docker_path
@@ -111,7 +100,7 @@ task BatchVCFs {
     }
 
     output {
-        Array[File] batch_tars = glob("*.tar.gz")
+        File batch_tar = "batch_1.tar.gz"
     }
 }
 
@@ -132,85 +121,35 @@ task FilterVCF {
     command <<<
         set -euo pipefail
 
-        # Bash function to perform the filtering/indexing task on a single VCF file
-
-        task() {
-            local vcf_file=$1
-
-            echo "Starting task for $vcf_file.."
-            sample_id=$(basename "$vcf_file" ".vcf")
-
-            # Perform indexing
-            echo "Indexing VCF file: $vcf_file"
-            gatk \
-            IndexFeatureFile \
-            -I "$vcf_file"
-
-            # Perform filtering
-            echo "Filtering VCF file: $vcf_file"
-            gatk \
-            SelectVariants \
-            -V  "$vcf_file" \
-            -L ~{bed_file} \
-            -O "$sample_id.filtered.vcf"
-        }
-
-        # Declare array of input batched tars
-        declare -a batch_tars=(~{sep=' ' batch_tars})
-        echo "batch_tars: ${batch_tars[@]}"
-
         # Untar the tarred inputs
         tar -xf $batch_tars --strip-components=1
 
-        # Declare array of vcf files
-        declare -a input_vcfs=($(ls | grep ".vcf$"))
-        echo "input_vcfs: ${input_vcfs[@]}"
+        vcf_file=$(ls | grep ".vcf$")
 
-        # Launch tasks in parallel for each VCF file
-        for ((i = 0; i < ${#input_vcfs[@]}; i += 2)); do
+        # Perform indexing
+        echo "Indexing VCF file: $vcf_file"
+        gatk \
+        IndexFeatureFile \
+        -I "$vcf_file"
 
-            task "${input_vcfs[i]}" &
+        # Perform filtering
+        echo "Filtering VCF file: $vcf_file"
+        gatk \
+        SelectVariants \
+        -V  "$vcf_file" \
+        -L ~{bed_file} \
+        -O "diabetes_pathogenic_variant.vcf"
 
-            # Check if there's another file available in the batch
-            if [[ $((i + 1)) -lt ${#input_vcfs[@]} ]]; then
-                echo "Next file to process: ${input_vcfs[i + 1]}"
-                task "${input_vcfs[i + 1]}" &
-            fi
-
-            # Limit the number of concurrent tasks to 2 (adjust as needed)
-            if [[ $(jobs -p | wc -l) -ge 2 ]]; then
-                wait -n # Wait for any background job to finish
-            fi
-        done
-
-        wait
-        echo "Tasks all done."
 
         # Create a directory for each batch and move the filtered VCF files to the corresponding directory
         batch_size=~{batch_size}
-        for i in $(seq 1 "${batch_size}"); do
-            mkdir -p "batch${i}"
-        done
-
-        folder_index=1
+        mkdir batch1
 
         filtered_vcf_files=($(ls | grep ".filtered.vcf$"))
         echo "filtered_vcf_files: ${filtered_vcf_files[@]}"
 
-        for file in "${filtered_vcf_files[@]}"; do
-            mv $file batch$((folder_index))/$file
-            folder_index=$(( (folder_index % $batch_size) + 1 ))
-        done
-
-        # Create a tar for each batch directory
-        for i in $(seq 1 "${batch_size}"); do
-        # Check if files exist in batch directory before creating a tar
-            if [ -n "$(find "batch${i}" -maxdepth 1 -name '*.filtered.vcf')" ]; then
-                tar -czf "${i}.filtered_vcf_files.tar.gz" "batch${i}"/*.filtered.vcf
-            else
-                echo "No files found in batch${i}. Skipping tar creation."
-            fi
-        done
+        mv $filtered_vcf_files batch1/$filtered_vcf_files
+        tar -czf "1.filtered_vcf_files.tar.gz" "batch1"/*.filtered.vcf
 
     >>>
     runtime {
@@ -221,13 +160,13 @@ task FilterVCF {
     }
 
     output {
-        Array[File] tarred_filtered_vcfs = glob("*.tar.gz")
+       File tarred_filtered_vcfs = "1.filtered_vcf_files.tar.gz"
     }
 }
 
 task AnnotateVCF {
     input {
-        Array[File] input_filtered_vcf_tars
+        File input_filtered_vcf_tars
         File omim_annotations
         String cloud_provider
         String docker_path
@@ -244,7 +183,7 @@ task AnnotateVCF {
         set -euo pipefail
 
         # Declare array of filtered vcf tars
-        filtered_vcf_files=(~{sep=' ' input_filtered_vcf_tars})
+        filtered_vcf_files=(~{input_filtered_vcf_tars})
 
         # Choose where to create the Nirvana DATA_SOURCES_FOLDER based on cloud_provider
         if [[ "~{cloud_provider}" == "azure" ]]; then
@@ -267,31 +206,27 @@ task AnnotateVCF {
         ln ~{omim_annotations} ${DATA_SOURCES_FOLDER}/SupplementaryAnnotation/GRCh38/
 
         # Bash function to perform the annotation task on a single VCF file
-        task() {
-            local file=$1
-            sample_id=$(basename "$file" ".vcf")
-            echo $sample_id
 
             # Create Nirvana annotations:
             dotnet ~{nirvana_location} \
-                -i ${sample_id}.filtered.vcf \
+                -i diabetes_pathogenic_variant.filtered.vcf \
                 -c $DATA_SOURCES_FOLDER~{path} \
                 --sd $DATA_SOURCES_FOLDER~{path_supplementary_annotations} \
                 -r $DATA_SOURCES_FOLDER~{path_reference} \
-                -o ${sample_id}
+                -o diabetes_pathogenic_variant.vcf
 
               # https://illumina.github.io/NirvanaDocumentation/introduction/parsing-json#jasix
               # Parse out the Genes section into a separate annotated json
               dotnet  ~{jasix_location} \
-                  --in ${sample_id}.json.gz \
+                  --in diabetes_pathogenic_variant.json.gz \
                   --section genes \
-                  --out ${sample_id}.genes.json.gz
+                  --out diabetes_pathogenic_variant.genes.json.gz
 
           # Parse out the Positions section into a separate annotated json
           dotnet  ~{jasix_location} \
-              --in ${sample_id}.json.gz \
+              --in $diabetes_pathogenic_variant.json.gz \
               --section positions \
-              --out ${sample_id}.positions.json.gz
+              --out diabetes_pathogenic_variant.positions.json.gz
         }
 
          # Define lists of vcf files
@@ -299,16 +234,6 @@ task AnnotateVCF {
           ls -lh
           echo "vcf_files: ${vcf_files[@]}"
 
-         # Run 2 instances of the task in parallel
-         for file in "${vcf_files[@]}"; do
-           (
-             echo "starting task $file.."
-             task "$file"
-           )
-         done
-
-         wait
-         echo "Tasks all done."
 
         # Tar up the genes.json and positions.json files
         tar -czf genes_annotation_json.tar.gz *.genes.json.gz
