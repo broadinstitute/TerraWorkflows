@@ -42,7 +42,7 @@ workflow AnnotateVCFWorkflow {
 
     call VariantReport {
         input:
-            positions_annotation_json = [AnnotateVCF.positions_annotation_json],
+            positions_annotation_json = AnnotateVCF.positions_annotation_json,
             docker_path = docker_prefix + variantreport_docker_image
     }
 
@@ -347,7 +347,7 @@ task AnnotateVCF {
 task VariantReport {
 
     input {
-        Array[File] positions_annotation_json
+        File positions_annotation_json
 
         String docker_path
         Int memory_mb = 4000
@@ -360,7 +360,7 @@ task VariantReport {
         set -euo pipefail
 
         # Loop through the json files and unpack them
-        declare -a input_jsons=(~{sep=' ' positions_annotation_json})
+        declare -a input_jsons=(~{positions_annotation_json})
 
         for json in "${input_jsons[@]}"; do
             tar -xzf $json
