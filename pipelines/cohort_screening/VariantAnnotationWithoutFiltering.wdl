@@ -47,10 +47,10 @@ workflow AnnotateVCFWorkflow {
     }
 
     output {
-        Array[File] positions_annotation_json = AnnotateVCF.positions_annotation_json
-        Array[File] genes_annotation_json = AnnotateVCF.genes_annotation_json
-        Array[File] variant_report_pdf = VariantReport.pdf_report
-        Array[File] variant_table_tsv = VariantReport.tsv_file
+        File positions_annotation_json = AnnotateVCF.positions_annotation_json
+        File genes_annotation_json = AnnotateVCF.genes_annotation_json
+        File variant_report_pdf = VariantReport.pdf_report
+        File variant_table_tsv = VariantReport.tsv_file
     }
 }
 
