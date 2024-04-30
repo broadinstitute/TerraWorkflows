@@ -304,12 +304,7 @@ task AnnotateVCF {
            (
              echo "starting task $file.."
              task "$file"
-             sleep $(( (RANDOM % 3) + 1))
-           ) &
-           # allow to execute up to 2 jobs in parallel
-           if [[ $(jobs -r -p | wc -l) -ge 2 ]]; then
-             wait -n
-           fi
+           )
          done
 
          wait
