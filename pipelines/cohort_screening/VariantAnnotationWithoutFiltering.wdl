@@ -107,16 +107,18 @@ task AnnotateVCF {
                 -r $DATA_SOURCES_FOLDER~{path_reference} \
                 -o diabetes_pathogenic_variant.vcf
 
+            ls -l
+
               # https://illumina.github.io/NirvanaDocumentation/introduction/parsing-json#jasix
               # Parse out the Genes section into a separate annotated json
               dotnet  ~{jasix_location} \
-                  --in diabetes_pathogenic_variant.json.gz \
+                  --in diabetes_pathogenic_variant.vcf.json.gz \
                   --section genes \
                   --out diabetes_pathogenic_variant.genes.json.gz
 
           # Parse out the Positions section into a separate annotated json
           dotnet  ~{jasix_location} \
-              --in $diabetes_pathogenic_variant.json.gz \
+              --in diabetes_pathogenic_variant.vcf.json.gz  \
               --section positions \
               --out diabetes_pathogenic_variant.positions.json.gz
 
