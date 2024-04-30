@@ -74,8 +74,8 @@ task AnnotateVCF {
         set -euo pipefail
 
         # Declare array of filtered vcf tars
-        filtered_vcf_files=(~{input_filtered_vcf_tars})
-        echo "vcf_files: ${filtered_vcf_files[@]}"
+        filtered_vcf_files=~{input_filtered_vcf_tars}
+        echo "vcf_files: ${filtered_vcf_files}"
 
         # Choose where to create the Nirvana DATA_SOURCES_FOLDER based on cloud_provider
         if [[ "~{cloud_provider}" == "azure" ]]; then
@@ -101,7 +101,7 @@ task AnnotateVCF {
 
             # Create Nirvana annotations:
             dotnet ~{nirvana_location} \
-                -i diabetes_pathogenic_variant.vcf \
+                -i ~{input_filtered_vcf_tars} \
                 -c $DATA_SOURCES_FOLDER~{path} \
                 --sd $DATA_SOURCES_FOLDER~{path_supplementary_annotations} \
                 -r $DATA_SOURCES_FOLDER~{path_reference} \
