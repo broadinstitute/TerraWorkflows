@@ -42,15 +42,15 @@ workflow AnnotateVCFWorkflow {
 
     call VariantReport {
         input:
-            positions_annotation_json = AnnotateVCF.positions_annotation_json,
+            positions_annotation_json = [AnnotateVCF.positions_annotation_json],
             docker_path = docker_prefix + variantreport_docker_image
     }
 
     output {
         File positions_annotation_json = AnnotateVCF.positions_annotation_json
         File genes_annotation_json = AnnotateVCF.genes_annotation_json
-        File variant_report_pdf = VariantReport.pdf_report
-        File variant_table_tsv = VariantReport.tsv_file
+        Array[File] variant_report_pdf = VariantReport.pdf_report
+        Array[File] variant_table_tsv = VariantReport.tsv_file
     }
 }
 
