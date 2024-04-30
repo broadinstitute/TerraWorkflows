@@ -84,7 +84,6 @@ task BatchVCFs {
 
         mkdir batch_1
 
-        echo "Processing batch $i..."
         mv ~{input_vcfs} batch_1
 
         tar_name="batch_1.tar.gz"
