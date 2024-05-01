@@ -164,6 +164,7 @@ task regenie_steps {
           --make-bed \
           --out high_mac_variants
 
+        #note that if regenie is supplied a ref-first BGEN then it also needs a ref-first argument
        regenie \
         --step 1 \
         --bed high_mac_variants \
@@ -179,8 +180,7 @@ task regenie_steps {
 
         regenie \
         --step 2 \
-        --bgen ~{input_bgen} \
-        --sample ~{input_samples} \
+        --bed high_mac_variants \
         --phenoFile ~{pheno_csv} \
         --phenoCol ~{pheno_col} \
         ~{"--covarFile " + covariate_csv} \
