@@ -141,9 +141,7 @@ def filter_variants_for_report(filtered_positions):
                 logging.info(f'no ClinVar classification found for variant, /'
                              f'removing variant' + str(variant_dict))
                 position[variants_field].remove(variant_dict)
-            # Include if ClinVar significance includes pathogenic or likely pathogenic,
-            # but does not include benign
-            # unless clinvar review status is
+            # remove those classifications that have a review status of
             # no assertion criteria provided,
             # no classification provided,
             # or no classification for the individual variant
@@ -152,16 +150,20 @@ def filter_variants_for_report(filtered_positions):
                     review_status_disregard = ['no assertion criteria provided',
                                                'no classification provided',
                                                'no classification for the individual variant']
-                    if ('benign' in clinvar_dict['significance']
-                            and clinvar_dict['reviewStatus'] not in review_status_disregard):
-                        logging.info(f'benign in significance, do not disregard, removing variant {clinvar_dict}')
+                    if clinvar_dict['reviewStatus'] in review_status_disregard:
+                        logging.info(f'review status does not pass inclusion filters, /'
+                                     f'removing clinvar dict' + str(clinvar_dict))
+                        variant_dict[clinvar_field].remove(clinvar_dict)
+                    # Include if ClinVar significance includes pathogenic or likely pathogenic,
+                    # but does not include benign
+                    elif 'benign' in clinvar_dict['significance']:
+                        logging.info(f'benign in significance, removing clinvar dict {clinvar_dict}')
                         variant_dict[clinvar_field].remove(clinvar_dict)
                     elif 'significance' in clinvar_dict and ('pathogenic' not in clinvar_dict['significance']
                                                              and 'likely pathogenic'
-                                                             not in clinvar_dict['significance']) \
-                            and clinvar_dict['reviewStatus'] not in review_status_disregard:
+                                                             not in clinvar_dict['significance']):
                         logging.info(f'ClinVar significance does not pass inclusion filters, /'
-                                     f'removing variant' + str(variant_dict))
+                                     f'removing clinvar dict' + str(variant_dict))
                         variant_dict[clinvar_field].remove(clinvar_dict)
 
     # remove any variants that don't have any populated clinvar fields left
@@ -233,19 +235,19 @@ def calculate_zygosity(genotype):
 
 # get an index for sorting the classifications
 def classification_sort(classification):
-    classification_order = ["benign",
-                            "likely benign",
-                            "uncertain significance",
+    classification_order = ["pathogenic",
                             "likely pathogenic",
-                            "pathogenic",
-                            "drug response",
-                            "association",
                             "risk factor",
-                            "protective",
+                            "uncertain significance",
+                            "benign",
+                            "likely benign",
                             "affects",
+                            "association",
                             "conflicting data from submitters",
-                            "other",
+                            "drug response",
                             "not provided",
+                            "other",
+                            "protective",
                             "'-'"]
     return classification_order.index(classification)
 
@@ -257,9 +259,37 @@ def map_variants_to_table(variants_to_include):
         genotype = variant["samples"][0]["genotype"]
         zygosity = calculate_zygosity(genotype)
 
-        # sort the classifications
-        clinvar_classification = variant.get("variants", [{}])[0].get("clinvar", [{}])[0].get("significance", "")
-        sorted_classification = sorted(clinvar_classification, key=classification_sort)
+        # make list of classifications
+        clinvar_classifications = []
+        for clinvar_dict in variant.get("variants", [{}])[0].get("clinvar", [{}]):
+            clinvar_classifications.append(clinvar_dict.get("significance", "NA"))
+        # Convert the list of lists into a list of strings
+        classification_strings = [item[0] for item in clinvar_classifications]
+        # Remove duplicates from the list
+        unique_classifications = list(set(classification_strings))
+        # sort the unique list by the classification
+        sorted_classifications = sorted(unique_classifications, key=classification_sort)
+        # Flatten the list
+        classifications_list = ', '.join(sorted_classifications)
+
+        # make list of phenotypes
+        phenotypes = []
+        for clinvar_dict in variant.get("variants", [{}])[0].get("clinvar", [{}]):
+            phenotypes.append(clinvar_dict.get("phenotypes", "NA"))
+
+        print(f'this is phenotypes {phenotypes}')
+
+        # Convert the mixed list of lists and strings into a list of strings
+        phenotype_strings = [item[0] if isinstance(item, list) else item for item in phenotypes]
+        print(f'this is phenotype_strings {phenotype_strings}')
+        # drop NA and not provided
+        filtered_phenotypes = [item for item in phenotype_strings if item not in ['NA', 'not provided']]
+        # Remove duplicates from the list
+        unique_phenotypes = list(set(filtered_phenotypes))
+        print(f'this is unique_phenotypes {unique_phenotypes}')
+        # Flatten the list
+        phenotypes_list = ', '.join(unique_phenotypes)
+        print(f'phenotypes_list {phenotypes_list}')
 
         # map the variant data to a dictionary
         # nullable uses get() to avoid KeyError
@@ -270,19 +300,17 @@ def map_variants_to_table(variants_to_include):
             "Reference allele": variant["refAllele"],
             "Alternate Allele": ', '.join(map(str, variant["altAlleles"])),
             "dbSNP": ', '.join(map(
-                str, variant.get("variants", [{}])[0].get("dbsnp", ""))
+                str, variant.get("variants", [{}])[0].get("dbsnp", "NA"))
             ),
-            "HGVSG": variant.get("variants", [{}])[0].get("hgvsg", ""),
+            "HGVSG": variant.get("variants", [{}])[0].get("hgvsg", "NA"),
             "Zygosity": zygosity,
             "consequence": ', '.join(map(
-                str, variant.get("variants", [{}])[0].get("transcripts", [{}])[0].get("consequence", ""))
+                str, variant.get("variants", [{}])[0].get("transcripts", [{}])[0].get("consequence", "NA"))
             ),
-            "Protein change": variant.get("variants", [{}])[0].get("transcripts", [{}])[0].get("hgvsp", ""),
-            "gnomAD AF": variant.get("variants", [{}])[0].get("gnomad", {}).get("allAf", ""),
-            "ClinVar classification": ', '.join(map(str, sorted_classification)),
-            "ClinVar Phenotype": ', '.join(map(
-                str, variant.get("variants", [{}])[0].get("clinvar", [{}])[0].get("phenotypes", ""))
-            ),
+            "Protein change": variant.get("variants", [{}])[0].get("transcripts", [{}])[0].get("hgvsp", "NA"),
+            "gnomAD AF": variant.get("variants", [{}])[0].get("gnomad", {}).get("allAf", "NA"),
+            "ClinVar Classification": classifications_list,
+            "ClinVar Phenotype": phenotypes_list,
         }
         variants.append(data)
 
@@ -408,7 +436,7 @@ def report(args):
         pass
     else:
         with open("filtered_positions.json", 'w') as outfile:
-            json.dump(filtered_positions, outfile)
+            json.dump(filtered_positions, outfile, indent=4)
 
     variants_to_include = filter_variants_for_report(filtered_positions)
     mapped_variants = map_variants_to_table(variants_to_include)
