@@ -304,10 +304,10 @@ def map_variants_to_table(variants_to_include):
             "dbSNP": ', '.join(map(
                 str, variant.get("variants", [{}])[0].get("dbsnp", ["NA"]))
             ),
-            "HGVSG": variant.get("variants", [{}])[0].get("hgvsg", "NA"),
+            "HGVSC": variant.get("variants", [{}])[0].get("transcripts", [{}])[0].get("hgvsc", "NA"),
             "Zygosity": zygosity,
             "consequence": ', '.join(map(
-                str, variant.get("variants", [{}])[0].get("transcripts", [{}])[0].get("consequence", ["NA"]))
+                str, variant.get("variants", [{}])[0].get("transcripts", [{}])[0].get("consequence", "NA"))
             ),
             "Protein change": variant.get("variants", [{}])[0].get("transcripts", [{}])[0].get("hgvsp", "NA"),
             "gnomAD AF": variant.get("variants", [{}])[0].get("gnomad", {}).get("allAf", "NA"),
