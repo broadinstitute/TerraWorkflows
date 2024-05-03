@@ -4,7 +4,6 @@ workflow AnnotateVCFWorkflow {
     input {
         Array[File] input_vcf
         File bed_file
-        String output_annotated_file_name
         String cloud_provider
         File omim_annotations
         Int batch_size
@@ -43,7 +42,6 @@ workflow AnnotateVCFWorkflow {
                 input:
                     batch_tars = tar,
                     bed_file = bed_file,
-                    output_annotated_file_name = output_annotated_file_name,
                     batch_size = batch_size,
                     docker_path = gatk_docker_path
             }
@@ -54,16 +52,23 @@ workflow AnnotateVCFWorkflow {
         call AnnotateVCF as AnnotateVCF {
                 input:
                     input_filtered_vcf_tars = tar,
-                    output_annotated_file_name = output_annotated_file_name,
                     cloud_provider = cloud_provider,
                     omim_annotations = omim_annotations,
                     docker_path = docker_prefix + nirvana_docker_image
             }
         }
 
+    call VariantReport {
+        input:
+            positions_annotation_json = AnnotateVCF.positions_annotation_json,
+            docker_path = docker_prefix + variantreport_docker_image
+    }
+
     output {
         Array[File] positions_annotation_json = AnnotateVCF.positions_annotation_json
         Array[File] genes_annotation_json = AnnotateVCF.genes_annotation_json
+        Array[File] variant_report_pdf = VariantReport.pdf_report
+        Array[File] variant_table_tsv = VariantReport.tsv_file
     }
 }
 
@@ -123,13 +128,6 @@ task BatchVCFs {
         memory: mem_size + " MiB"
     }
 
-    call VariantReport {
-        input:
-            positions_annotation_json = AnnotateVCF.positions_annotation_json,
-            sample_id = sample_id,
-            docker_path = docker_prefix + variantreport_docker_image
-    }
-
     output {
         Array[File] batch_tars = glob("*.tar.gz")
     }
@@ -139,7 +137,6 @@ task FilterVCF {
     input {
         File batch_tars
         File bed_file
-        String output_annotated_file_name
         Int batch_size
 
         Int disk_size_gb = ceil(2*size(batch_tars, "GiB")) + 50
@@ -249,7 +246,6 @@ task FilterVCF {
 task AnnotateVCF {
     input {
         Array[File] input_filtered_vcf_tars
-        String output_annotated_file_name
         File omim_annotations
         String cloud_provider
         String docker_path
@@ -268,9 +264,14 @@ task AnnotateVCF {
         # Declare array of filtered vcf tars
         filtered_vcf_files=(~{sep=' ' input_filtered_vcf_tars})
 
-        # Untar the tarred filtered vcf inputs and remove the tar files
-        tar -xf $filtered_vcf_files --strip-components=1
-        rm $filtered_vcf_files
+        # Loop through the filtered_vcf_files and untar them
+        for file in "${filtered_vcf_files[@]}"; do
+        (
+            echo "extracting $file"
+            tar -xf $file --strip-components=1
+            rm $file
+        )
+        done
 
         # Choose where to create the Nirvana DATA_SOURCES_FOLDER based on cloud_provider
         if [[ "~{cloud_provider}" == "azure" ]]; then
@@ -322,6 +323,7 @@ task AnnotateVCF {
 
          # Define lists of vcf files
           vcf_files=($(ls | grep "filtered.vcf$"))
+          echo "vcf_files: ${vcf_files[@]}"
 
          # Run 2 instances of the task in parallel
          for file in "${vcf_files[@]}"; do
@@ -362,32 +364,45 @@ task AnnotateVCF {
 task VariantReport {
 
     input {
-        File positions_annotation_json
-        String sample_id
+        Array[File] positions_annotation_json
 
         String docker_path
-        Int mem_gb = 4
-        Int disk_gb = 15
+        Int memory_mb = 4000
+        Int disk_size_gb = 15
+        Int cpu = 1
     }
 
-    command {
+    command <<<
 
-        python3 /src/variants_report.py \
-        --positions_json ~{positions_annotation_json} \
-        --sample_identifier ~{sample_id}
+        set -euo pipefail
 
-    }
+        # Loop through the json files and unpack them
+        declare -a input_jsons=(~{sep=' ' positions_annotation_json})
+
+        for json in "${input_jsons[@]}"; do
+            tar -xzf $json
+        done
+
+        # Loop through the json.gz files and get the sample_id by using basename
+        for json in $(ls *.json.gz); do
+            sample_id=$(basename "$json" ".positions.json.gz")
+            echo "Creating the report for $sample_id"
+            python3 /src/variants_report.py \
+            --positions_json $json \
+            --sample_identifier $sample_id
+        done
+
+    >>>
 
     runtime {
         docker: docker_path
-        memory: '${mem_gb} GB'
-        disks: 'local-disk ${disk_gb} HDD'
-        disk: '${disk_gb} GB'
+        memory: "${memory_mb} MiB"
+        cpu: cpu
+        disks: 'local-disk ${disk_size_gb} HDD'
         maxRetries: 2
     }
-
     output {
-        File pdf_report = "~{sample_id}_mody_variants_report.pdf"
-        File tsv_file = "~{sample_id}_mody_variants_table.tsv"
+        Array[File] pdf_report = glob("*.pdf")
+        Array[File] tsv_file = glob("*.tsv")
     }
 }
