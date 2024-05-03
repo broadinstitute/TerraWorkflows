@@ -1,0 +1,1582 @@
+[
+{
+  "chromosome": "chr7",
+  "position": 44145136,
+  "refAllele": "A",
+  "altAlleles": [
+    "G"
+  ],
+  "fisherStrandBias": 0,
+  "cytogeneticBand": "7p13",
+  "samples": [
+    {
+      "genotype": "1/1",
+      "genotypeQuality": 99
+    }
+  ],
+  "variants": [
+    {
+      "vid": "7-44145136-A-G",
+      "chromosome": "chr7",
+      "begin": 44145136,
+      "end": 44145136,
+      "refAllele": "A",
+      "altAllele": "G",
+      "variantType": "SNV",
+      "hgvsg": "NC_000007.14:g.44145136A>G",
+      "phylopScore": 0.1,
+      "clinvar": [
+        {
+          "id": "VCV002578350.1",
+          "reviewStatus": "reviewed by expert panel",
+          "significance": [
+            "likely pathogenic"
+          ],
+          "refAllele": "T",
+          "altAllele": "C",
+          "lastUpdatedDate": "2023-09-16"
+        },
+        {
+          "id": "RCV003326076.2",
+          "variationId": "VCV002578350.1",
+          "reviewStatus": "reviewed by expert panel",
+          "alleleOrigins": [
+            "germline"
+          ],
+          "refAllele": "T",
+          "altAllele": "C",
+          "phenotypes": [
+            "Monogenic diabetes"
+          ],
+          "medGenIds": [
+            "C3888631"
+          ],
+          "significance": [
+            "likely pathogenic"
+          ],
+          "lastUpdatedDate": "2023-09-16"
+        }
+      ],
+      "clinvar-preview": [
+        {
+          "variantType": "SNV",
+          "accession": "VCV002578350",
+          "version": "1",
+          "recordType": "classified",
+          "dateLastUpdated": "2023-09-16",
+          "rcvs": [
+            {
+              "accession": "RCV003326076",
+              "version": "2",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "reviewed by expert panel",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2023-08-10",
+                      "classification": "Likely pathogenic"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Monogenic diabetes",
+                  "db": "MedGen",
+                  "id": "C3888631"
+                }
+              ]
+            }
+          ],
+          "classifications": {
+            "germlineClassification": {
+              "classification": "Likely pathogenic",
+              "reviewStatus": "reviewed by expert panel",
+              "dateLastEvaluated": "2023-08-10",
+              "mostRecentSubmission": "2023-09-09",
+              "conditions": [
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "37052",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0015967"
+                          },
+                          {
+                            "db": "Personalized Diabetes Medicine Program, University of Maryland School of Medicine",
+                            "id": "PDMP0008"
+                          }
+                        ],
+                        "value": "Monogenic diabetes"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "clinicalAssertions": [
+            {
+              "accession": "SCV004032077"
+            }
+          ],
+          "refAllele": "T",
+          "altAllele": "C"
+        }
+      ],
+      "dannScore": 0.74,
+      "gerpScore": 1.23,
+      "transcripts": [
+        {
+          "transcript": "ENST00000446581.5",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "proteinId": "ENSP00000416010.1"
+        },
+        {
+          "transcript": "NM_021223.2",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "geneId": "58498",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "isCanonical": true,
+          "proteinId": "NP_067046.1"
+        },
+        {
+          "transcript": "ENST00000223364.7",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "proteinId": "ENSP00000223364.3"
+        },
+        {
+          "transcript": "ENST00000458240.5",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "proteinId": "ENSP00000403360.1"
+        },
+        {
+          "transcript": "ENST00000434895.5",
+          "source": "Ensembl",
+          "bioType": "processed_transcript",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ]
+        },
+        {
+          "transcript": "ENST00000457314.5",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "isCanonical": true,
+          "proteinId": "ENSP00000389202.1"
+        },
+        {
+          "transcript": "ENST00000447951.1",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "proteinId": "ENSP00000403988.1"
+        },
+        {
+          "transcript": "ENST00000476118.1",
+          "source": "Ensembl",
+          "bioType": "retained_intron",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ]
+        },
+        {
+          "transcript": "ENST00000431289.1",
+          "source": "Ensembl",
+          "bioType": "nonsense_mediated_decay",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "proteinId": "ENSP00000399398.1"
+        },
+        {
+          "transcript": "ENST00000431007.1",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "proteinId": "ENSP00000411340.1"
+        },
+        {
+          "transcript": "ENST00000457910.1",
+          "source": "Ensembl",
+          "bioType": "nonsense_mediated_decay",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "proteinId": "ENSP00000404918.1"
+        },
+        {
+          "transcript": "ENST00000616242.4",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "tgA/tgC",
+          "aminoAcids": "*/C",
+          "cdnaPos": "1395",
+          "cdsPos": "1395",
+          "exons": "10/10",
+          "proteinPos": "465",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "stop_lost"
+          ],
+          "hgvsc": "ENST00000616242.4:c.1395A>C",
+          "hgvsp": "ENSP00000482149.1:p.(Ter465CysextTer144)",
+          "proteinId": "ENSP00000482149.1"
+        },
+        {
+          "transcript": "NM_033507.1",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "codons": "tgA/tgC",
+          "aminoAcids": "*/C",
+          "cdnaPos": "1569",
+          "cdsPos": "1401",
+          "exons": "10/10",
+          "proteinPos": "467",
+          "geneId": "2645",
+          "hgnc": "GCK",
+          "consequence": [
+            "stop_lost"
+          ],
+          "hgvsc": "NM_033507.1:c.1401A>C",
+          "hgvsp": "NP_277042.1:p.(Ter467CysextTer144)",
+          "isCanonical": true,
+          "proteinId": "NP_277042.1"
+        },
+        {
+          "transcript": "NM_033508.1",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "codons": "tgA/tgC",
+          "aminoAcids": "*/C",
+          "cdnaPos": "1693",
+          "cdsPos": "1395",
+          "exons": "11/11",
+          "proteinPos": "465",
+          "geneId": "2645",
+          "hgnc": "GCK",
+          "consequence": [
+            "stop_lost"
+          ],
+          "hgvsc": "NM_033508.1:c.1395A>C",
+          "hgvsp": "NP_277043.1:p.(Ter465CysextTer144)",
+          "proteinId": "NP_277043.1"
+        },
+        {
+          "transcript": "NM_000162.3",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "codons": "tgA/tgC",
+          "aminoAcids": "*/C",
+          "cdnaPos": "1868",
+          "cdsPos": "1398",
+          "exons": "10/10",
+          "proteinPos": "466",
+          "geneId": "2645",
+          "hgnc": "GCK",
+          "consequence": [
+            "stop_lost"
+          ],
+          "hgvsc": "NM_000162.3:c.1398A>C",
+          "hgvsp": "NP_000153.1:p.(Ter466CysextTer144)",
+          "proteinId": "NP_000153.1"
+        },
+        {
+          "transcript": "ENST00000459642.1",
+          "source": "Ensembl",
+          "bioType": "retained_intron",
+          "cdnaPos": "778",
+          "exons": "2/2",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "non_coding_transcript_exon_variant"
+          ],
+          "hgvsc": "ENST00000459642.1:n.778A>C"
+        },
+        {
+          "transcript": "ENST00000336642.8",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "tgA/tgC",
+          "aminoAcids": "*/C",
+          "cdnaPos": "450",
+          "cdsPos": "450",
+          "exons": "3/3",
+          "proteinPos": "150",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "stop_lost"
+          ],
+          "hgvsc": "ENST00000336642.8:c.450A>C",
+          "hgvsp": "ENSP00000338009.4:p.(Ter150CysextTer144)",
+          "proteinId": "ENSP00000338009.4"
+        },
+        {
+          "transcript": "ENST00000403799.7",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "tgA/tgC",
+          "aminoAcids": "*/C",
+          "cdnaPos": "1868",
+          "cdsPos": "1398",
+          "exons": "10/10",
+          "proteinPos": "466",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "stop_lost"
+          ],
+          "hgvsc": "ENST00000403799.7:c.1398A>C",
+          "hgvsp": "ENSP00000384247.3:p.(Ter466CysextTer144)",
+          "proteinId": "ENSP00000384247.3"
+        },
+        {
+          "transcript": "ENST00000395796.7",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "tgA/tgC",
+          "aminoAcids": "*/C",
+          "cdnaPos": "1680",
+          "cdsPos": "1395",
+          "exons": "11/11",
+          "proteinPos": "465",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "stop_lost"
+          ],
+          "hgvsc": "ENST00000395796.7:c.1395A>C",
+          "hgvsp": "ENSP00000379142.3:p.(Ter465CysextTer144)",
+          "proteinId": "ENSP00000379142.3"
+        },
+        {
+          "transcript": "ENST00000345378.6",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "tgA/tgC",
+          "aminoAcids": "*/C",
+          "cdnaPos": "1563",
+          "cdsPos": "1401",
+          "exons": "10/10",
+          "proteinPos": "467",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "stop_lost"
+          ],
+          "hgvsc": "ENST00000345378.6:c.1401A>C",
+          "hgvsp": "ENSP00000223366.2:p.(Ter467CysextTer144)",
+          "isCanonical": true,
+          "proteinId": "ENSP00000223366.2"
+        },
+        {
+          "transcript": "ENST00000437084.1",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "tgA/tgC",
+          "aminoAcids": "*/C",
+          "cdnaPos": "1381",
+          "cdsPos": "1347",
+          "exons": "10/10",
+          "proteinPos": "449",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "stop_lost"
+          ],
+          "hgvsc": "ENST00000437084.1:c.1347A>C",
+          "hgvsp": "ENSP00000402840.1:p.(Ter449CysextTer?)",
+          "proteinId": "ENSP00000402840.1"
+        },
+        {
+          "transcript": "ENST00000473353.1",
+          "source": "Ensembl",
+          "bioType": "processed_transcript",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "downstream_gene_variant"
+          ]
+        }
+      ]
+    }
+  ]
+},
+{
+  "chromosome": "chr7",
+  "position": 44145176,
+  "refAllele": "G",
+  "altAlleles": [
+    "A"
+  ],
+  "fisherStrandBias": 0,
+  "cytogeneticBand": "7p13",
+  "samples": [
+    {
+      "genotype": "1/1",
+      "genotypeQuality": 99
+    }
+  ],
+  "variants": [
+    {
+      "vid": "7-44145176-G-A",
+      "chromosome": "chr7",
+      "begin": 44145176,
+      "end": 44145176,
+      "refAllele": "G",
+      "altAllele": "A",
+      "variantType": "SNV",
+      "hgvsg": "NC_000007.14:g.44145176G>A",
+      "phylopScore": 1,
+      "clinvar": [
+        {
+          "id": "RCV002287343.1",
+          "variationId": "VCV000036190.4",
+          "reviewStatus": "criteria provided, single submitter",
+          "alleleOrigins": [
+            "unknown"
+          ],
+          "refAllele": "GAGACCAGGGCCGCGCCCCGGCCACTGCCCTCCTCCGACTCGATGAAGGTGATCTCGCAGCTGGGCGTCAGCCTGCGCAC",
+          "altAllele": "TGTAA",
+          "phenotypes": [
+            "Maturity onset diabetes mellitus in young"
+          ],
+          "medGenIds": [
+            "C0342276"
+          ],
+          "omimIds": [
+            "606391"
+          ],
+          "orphanetIds": [
+            "552"
+          ],
+          "significance": [
+            "uncertain significance"
+          ],
+          "lastUpdatedDate": "2023-12-17",
+          "pubMedIds": [
+            "27269892",
+            "29510678",
+            "30257192",
+            "31197960",
+            "32375122",
+            "33129248"
+          ]
+        },
+        {
+          "id": "RCV002285258.9",
+          "variationId": "VCV000036200.15",
+          "reviewStatus": "criteria provided, single submitter",
+          "alleleOrigins": [
+            "germline"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "phenotypes": [
+            "Maturity-onset diabetes of the young type 2"
+          ],
+          "medGenIds": [
+            "C0342277"
+          ],
+          "omimIds": [
+            "125851"
+          ],
+          "orphanetIds": [
+            "552"
+          ],
+          "significance": [
+            "likely pathogenic"
+          ],
+          "lastUpdatedDate": "2023-12-30",
+          "pubMedIds": [
+            "25741868",
+            "36257325"
+          ],
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "RCV000029853.2",
+          "variationId": "VCV000036190.4",
+          "reviewStatus": "criteria provided, single submitter",
+          "alleleOrigins": [
+            "germline"
+          ],
+          "refAllele": "GAGACCAGGGCCGCGCCCCGGCCACTGCCCTCCTCCGACTCGATGAAGGTGATCTCGCAGCTGGGCGTCAGCCTGCGCAC",
+          "altAllele": "TGTAA",
+          "phenotypes": [
+            "Maturity-onset diabetes of the young type 2"
+          ],
+          "medGenIds": [
+            "C0342277"
+          ],
+          "omimIds": [
+            "125851"
+          ],
+          "orphanetIds": [
+            "552"
+          ],
+          "significance": [
+            "likely pathogenic"
+          ],
+          "lastUpdatedDate": "2023-12-17"
+        },
+        {
+          "id": "RCV000763582.9",
+          "variationId": "VCV000036200.15",
+          "reviewStatus": "criteria provided, single submitter",
+          "alleleOrigins": [
+            "unknown"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "phenotypes": [
+            "Permanent neonatal diabetes mellitus",
+            "Type II diabetes mellitus",
+            "Hyperinsulinism due to glucokinase deficiency",
+            "Maturity-onset diabetes of the young type 2"
+          ],
+          "medGenIds": [
+            "C1833104",
+            "C0011860",
+            "C1865290",
+            "C0342277"
+          ],
+          "omimIds": [
+            "606176",
+            "125853",
+            "602485",
+            "125851"
+          ],
+          "orphanetIds": [
+            "552"
+          ],
+          "significance": [
+            "likely pathogenic"
+          ],
+          "lastUpdatedDate": "2023-12-30",
+          "pubMedIds": [
+            "25741868"
+          ],
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "RCV000517061.11",
+          "variationId": "VCV000036200.15",
+          "reviewStatus": "criteria provided, multiple submitters, no conflicts",
+          "alleleOrigins": [
+            "unknown",
+            "germline"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "phenotypes": [
+            "not provided"
+          ],
+          "medGenIds": [
+            "C3661900"
+          ],
+          "significance": [
+            "pathogenic",
+            "likely pathogenic"
+          ],
+          "lastUpdatedDate": "2023-12-30",
+          "pubMedIds": [
+            "14517956",
+            "16731834",
+            "18399931",
+            "26467025",
+            "28492532"
+          ],
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "RCV002271378.8",
+          "variationId": "VCV000036200.15",
+          "reviewStatus": "criteria provided, single submitter",
+          "alleleOrigins": [
+            "germline"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "phenotypes": [
+            "Monogenic diabetes"
+          ],
+          "medGenIds": [
+            "C3888631"
+          ],
+          "significance": [
+            "likely pathogenic"
+          ],
+          "lastUpdatedDate": "2023-12-30",
+          "pubMedIds": [
+            "14517956",
+            "16731834",
+            "18399931"
+          ],
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "VCV000036200.15",
+          "reviewStatus": "criteria provided, multiple submitters, no conflicts",
+          "significance": [
+            "pathogenic",
+            "likely pathogenic"
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "lastUpdatedDate": "2023-12-30",
+          "isAlleleSpecific": true
+        },
+        {
+          "id": "RCV003445083.1",
+          "variationId": "VCV000036190.4",
+          "reviewStatus": "reviewed by expert panel",
+          "alleleOrigins": [
+            "germline"
+          ],
+          "refAllele": "GAGACCAGGGCCGCGCCCCGGCCACTGCCCTCCTCCGACTCGATGAAGGTGATCTCGCAGCTGGGCGTCAGCCTGCGCAC",
+          "altAllele": "TGTAA",
+          "phenotypes": [
+            "Monogenic diabetes"
+          ],
+          "medGenIds": [
+            "C3888631"
+          ],
+          "significance": [
+            "uncertain significance"
+          ],
+          "lastUpdatedDate": "2023-12-17"
+        },
+        {
+          "id": "VCV000036190.4",
+          "reviewStatus": "reviewed by expert panel",
+          "significance": [
+            "uncertain significance"
+          ],
+          "refAllele": "GAGACCAGGGCCGCGCCCCGGCCACTGCCCTCCTCCGACTCGATGAAGGTGATCTCGCAGCTGGGCGTCAGCCTGCGCAC",
+          "altAllele": "TGTAA",
+          "lastUpdatedDate": "2023-12-17"
+        }
+      ],
+      "clinvar-preview": [
+        {
+          "variantType": "delins",
+          "accession": "VCV000036190",
+          "version": "4",
+          "recordType": "classified",
+          "dateLastUpdated": "2023-12-17",
+          "rcvs": [
+            {
+              "accession": "RCV000029853",
+              "version": "2",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, single submitter",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2011-08-18",
+                      "classification": "Likely pathogenic"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Maturity-onset diabetes of the young type 2",
+                  "db": "MedGen",
+                  "id": "C0342277"
+                }
+              ]
+            },
+            {
+              "accession": "RCV002287343",
+              "version": "1",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, single submitter",
+                  "descriptions": [
+                    {
+                      "classification": "Uncertain significance"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Maturity onset diabetes mellitus in young",
+                  "db": "MedGen",
+                  "id": "C0342276"
+                }
+              ]
+            },
+            {
+              "accession": "RCV003445083",
+              "version": "1",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "reviewed by expert panel",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2023-12-02",
+                      "classification": "Uncertain significance"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Monogenic diabetes",
+                  "db": "MedGen",
+                  "id": "C3888631"
+                }
+              ]
+            }
+          ],
+          "classifications": {
+            "germlineClassification": {
+              "classification": "Uncertain significance",
+              "reviewStatus": "reviewed by expert panel",
+              "dateLastEvaluated": "2023-12-02",
+              "mostRecentSubmission": "2023-12-09",
+              "conditions": [
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "37052",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0015967"
+                          },
+                          {
+                            "db": "Personalized Diabetes Medicine Program, University of Maryland School of Medicine",
+                            "id": "PDMP0008"
+                          }
+                        ],
+                        "value": "Monogenic diabetes"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Disease",
+                  "traits": [
+                    {
+                      "id": "5458",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0007453"
+                          }
+                        ],
+                        "value": "Maturity-onset diabetes of the young type 2"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Disease",
+                  "traits": [
+                    {
+                      "id": "5457",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "SNOMED CT",
+                            "id": "28453007"
+                          }
+                        ],
+                        "value": "Maturity onset diabetes mellitus in young"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "pubMedIds": [
+                "27269892",
+                "29510678",
+                "30257192",
+                "31197960",
+                "32375122",
+                "33129248"
+              ]
+            }
+          },
+          "clinicalAssertions": [
+            {
+              "accession": "SCV002577630"
+            },
+            {
+              "accession": "SCV004174241"
+            },
+            {
+              "accession": "SCV000052508"
+            }
+          ],
+          "refAllele": "GAGACCAGGGCCGCGCCCCGGCCACTGCCCTCCTCCGACTCGATGAAGGTGATCTCGCAGCTGGGCGTCAGCCTGCGCAC",
+          "altAllele": "TGTAA"
+        },
+        {
+          "variantType": "SNV",
+          "accession": "VCV000036200",
+          "version": "15",
+          "recordType": "classified",
+          "dateLastUpdated": "2024-01-26",
+          "rcvs": [
+            {
+              "accession": "RCV000517061",
+              "version": "11",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, multiple submitters, no conflicts",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2021-11-30",
+                      "classification": "Pathogenic/Likely pathogenic"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "not provided",
+                  "db": "MedGen",
+                  "id": "C3661900"
+                }
+              ]
+            },
+            {
+              "accession": "RCV002271378",
+              "version": "8",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, single submitter",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2022-06-09",
+                      "classification": "Likely pathogenic"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Monogenic diabetes",
+                  "db": "MedGen",
+                  "id": "C3888631"
+                }
+              ]
+            },
+            {
+              "accession": "RCV002285258",
+              "version": "9",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, single submitter",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2022-08-02",
+                      "classification": "Likely pathogenic"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Maturity-onset diabetes of the young type 2",
+                  "db": "MedGen",
+                  "id": "C0342277"
+                }
+              ]
+            },
+            {
+              "accession": "RCV000763582",
+              "version": "9",
+              "classifications": {
+                "germlineClassification": {
+                  "reviewStatus": "criteria provided, single submitter",
+                  "descriptions": [
+                    {
+                      "dateLastEvaluated": "2018-10-31",
+                      "classification": "Likely pathogenic"
+                    }
+                  ]
+                }
+              },
+              "classifiedConditions": [
+                {
+                  "condition": "Hyperinsulinism due to glucokinase deficiency",
+                  "db": "MedGen",
+                  "id": "C1865290"
+                },
+                {
+                  "condition": "Maturity-onset diabetes of the young type 2",
+                  "db": "MedGen",
+                  "id": "C0342277"
+                },
+                {
+                  "condition": "Permanent neonatal diabetes mellitus",
+                  "db": "MedGen",
+                  "id": "C1833104"
+                },
+                {
+                  "condition": "Type 2 diabetes mellitus",
+                  "db": "MedGen",
+                  "id": "C0011860"
+                }
+              ]
+            }
+          ],
+          "classifications": {
+            "germlineClassification": {
+              "classification": "Pathogenic/Likely pathogenic",
+              "reviewStatus": "criteria provided, multiple submitters, no conflicts",
+              "dateLastEvaluated": "2022-08-02",
+              "mostRecentSubmission": "2023-02-07",
+              "conditions": [
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "37052",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0015967"
+                          },
+                          {
+                            "db": "Personalized Diabetes Medicine Program, University of Maryland School of Medicine",
+                            "id": "PDMP0008"
+                          }
+                        ],
+                        "value": "Monogenic diabetes"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "1095",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "Genetic Alliance",
+                            "id": "Permanent+neonatal+diabetes+mellitus/5681"
+                          },
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0011643"
+                          },
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0100164"
+                          }
+                        ],
+                        "value": "Permanent neonatal diabetes mellitus"
+                      }
+                    },
+                    {
+                      "id": "4949",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "Genetic Alliance",
+                            "id": "Diabetes+mellitus+type+2/8215"
+                          },
+                          {
+                            "db": "Human Phenotype Ontology",
+                            "id": "HP:0005978"
+                          },
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0005148"
+                          },
+                          {
+                            "db": "SNOMED CT",
+                            "id": "44054006"
+                          }
+                        ],
+                        "value": "Type 2 diabetes mellitus"
+                      }
+                    },
+                    {
+                      "id": "5280",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0011236"
+                          }
+                        ],
+                        "value": "Hyperinsulinism due to glucokinase deficiency"
+                      }
+                    },
+                    {
+                      "id": "5458",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0007453"
+                          }
+                        ],
+                        "value": "Maturity-onset diabetes of the young type 2"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "17556",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "Department Of Translational Genomics (developmental Genetics Section), King Faisal Specialist Hospital & Research Centre",
+                            "id": "13DG0619"
+                          }
+                        ],
+                        "value": "not provided"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Disease",
+                  "contributesToAggregateClassification": true,
+                  "traits": [
+                    {
+                      "id": "5458",
+                      "name": {
+                        "xRefs": [
+                          {
+                            "db": "MONDO",
+                            "id": "MONDO:0007453"
+                          }
+                        ],
+                        "value": "Maturity-onset diabetes of the young type 2"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "pubMedIds": [
+                "14517956",
+                "16731834",
+                "18399931",
+                "36257325"
+              ]
+            }
+          },
+          "clinicalAssertions": [
+            {
+              "accession": "SCV000894421",
+              "pubMedIds": [
+                "25741868"
+              ]
+            },
+            {
+              "accession": "SCV000613413",
+              "pubMedIds": [
+                "26467025"
+              ]
+            },
+            {
+              "accession": "SCV000052518"
+            },
+            {
+              "accession": "SCV002562160",
+              "pubMedIds": [
+                "25741868"
+              ]
+            },
+            {
+              "accession": "SCV002161526",
+              "pubMedIds": [
+                "28492532"
+              ]
+            }
+          ],
+          "refAllele": "G",
+          "altAllele": "A",
+          "isAlleleSpecific": true
+        }
+      ],
+      "dbsnp": [
+        "rs193922283"
+      ],
+      "gnomad-exome": {
+        "coverage": 0,
+        "allAf": 1E-06,
+        "allAn": 1458166,
+        "allAc": 2,
+        "allHc": 0,
+        "afrAf": 0,
+        "afrAn": 33444,
+        "afrAc": 0,
+        "afrHc": 0,
+        "amrAf": 0,
+        "amrAn": 44574,
+        "amrAc": 0,
+        "amrHc": 0,
+        "easAf": 0,
+        "easAn": 39614,
+        "easAc": 0,
+        "easHc": 0,
+        "finAf": 0,
+        "finAn": 51210,
+        "finAc": 0,
+        "finHc": 0,
+        "nfeAf": 2E-06,
+        "nfeAn": 1111320,
+        "nfeAc": 2,
+        "nfeHc": 0,
+        "asjAf": 0,
+        "asjAn": 26072,
+        "asjAc": 0,
+        "asjHc": 0,
+        "sasAf": 0,
+        "sasAn": 85902,
+        "sasAc": 0,
+        "sasHc": 0,
+        "midAf": 0,
+        "midAn": 5762,
+        "midAc": 0,
+        "midHc": 0,
+        "remainingAf": 0,
+        "remainingAn": 60268,
+        "remainingAc": 0,
+        "remainingHc": 0,
+        "maleAf": 1E-06,
+        "maleAn": 725344,
+        "maleAc": 1,
+        "maleHc": 0,
+        "femaleAf": 1E-06,
+        "femaleAn": 732822,
+        "femaleAc": 1,
+        "femaleHc": 0
+      },
+      "revel": {
+        "score": 0.821
+      },
+      "dannScore": 1,
+      "transcripts": [
+        {
+          "transcript": "ENST00000446581.5",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "proteinId": "ENSP00000416010.1"
+        },
+        {
+          "transcript": "NM_021223.2",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "geneId": "58498",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "isCanonical": true,
+          "proteinId": "NP_067046.1"
+        },
+        {
+          "transcript": "ENST00000223364.7",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "proteinId": "ENSP00000223364.3"
+        },
+        {
+          "transcript": "ENST00000458240.5",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "proteinId": "ENSP00000403360.1"
+        },
+        {
+          "transcript": "ENST00000434895.5",
+          "source": "Ensembl",
+          "bioType": "processed_transcript",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ]
+        },
+        {
+          "transcript": "ENST00000457314.5",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "isCanonical": true,
+          "proteinId": "ENSP00000389202.1"
+        },
+        {
+          "transcript": "ENST00000447951.1",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "proteinId": "ENSP00000403988.1"
+        },
+        {
+          "transcript": "ENST00000476118.1",
+          "source": "Ensembl",
+          "bioType": "retained_intron",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ]
+        },
+        {
+          "transcript": "ENST00000431289.1",
+          "source": "Ensembl",
+          "bioType": "nonsense_mediated_decay",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "proteinId": "ENSP00000399398.1"
+        },
+        {
+          "transcript": "ENST00000431007.1",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "proteinId": "ENSP00000411340.1"
+        },
+        {
+          "transcript": "ENST00000457910.1",
+          "source": "Ensembl",
+          "bioType": "nonsense_mediated_decay",
+          "geneId": "ENSG00000106631",
+          "hgnc": "MYL7",
+          "consequence": [
+            "upstream_gene_variant"
+          ],
+          "proteinId": "ENSP00000404918.1"
+        },
+        {
+          "transcript": "ENST00000616242.4",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "tCg/tTg",
+          "aminoAcids": "S/L",
+          "cdnaPos": "1355",
+          "cdsPos": "1355",
+          "exons": "10/10",
+          "proteinPos": "452",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "ENST00000616242.4:c.1355C>T",
+          "hgvsp": "ENSP00000482149.1:p.(Ser452Leu)",
+          "polyPhenScore": 0.85,
+          "polyPhenPrediction": "possibly damaging",
+          "proteinId": "ENSP00000482149.1",
+          "siftScore": 0,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "NM_033507.1",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "codons": "tCg/tTg",
+          "aminoAcids": "S/L",
+          "cdnaPos": "1529",
+          "cdsPos": "1361",
+          "exons": "10/10",
+          "proteinPos": "454",
+          "geneId": "2645",
+          "hgnc": "GCK",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "NM_033507.1:c.1361C>T",
+          "hgvsp": "NP_277042.1:p.(Ser454Leu)",
+          "isCanonical": true,
+          "polyPhenScore": 0.735,
+          "polyPhenPrediction": "possibly damaging",
+          "proteinId": "NP_277042.1",
+          "siftScore": 0.01,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "NM_033508.1",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "codons": "tCg/tTg",
+          "aminoAcids": "S/L",
+          "cdnaPos": "1653",
+          "cdsPos": "1355",
+          "exons": "11/11",
+          "proteinPos": "452",
+          "geneId": "2645",
+          "hgnc": "GCK",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "NM_033508.1:c.1355C>T",
+          "hgvsp": "NP_277043.1:p.(Ser452Leu)",
+          "polyPhenScore": 0.85,
+          "polyPhenPrediction": "possibly damaging",
+          "proteinId": "NP_277043.1",
+          "siftScore": 0,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "NM_000162.3",
+          "source": "RefSeq",
+          "bioType": "protein_coding",
+          "codons": "tCg/tTg",
+          "aminoAcids": "S/L",
+          "cdnaPos": "1828",
+          "cdsPos": "1358",
+          "exons": "10/10",
+          "proteinPos": "453",
+          "geneId": "2645",
+          "hgnc": "GCK",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "NM_000162.3:c.1358C>T",
+          "hgvsp": "NP_000153.1:p.(Ser453Leu)",
+          "polyPhenScore": 0.99,
+          "polyPhenPrediction": "probably damaging",
+          "proteinId": "NP_000153.1",
+          "siftScore": 0,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "ENST00000459642.1",
+          "source": "Ensembl",
+          "bioType": "retained_intron",
+          "cdnaPos": "738",
+          "exons": "2/2",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "non_coding_transcript_exon_variant"
+          ],
+          "hgvsc": "ENST00000459642.1:n.738C>T"
+        },
+        {
+          "transcript": "ENST00000336642.8",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "tCg/tTg",
+          "aminoAcids": "S/L",
+          "cdnaPos": "410",
+          "cdsPos": "410",
+          "exons": "3/3",
+          "proteinPos": "137",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "ENST00000336642.8:c.410C>T",
+          "hgvsp": "ENSP00000338009.4:p.(Ser137Leu)",
+          "polyPhenScore": 0.96,
+          "polyPhenPrediction": "probably damaging",
+          "proteinId": "ENSP00000338009.4",
+          "siftScore": 0.01,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "ENST00000403799.7",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "tCg/tTg",
+          "aminoAcids": "S/L",
+          "cdnaPos": "1828",
+          "cdsPos": "1358",
+          "exons": "10/10",
+          "proteinPos": "453",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "ENST00000403799.7:c.1358C>T",
+          "hgvsp": "ENSP00000384247.3:p.(Ser453Leu)",
+          "polyPhenScore": 0.99,
+          "polyPhenPrediction": "probably damaging",
+          "proteinId": "ENSP00000384247.3",
+          "siftScore": 0,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "ENST00000395796.7",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "tCg/tTg",
+          "aminoAcids": "S/L",
+          "cdnaPos": "1640",
+          "cdsPos": "1355",
+          "exons": "11/11",
+          "proteinPos": "452",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "ENST00000395796.7:c.1355C>T",
+          "hgvsp": "ENSP00000379142.3:p.(Ser452Leu)",
+          "polyPhenScore": 0.85,
+          "polyPhenPrediction": "possibly damaging",
+          "proteinId": "ENSP00000379142.3",
+          "siftScore": 0,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "ENST00000345378.6",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "tCg/tTg",
+          "aminoAcids": "S/L",
+          "cdnaPos": "1523",
+          "cdsPos": "1361",
+          "exons": "10/10",
+          "proteinPos": "454",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "ENST00000345378.6:c.1361C>T",
+          "hgvsp": "ENSP00000223366.2:p.(Ser454Leu)",
+          "isCanonical": true,
+          "polyPhenScore": 0.735,
+          "polyPhenPrediction": "possibly damaging",
+          "proteinId": "ENSP00000223366.2",
+          "siftScore": 0.01,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "ENST00000437084.1",
+          "source": "Ensembl",
+          "bioType": "protein_coding",
+          "codons": "tCg/tTg",
+          "aminoAcids": "S/L",
+          "cdnaPos": "1341",
+          "cdsPos": "1307",
+          "exons": "10/10",
+          "proteinPos": "436",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "missense_variant"
+          ],
+          "hgvsc": "ENST00000437084.1:c.1307C>T",
+          "hgvsp": "ENSP00000402840.1:p.(Ser436Leu)",
+          "polyPhenScore": 0.83,
+          "polyPhenPrediction": "possibly damaging",
+          "proteinId": "ENSP00000402840.1",
+          "siftScore": 0,
+          "siftPrediction": "deleterious"
+        },
+        {
+          "transcript": "ENST00000473353.1",
+          "source": "Ensembl",
+          "bioType": "processed_transcript",
+          "geneId": "ENSG00000106633",
+          "hgnc": "GCK",
+          "consequence": [
+            "downstream_gene_variant"
+          ]
+        }
+      ]
+    }
+  ]
+}]
