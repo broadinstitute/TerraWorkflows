@@ -48,6 +48,7 @@ def filter_transcripts(positions):
         progress_bar.update(1)
 
     # select transcripts in MANE
+    # if none are in MANE, continue with transcripts
     MANE = get_MANE()
     for position in positions:
         if variants_field in position:
@@ -57,7 +58,8 @@ def filter_transcripts(positions):
                     for transcript_dict in variant_dict[transcripts_field]:
                         if isMANE(transcript_dict['transcript'], MANE):
                             transcripts_to_keep.append(transcript_dict)
-                    variant_dict[transcripts_field] = transcripts_to_keep
+                    variant_dict[transcripts_field] = transcripts_to_keep if len(transcripts_to_keep) > 1 \
+                        else variant_dict[transcripts_field]
         progress_bar.set_description('Selecting transcripts in MANE...')
         progress_bar.update(1)
 
@@ -300,12 +302,12 @@ def map_variants_to_table(variants_to_include):
             "Reference allele": variant["refAllele"],
             "Alternate Allele": ', '.join(map(str, variant["altAlleles"])),
             "dbSNP": ', '.join(map(
-                str, variant.get("variants", [{}])[0].get("dbsnp", "NA"))
+                str, variant.get("variants", [{}])[0].get("dbsnp", ["NA"]))
             ),
             "HGVSG": variant.get("variants", [{}])[0].get("hgvsg", "NA"),
             "Zygosity": zygosity,
             "consequence": ', '.join(map(
-                str, variant.get("variants", [{}])[0].get("transcripts", [{}])[0].get("consequence", "NA"))
+                str, variant.get("variants", [{}])[0].get("transcripts", [{}])[0].get("consequence", ["NA"]))
             ),
             "Protein change": variant.get("variants", [{}])[0].get("transcripts", [{}])[0].get("hgvsp", "NA"),
             "gnomAD AF": variant.get("variants", [{}])[0].get("gnomad", {}).get("allAf", "NA"),
