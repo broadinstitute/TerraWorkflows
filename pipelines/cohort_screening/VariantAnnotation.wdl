@@ -5,7 +5,6 @@ workflow AnnotateVCFWorkflow {
         Array[File] input_vcf
         File bed_file
         String cloud_provider
-        File omim_annotations
         Int batch_size
     }
 
@@ -53,7 +52,6 @@ workflow AnnotateVCFWorkflow {
                 input:
                     input_filtered_vcf_tars = tar,
                     cloud_provider = cloud_provider,
-                    omim_annotations = omim_annotations,
                     docker_path = docker_prefix + nirvana_docker_image
             }
         }
@@ -246,7 +244,6 @@ task FilterVCF {
 task AnnotateVCF {
     input {
         Array[File] input_filtered_vcf_tars
-        File omim_annotations
         String cloud_provider
         String docker_path
     }
@@ -288,10 +285,6 @@ task AnnotateVCF {
         # Download the references
         dotnet /Nirvana/Downloader.dll --ga GRCh38 --out ${DATA_SOURCES_FOLDER}
 
-        # As of 2024-01-24 OMIM is no longer included among the bundle of annotation resources pulled down by the
-        # Nirvana downloader. As this annotation set is currently central for our VAT logic, special-case link in
-        # the OMIM .nsa bundle we downloaded back when we made the Delta reference disk:
-        ln ~{omim_annotations} ${DATA_SOURCES_FOLDER}/SupplementaryAnnotation/GRCh38/
 
         # Bash function to perform the annotation task on a single VCF file
         task() {
