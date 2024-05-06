@@ -1,5 +1,4 @@
 {
-	"AnnotateVCFWorkflow.omim_annotations": "https://lz20d84cb3d4280379121bab.blob.core.windows.net/sc-2ca09ef1-d359-4dae-a562-af401a258a1c/OMIM_20220516.nga",
 	"AnnotateVCFWorkflow.input_vcf": [
 		"https://lz20d84cb3d4280379121bab.blob.core.windows.net/sc-2ca09ef1-d359-4dae-a562-af401a258a1c/lees_4_vcfs/diabetes_common_variant.vcf",
 		"https://lz20d84cb3d4280379121bab.blob.core.windows.net/sc-2ca09ef1-d359-4dae-a562-af401a258a1c/lees_4_vcfs/diabetes_pathogenic_variant.vcf",
