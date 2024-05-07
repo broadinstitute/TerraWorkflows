@@ -4,6 +4,7 @@ import "Cyrius_localize.wdl" as CyriusWorkflow
 import "Stargazer_fromGVCF.wdl" as StargazerWorkflow
 import "MakePGxReport.wdl" as MakePGxReport
 
+#Call pharmacogenomics star alleles and output diplotype and phenotype report
 workflow Pharmacogenomics {
     input {
         File input_cram

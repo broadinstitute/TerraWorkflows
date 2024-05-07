@@ -2,6 +2,7 @@ version 1.0
 
 import "regenie_bgen-1.2.wdl" as RegenieSingleWorkflow
 
+#Genome-wide association study with Regenie
 workflow regenie_multiple_contigs {
   input {
     File per_contig_sample_files
