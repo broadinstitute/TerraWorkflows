@@ -2,7 +2,7 @@ version 1.0
 
 workflow AnnotateVCFWorkflow {
     input {
-        Array[File] input_vcf
+        Array[File] input_vcfs
         File bed_file
         String cloud_provider
         Int batch_size
@@ -31,7 +31,7 @@ workflow AnnotateVCFWorkflow {
 
     call BatchVCFs as batch_vcfs {
         input:
-            input_vcfs = input_vcf,
+            input_vcfs = input_vcfs,
             batch_size = batch_size,
             docker_path = ubuntu_docker_path
     }
