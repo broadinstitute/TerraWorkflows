@@ -66,7 +66,7 @@ def filter_transcripts(positions):
     # select transcript with highest impact
     # impact table was manually created from
     # https://grch37.ensembl.org/info/genome/variation/prediction/predicted_data.html
-    impact_table = pd.read_csv('/src/mpact_table_with_score.csv', index_col=False)
+    impact_table = pd.read_csv('/src/impact_table_with_score.csv', index_col=False)
     for position in positions:
         if variants_field in position:
             for variant_dict in position[variants_field]:
