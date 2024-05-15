@@ -308,13 +308,13 @@ task AnnotateVCF {
               dotnet  ~{jasix_location} \
                   --in ${sample_id}.json.gz \
                   --section genes \
-                  --out ~{output_prefix}.${sample_id}.genes.json.gz
+                  --out ~{output_prefix}_${sample_id}.genes.json.gz
 
           # Parse out the Positions section into a separate annotated json
           dotnet  ~{jasix_location} \
               --in ${sample_id}.json.gz \
               --section positions \
-              --out ~{output_prefix}.${sample_id}.positions.json.gz
+              --out ~{output_prefix}_${sample_id}.positions.json.gz
         }
 
          # Define lists of vcf files
