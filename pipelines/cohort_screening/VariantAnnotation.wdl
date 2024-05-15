@@ -1,6 +1,6 @@
 version 1.0
 
-workflow AnnotateVCFWorkflow {
+workflow GenomicsScreening {
     input {
         Array[File] input_vcfs
         String output_prefix
