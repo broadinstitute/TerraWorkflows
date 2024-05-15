@@ -6,6 +6,7 @@ workflow GenomicsScreening {
         File bed_file
         String cloud_provider
         Int batch_size
+        String output_prefix
     }
 
     # Determine docker prefix based on cloud provider
@@ -52,7 +53,8 @@ workflow GenomicsScreening {
                 input:
                     input_filtered_vcf_tars = tar,
                     cloud_provider = cloud_provider,
-                    docker_path = docker_prefix + nirvana_docker_image
+                    docker_path = docker_prefix + nirvana_docker_image,
+                    output_prefix = output_prefix
             }
         }
 
@@ -246,6 +248,7 @@ task AnnotateVCF {
         Array[File] input_filtered_vcf_tars
         String cloud_provider
         String docker_path
+        String output_prefix
     }
 
     String nirvana_location = "/Nirvana/Nirvana.dll"
@@ -305,13 +308,13 @@ task AnnotateVCF {
               dotnet  ~{jasix_location} \
                   --in ${sample_id}.json.gz \
                   --section genes \
-                  --out ${sample_id}.genes.json.gz
+                  --out ~{output_prefix}.${sample_id}.genes.json.gz
 
           # Parse out the Positions section into a separate annotated json
           dotnet  ~{jasix_location} \
               --in ${sample_id}.json.gz \
               --section positions \
-              --out ${sample_id}.positions.json.gz
+              --out ~{output_prefix}.${sample_id}.positions.json.gz
         }
 
          # Define lists of vcf files
@@ -335,8 +338,8 @@ task AnnotateVCF {
          echo "Tasks all done."
 
         # Tar up the genes.json and positions.json files
-        tar -czf genes_annotation_json.tar.gz *.genes.json.gz
-        tar -czf positions_annotation_json.tar.gz *.positions.json.gz
+        tar -czf ~{output_prefix}.genes_annotation_json.tar.gz *.genes.json.gz
+        tar -czf ~{output_prefix}.positions_annotation_json.tar.gz *.positions.json.gz
     >>>
 
     runtime {
@@ -349,8 +352,8 @@ task AnnotateVCF {
     }
 
     output {
-        File genes_annotation_json = "genes_annotation_json.tar.gz"
-        File positions_annotation_json = "positions_annotation_json.tar.gz"
+        File genes_annotation_json = "~{output_prefix}.genes_annotation_json.tar.gz"
+        File positions_annotation_json = "~{output_prefix}.positions_annotation_json.tar.gz"
     }
 }
 
