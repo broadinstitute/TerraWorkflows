@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 # static file because we are using this for filtering and do not want it to change.
 def get_MANE():
-    df = read_gtf('/src/MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz')
+    df = read_gtf('MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz')
     df = df['transcript_id'].to_pandas()  # polar dataframe to pandas dataframe
     df = pd.DataFrame(df)
     df[['transcript', 'version']] = df['transcript_id'].str.split('.', expand=True)
@@ -66,7 +66,7 @@ def filter_transcripts(positions):
     # select transcript with highest impact
     # impact table was manually created from
     # https://grch37.ensembl.org/info/genome/variation/prediction/predicted_data.html
-    impact_table = pd.read_csv('/src/impact_table_with_score.csv', index_col=False)
+    impact_table = pd.read_csv('impact_table_with_score.csv', index_col=False)
     for position in positions:
         if variants_field in position:
             for variant_dict in position[variants_field]:
@@ -324,6 +324,8 @@ def map_variants_to_table(variants_to_include):
 # formats the report
 def format_report(mapped_variants):
     sample_identifier = args.sample_identifier
+    output_prefix = args.output_prefix
+    bed_file = args.bed_file
 
     if mapped_variants.empty:
         logging.info('no variants to report, creating empty report')
@@ -353,7 +355,7 @@ def format_report(mapped_variants):
         # Convert the DataFrame to an HTML table
         df_var_html = df_var.style.hide().set_table_styles(style).to_html()
 
-    # MOBY (Maturity-Onset Diabetes of the Young) genes
+    # MODY (Maturity-Onset Diabetes of the Young) genes
     # obtained from Naylor 2018, https://www.ncbi.nlm.nih.gov/books/NBK500456/#mody-ov.Genetic_Causes_of_MODY
     # FAQ:
     # Why are HNF1A and KLF11 missing from the MODY list?
@@ -364,6 +366,20 @@ def format_report(mapped_variants):
     # In order to call variants in these genes effectively,
     # we would need to implement and run another annotation pipeline, which is out of scope for this project.
     mody_genes = ["ABCC8", "APPL1", "BLK", "CEL", "GCK", "HNF1B", "HNF4A", "INS", "KCNJ11", "NEUROD1", "PAX4", "PDX1"]
+
+    genes = []
+    # list of genes is 4th column of bed file
+    with open(bed_file)as f:
+        for line in f:
+            genes.append(line.strip().split()[3])
+    genes.sort()
+
+    if genes == mody_genes:
+        gene_list = mody_genes
+        mody = True
+    else:
+        gene_list = genes
+        mody = False
 
     # Generate HTML report
     html_content = f"""
@@ -386,28 +402,37 @@ def format_report(mapped_variants):
             <p>{identified_variants_message}</p>
             {df_var_html}
         """
-    html_content += """
-            <h3 style="font-size: 16px;">We have examined the following genes, which have been implicated in 
-            Maturity-Onset Diabetes of the Young (MODY):</h3>
-            <ul>
-        """
 
-    for gene in mody_genes:
+    if mody:
+        html_content += """
+                <h3 style="font-size: 16px;">We have examined the following genes, which have been implicated in 
+                Maturity-Onset Diabetes of the Young (MODY):</h3>
+                <ul>
+            """
+    else:
+        html_content += """
+                <h3 style="font-size: 16px;">We have examined the following genes, which have been implicated in 
+                the phenotype:</h3>
+                <ul>
+            """
+
+    for gene in gene_list:
         html_content += f"<li>{gene}</li>"
 
-    html_content += """
-            </ul>
-            <p style="font-size: 14px;">The analysis to identify these variants has limitations, 
-            which include potentially missing pathogenic variants, 
-            missing variants that are not yet associated with MODY, and missing variants that are associated 
-            with MODY as part of a polygenic effect.  This analysis did not use any familial genomic information 
-            to confirm variants.</p>
-            <p style="font-size: 14px;">Please note that we do not include HNF1A and KLF11, two MODY genes, 
-            in this report, due to difficulties calling these genes on the hg38 reference 
-            (<a href="http://dx.doi.org/10.1038/s41587-021-01158-1">10.1038/s41587-021-01158-1</a>).</p>
-        </body>
-        </html>
-        """
+    if mody:
+        html_content += """
+                </ul>
+                <p style="font-size: 14px;">The analysis to identify these variants has limitations, 
+                which include potentially missing pathogenic variants, 
+                missing variants that are not yet associated with MODY, and missing variants that are associated 
+                with MODY as part of a polygenic effect.  This analysis did not use any familial genomic information 
+                to confirm variants.</p>
+                <p style="font-size: 14px;">Please note that we do not include HNF1A and KLF11, two MODY genes, 
+                in this report, due to difficulties calling these genes on the hg38 reference 
+                (<a href="http://dx.doi.org/10.1038/s41587-021-01158-1">10.1038/s41587-021-01158-1</a>).</p>
+            </body>
+            </html>
+            """
 
     # write out the HTML content to a file
     with open('report.html', 'w') as html_file:
@@ -415,12 +440,12 @@ def format_report(mapped_variants):
     logging.info("HTML report generated successfully!")
 
     # convert the HTML report to a PDF file
-    pdf_report_name = sample_identifier + '_mody_variants_report.pdf'
+    pdf_report_name = f'{sample_identifier}_{"mody" if mody else output_prefix}_variants_report.pdf'
     pdfkit.from_file('report.html', pdf_report_name)
     logging.info("PDF report generated successfully!")
 
     # Export variants dataframe as tsv
-    table_name = sample_identifier + '_mody_variants_table.tsv'
+    table_name = f'{sample_identifier}_{"mody" if mody else output_prefix}_variants_table.tsv'
     df_var.to_csv(table_name, sep='\t', index=False)
     logging.info("variants.tsv exported successfully!")
 
@@ -449,6 +474,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parse NIRVANA JSON file and create a Variant Report.')
     parser.add_argument('--positions_json', type=str, help='path to nirvana positions json', required=True)
     parser.add_argument('--sample_identifier', type=str, help='sample id', required=True)
+    parser.add_argument('--bed_file', type=str, help='path to bed file', required=True)
+    parser.add_argument('--output_prefix', type=str, help='genes', required=True)
     parser.add_argument('--output_json', type=bool, default=False,
                         help='Specify to output the initial filtered json', required=False)
 
