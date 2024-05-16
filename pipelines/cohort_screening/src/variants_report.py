@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 # static file because we are using this for filtering and do not want it to change.
 def get_MANE():
-    df = read_gtf('MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz')
+    df = read_gtf('/src/MANE.GRCh38.v1.3.ensembl_genomic.gtf.gz')
     df = df['transcript_id'].to_pandas()  # polar dataframe to pandas dataframe
     df = pd.DataFrame(df)
     df[['transcript', 'version']] = df['transcript_id'].str.split('.', expand=True)
@@ -66,7 +66,7 @@ def filter_transcripts(positions):
     # select transcript with highest impact
     # impact table was manually created from
     # https://grch37.ensembl.org/info/genome/variation/prediction/predicted_data.html
-    impact_table = pd.read_csv('impact_table_with_score.csv', index_col=False)
+    impact_table = pd.read_csv('/src/impact_table_with_score.csv', index_col=False)
     for position in positions:
         if variants_field in position:
             for variant_dict in position[variants_field]:
