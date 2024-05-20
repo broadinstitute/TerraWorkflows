@@ -1,0 +1,11 @@
+{
+  "HLAAnalysis.normalBam": "data/test.bam",
+  "HLAAnalysis.normalBamIndex": "data/test.bam.bai",
+  "HLAAnalysis.tumorBam": "data/test.tumor.bam",
+  "HLAAnalysis.tumorBamIndex": "data/test.tumor.bam.bai",
+  "HLAAnalysis.race": "Unknown",
+  "HLAAnalysis.build": "hg19",
+  "HLAAnalysis.format": "STDFQ",
+  "HLAAnalysis.indiv": "patient1",
+  "HLAAnalysis.container": "sachet/polysolver:v4"
+}
