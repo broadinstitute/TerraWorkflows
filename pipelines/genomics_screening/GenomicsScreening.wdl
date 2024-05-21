@@ -27,7 +27,7 @@ workflow GenomicsScreening {
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
-    String variantreport_docker_image = "variantreport:latest"
+    String variantreport_docker_image = "genomics_variant_report:3e82aa4"
 
 
     call BatchVCFs as batch_vcfs {
@@ -61,7 +61,9 @@ workflow GenomicsScreening {
     call VariantReport {
         input:
             positions_annotation_json = AnnotateVCF.positions_annotation_json,
-            docker_path = docker_prefix + variantreport_docker_image
+            docker_path = docker_prefix + variantreport_docker_image,
+            bed_file = bed_file,
+            output_prefix = output_prefix
     }
 
     output {
@@ -361,6 +363,8 @@ task VariantReport {
 
     input {
         Array[File] positions_annotation_json
+        File bed_file
+        String output_prefix
 
         String docker_path
         Int memory_mb = 4000
@@ -385,7 +389,9 @@ task VariantReport {
             echo "Creating the report for $sample_id"
             python3 /src/variants_report.py \
             --positions_json $json \
-            --sample_identifier $sample_id
+            --sample_identifier $sample_id \
+            --bed_file ~{bed_file} \
+            --output_prefix ~{output_prefix}
         done
 
     >>>
