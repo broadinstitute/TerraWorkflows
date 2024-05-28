@@ -9,6 +9,8 @@ workflow GenomicsScreening {
         String output_prefix
     }
 
+    String pipeline_version = "1.0"
+
     # Determine docker prefix based on cloud provider
     String gcr_docker_prefix = "us.gcr.io/broad-gotc-prod/"
     String acr_docker_prefix = "terraworkflows.azurecr.io/"
@@ -64,11 +66,20 @@ workflow GenomicsScreening {
             docker_path = docker_prefix + variantreport_docker_image
     }
 
+    call PipelineMetadata {
+        input:
+            pipeline_version = pipeline_version,
+            output_prefix = output_prefix,
+            input_vcfs = input_vcfs
+    }
+
     output {
         Array[File] positions_annotation_json = AnnotateVCF.positions_annotation_json
         Array[File] genes_annotation_json = AnnotateVCF.genes_annotation_json
         Array[File] variant_report_pdf = VariantReport.pdf_report
         Array[File] variant_table_tsv = VariantReport.tsv_file
+        File pipeline_metadata = PipelineMetadata.pipeline_metadata
+        File basenames = PipelineMetadata.basenames
     }
 }
 
@@ -402,3 +413,35 @@ task VariantReport {
         Array[File] tsv_file = glob("*.tsv")
     }
 }
+
+task PipelineMetadata {
+    input {
+        String pipeline_version
+        String output_prefix
+        Array[File] input_vcfs
+
+        String memory_mb = 4000
+        String disk_size_gb = 10
+        String cpu = 1
+    }
+    command <<<
+        # grab the pipeline version, the names of the input vcfs, and output that information to a text file
+        echo "{\"pipeline_version\": \"~{pipeline_version}\", \"input_vcfs\": (~{sep=' ' input_vcfs}, \"output_prefix\": \"~{output_prefix}\"}" > ~{output_prefix}_pipeline_metadata.json
+
+        #loop through array of input_vcfs and get the basename of each vcf
+        for vcf in (~{sep=' ' input_vcfs}); do
+            echo $(basename $vcf) >> basenames.txt
+        done
+    >>>
+    runtime {
+        docker: "ubuntu:latest"
+        memory: "${memory_mb} MiB"
+        cpu: cpu
+        disks: 'local-disk ${disk_size_gb} HDD'
+    }
+    output {
+        File pipeline_metadata = "~{output_prefix}_pipeline_metadata.json"
+        File basenames = "basenames.txt"
+    }
+}
+
