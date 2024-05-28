@@ -70,7 +70,8 @@ workflow GenomicsScreening {
         input:
             pipeline_version = pipeline_version,
             output_prefix = output_prefix,
-            input_vcfs = input_vcfs
+            input_vcfs = input_vcfs,
+            pdf_report = VariantReport.pdf_report
     }
 
     output {
@@ -79,7 +80,6 @@ workflow GenomicsScreening {
         Array[File] variant_report_pdf = VariantReport.pdf_report
         Array[File] variant_table_tsv = VariantReport.tsv_file
         File pipeline_metadata = PipelineMetadata.pipeline_metadata
-        File basenames = PipelineMetadata.basenames
     }
 }
 
@@ -419,19 +419,38 @@ task PipelineMetadata {
         String pipeline_version
         String output_prefix
         Array[File] input_vcfs
+        Array[File] pdf_report
 
         String memory_mb = 4000
         String disk_size_gb = 10
         String cpu = 1
     }
     command <<<
-        # grab the pipeline version, the names of the input vcfs, and output that information to a text file
-        echo "{\"pipeline_version\": \"~{pipeline_version}\", \"input_vcfs\": (~{sep=' ' input_vcfs}, \"output_prefix\": \"~{output_prefix}\"}" > ~{output_prefix}_pipeline_metadata.json
 
-        #loop through array of input_vcfs and get the basename of each vcf
-        for vcf in (~{sep=' ' input_vcfs}); do
-            echo $(basename $vcf) >> basenames.txt
+        # Variables
+        pipeline_version=~{pipeline_version}
+        declare -a input_vcfs=(~{sep=' ' input_vcfs})
+        declare -a pdf_reports=(~{sep=' ' pdf_report})
+
+        # Write the basename of the pdf_report to the file
+        echo "This pipeline metadata was used to generate following variant report PDFs:" >> pipeline_metadata.txt
+        for pdf in "${input_pdfs[@]}"; do
+            basename_pdf=$(basename "$pdf")
+            echo "$basename_pdf" >> pipeline_metadata.txt
         done
+        echo "" >> pipeline_metadata.txt
+
+        # Write the pipeline version to the file
+        echo "Pipeline Version: $pipeline_version" >> pipeline_metadata.txt
+        echo "" >> pipeline_metadata.txt
+
+        # Write the input VCFs to the file
+        echo "Input VCFs:" >> pipeline_metadata.txt
+        for vcf in "${input_vcfs[@]}"; do
+            basename_vcf=$(basename "$vcf")
+            echo "$basename_vcf" >> pipeline_metadata.txt
+        done
+
     >>>
     runtime {
         docker: "ubuntu:latest"
@@ -441,7 +460,6 @@ task PipelineMetadata {
     }
     output {
         File pipeline_metadata = "~{output_prefix}_pipeline_metadata.json"
-        File basenames = "basenames.txt"
     }
 }
 
