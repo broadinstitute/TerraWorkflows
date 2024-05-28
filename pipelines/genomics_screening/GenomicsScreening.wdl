@@ -428,28 +428,23 @@ task PipelineMetadata {
     command <<<
 
         # Variables
-        pipeline_version=~{pipeline_version}
+        pipeline_version=v~{pipeline_version}
         declare -a input_vcfs=(~{sep=' ' input_vcfs})
         declare -a pdf_reports=(~{sep=' ' pdf_report})
 
-        # Write the basename of the pdf_report to the file
-        echo "This pipeline metadata was used to generate following variant report PDFs:" >> pipeline_metadata.txt
-        for pdf in "${input_pdfs[@]}"; do
-            basename_pdf=$(basename "$pdf")
-            echo "$basename_pdf" >> pipeline_metadata.txt
+        echo -e "input_vcf\tvariant_report_pdf" >> ~{output_prefix}_pipeline_metadata.tsv
+
+        for ((i=0; i<${#pdf_reports[@]}; i++)); do
+            basename_pdf=$(basename "${pdf_reports[i]}")
+            basename_vcf=$(basename "${input_vcfs[i]}")
+            echo -e "$basename_vcf\t$basename_pdf" >> ~{output_prefix}_pipeline_metadata.tsv
         done
-        echo "" >> pipeline_metadata.txt
+
+        echo "" >> ~{output_prefix}_pipeline_metadata.tsv
 
         # Write the pipeline version to the file
-        echo "Pipeline Version: $pipeline_version" >> pipeline_metadata.txt
-        echo "" >> pipeline_metadata.txt
-
-        # Write the input VCFs to the file
-        echo "Input VCFs:" >> pipeline_metadata.txt
-        for vcf in "${input_vcfs[@]}"; do
-            basename_vcf=$(basename "$vcf")
-            echo "$basename_vcf" >> pipeline_metadata.txt
-        done
+        date=$(date)
+        echo "The variant report PDFs were generated on $date using the $pipeline_version version of this pipeline" >> ~{output_prefix}_pipeline_metadata.tsv
 
     >>>
     runtime {
@@ -459,7 +454,7 @@ task PipelineMetadata {
         disks: 'local-disk ${disk_size_gb} HDD'
     }
     output {
-        File pipeline_metadata = "~{output_prefix}_pipeline_metadata.json"
+        File pipeline_metadata = "~{output_prefix}_pipeline_metadata.tsv"
     }
 }
 
