@@ -71,7 +71,8 @@ workflow GenomicsScreening {
             pipeline_version = pipeline_version,
             output_prefix = output_prefix,
             input_vcfs = input_vcfs,
-            pdf_report = VariantReport.pdf_report
+            pdf_report = VariantReport.pdf_report,
+            bed_file = bed_file
     }
 
     output {
@@ -420,6 +421,7 @@ task PipelineMetadata {
         String output_prefix
         Array[File] input_vcfs
         Array[File] pdf_report
+        File bed_file
 
         String memory_mb = 4000
         String disk_size_gb = 10
@@ -432,19 +434,20 @@ task PipelineMetadata {
         declare -a input_vcfs=(~{sep=' ' input_vcfs})
         declare -a pdf_reports=(~{sep=' ' pdf_report})
 
-        echo -e "input_vcf\tvariant_report_pdf" >> ~{output_prefix}_pipeline_metadata.tsv
+        echo -e "input_vcf\tvariant_report_pdf" >> ~{output_prefix}_pipeline_metadata.txt
 
         for ((i=0; i<${#pdf_reports[@]}; i++)); do
             basename_pdf=$(basename "${pdf_reports[i]}")
             basename_vcf=$(basename "${input_vcfs[i]}")
-            echo -e "$basename_vcf\t$basename_pdf" >> ~{output_prefix}_pipeline_metadata.tsv
+            echo -e "$basename_vcf\t$basename_pdf" >> ~{output_prefix}_pipeline_metadata.txt
         done
 
-        echo "" >> ~{output_prefix}_pipeline_metadata.tsv
+        echo "" >> ~{output_prefix}_pipeline_metadata.txt
 
         # Write the pipeline version to the file
         date=$(date)
-        echo "The variant report PDFs were generated on $date using the $pipeline_version version of this pipeline" >> ~{output_prefix}_pipeline_metadata.tsv
+        bed_file=$(basename ~{bed_file})
+        echo "The variant report PDFs were generated on $date using the $bed_file file and $pipeline_version version of this pipeline" >> ~{output_prefix}_pipeline_metadata.txt
 
     >>>
     runtime {
@@ -454,7 +457,7 @@ task PipelineMetadata {
         disks: 'local-disk ${disk_size_gb} HDD'
     }
     output {
-        File pipeline_metadata = "~{output_prefix}_pipeline_metadata.tsv"
+        File pipeline_metadata = "~{output_prefix}_pipeline_metadata.txt"
     }
 }
 
