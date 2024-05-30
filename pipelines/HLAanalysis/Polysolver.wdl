@@ -11,7 +11,7 @@ workflow HLAAnalysis {
     String container
 
 
-    call PolysolverType {
+    call HLATypeExtraction {
         input:
             normalBam = normalBam,
             normalBamIndex = normalBamIndex,
@@ -21,43 +21,50 @@ workflow HLAAnalysis {
             container = container
     }
 
-    call PolysolverMut {
+    call HLATypeAlignment {
         input:
-            normalBam = normalBam,
-            normalBamIndex = normalBamIndex,
-            tumorBam = tumorBam,
-            tumorBamIndex = tumorBamIndex,
-            winners = PolysolverType.winners,
-            build = build,
-            format = format,
-            indiv = indiv,
+            tarred_hla_out = HLATypeExtraction.tarred_hla_out,
             container = container
-    }
 
-    call PolysolverAnnot {
-        input:
-            tarZipDir = PolysolverMut.hlaMut,
-            indiv = indiv,
-            build = build,
-            format = format,
-            container = container
     }
+    #call PolysolverMut {
+    #    input:
+    #        normalBam = normalBam,
+    #        normalBamIndex = normalBamIndex,
+    #        tumorBam = tumorBam,
+    #        tumorBamIndex = tumorBamIndex,
+    #        winners = HLATypeAlignment.winners,
+    #        build = build,
+    #        format = format,
+    #        indiv = indiv,
+    #        container = container
+    #}
+
+    #call PolysolverAnnot {
+    #    input:
+    #        tarZipDir = PolysolverMut.hlaMut,
+    #        indiv = indiv,
+    #        build = build,
+    #        format = format,
+    #        container = container
+    #}
 
     output {
-        File winners = PolysolverType.winners
-        File hlaMut = PolysolverMut.hlaMut
-        File hlaTypeBam = PolysolverMut.hlaTypeBam
-        Array[File] mutUnfiltAnnot = PolysolverAnnot.mutUnfiltAnnot
-        Array[File] mutFiltNonSynAnnot = PolysolverAnnot.mutFiltNonSynAnnot
-        Array[File] mutAmbAnnot = PolysolverAnnot.mutAmbAnnot
-        Array[File] mutFiltSynAnnot = PolysolverAnnot.mutFiltSynAnnot
-        Array[File] strelkaIndelUnfiltAnnot = PolysolverAnnot.strelkaIndelUnfiltAnnot
-        Array[File] strelkaIndelAmbAnnot = PolysolverAnnot.strelkaIndelAmbAnnot
-        Array[File] strelkaIndelFiltAnnot = PolysolverAnnot.strelkaIndelFiltAnnot
+        Array[File] hla_type_out = HLATypeAlignment.hla_type_out
+        #File winners = PolysolverType.winners
+        #File hlaMut = PolysolverMut.hlaMut
+        #File hlaTypeBam = PolysolverMut.hlaTypeBam
+        #Array[File] mutUnfiltAnnot = PolysolverAnnot.mutUnfiltAnnot
+        #Array[File] mutFiltNonSynAnnot = PolysolverAnnot.mutFiltNonSynAnnot
+        #Array[File] mutAmbAnnot = PolysolverAnnot.mutAmbAnnot
+        #Array[File] mutFiltSynAnnot = PolysolverAnnot.mutFiltSynAnnot
+        #Array[File] strelkaIndelUnfiltAnnot = PolysolverAnnot.strelkaIndelUnfiltAnnot
+        #Array[File] strelkaIndelAmbAnnot = PolysolverAnnot.strelkaIndelAmbAnnot
+        #Array[File] strelkaIndelFiltAnnot = PolysolverAnnot.strelkaIndelFiltAnnot
     }
 }
 
-task PolysolverType {
+task HLATypeExtraction {
     
     File normalBam
     File normalBamIndex
@@ -69,9 +76,9 @@ task PolysolverType {
     String container
 
     Int disk_size = 100
-    Int mem_size = 2
+    Int mem_size = 16
     Int preemptible_tries = 3
-    Int cpu = 2
+    Int cpu = 4
 
     command <<<
         #!/bin/bash
@@ -104,7 +111,8 @@ task PolysolverType {
         insertCalc=${insertCalc}
         outDir=$(pwd)/hla_out 
 
-        ids=/home/polysolver/data/ids
+
+        ids=/home/polysolver/data/ids_test
         tag_file=/home/polysolver/data/abc_v14.uniq
 
 
@@ -140,18 +148,10 @@ task PolysolverType {
 
         echo "check_bam_flag_pairs status = $status"
 
-
-
-
-
-
         if [ $status == 0 ]; then
                 echo "bam=$bam file is not paired"
                 exit 1
         fi
-
-        #rm -f temp.checkpairs
-
 
         # calculate insert size distribution
 
@@ -162,12 +162,10 @@ task PolysolverType {
 
             /usr/bin/java -Xmx12g -Xms5g -jar /home/polysolver/binaries/CollectInsertSizeMetrics.jar I=$bam O=$outDir/insertsize.txt H=$outDir/insertsize.hist.pdf VALIDATION_STRINGENCY=SILENT TMP_DIR=$outDir
 
-
         else
             echo -n -e "skipping insert size distribution\n"
 
             iFile=0
-
         fi
 
         # getting matching tag sequences
@@ -240,6 +238,46 @@ task PolysolverType {
 
         rm -f $outDir/*sam
 
+        echo "TAR files"
+        tar cvf tarred_hla_out.tar $outDir/*
+        echo "TAR files created successfully."
+
+    >>>
+    
+    output {
+        File tarred_hla_out = "tarred_hla_out.tar"
+    }
+
+    runtime {
+        docker: container
+        disks: "local-disk ${disk_size} SSD"
+        cpu: cpu
+        memory: "${mem_size} GiB"
+        preemptible: preemptible_tries
+    }
+}
+
+
+
+task HLATypeAlignment{
+    
+    File tarred_hla_out
+    String container
+
+    Int disk_size = 100
+    Int mem_size = 16
+    Int preemptible_tries = 3
+    Int cpu = 4
+
+    command <<<
+
+
+        #!/bin/bash
+        set -x
+        echo "Untarring tarred_hlaout"
+        tar -xvfz tarred_hla_out -C hla_out --strip-components=1
+
+        outDir=hla_out
         # alignment
 
         echo -n -e "aligning to HLA library\n"
@@ -326,26 +364,12 @@ task PolysolverType {
 
         # cleanup
 
-        echo -n -e "cleanup\n"
-
-
-        rm -f $outDir/temp* 
-        rm -f $outDir/*sam 
-        rm -f  $outDir/tag*fastq0* $outDir/ids_* 
-        rm -rf $outDir/*REF* 
-        rm -rf $outDir/nv* 
-        rm -rf $outDir/*fastq 
-        rm -rf $outDir/tag* 
-        rm -rf $outDir/chr6region* 
-        rm -rf $outDir/merged* 
-        #rm -rf $outDir/counts* 
-        rm -f $outDir/*lik1 $outDir/*lik2 
 
 
     >>>
     
     output {
-        File winners = "hla_out/winners*.txt"
+        #File winners = "hla_out/winners*.txt"
         Array[File] hla_type_out=glob("./hla_out/*")
     }
 
@@ -357,7 +381,6 @@ task PolysolverType {
         preemptible: preemptible_tries
     }
 }
-
 
 task PolysolverMut {
     
