@@ -104,7 +104,7 @@ def filter_transcripts(positions):
             for variant_dict in position[variants_field]:
                 if transcripts_field in variant_dict and len(variant_dict[transcripts_field]) > 1:
                     sorted_transcripts = sorted(variant_dict[transcripts_field], key=lambda x: x['transcript'])
-                    variant_dict[transcripts_field] = sorted_transcripts[0]
+                    variant_dict[transcripts_field] = [sorted_transcripts[0]]
         progress_bar.set_description('Selecting first transcript when sorted alphabetically...')
         progress_bar.update(1)
 
@@ -279,19 +279,19 @@ def map_variants_to_table(variants_to_include):
         for clinvar_dict in variant.get("variants", [{}])[0].get("clinvar", [{}]):
             phenotypes.append(clinvar_dict.get("phenotypes", "NA"))
 
-        print(f'this is phenotypes {phenotypes}')
+        #print(f'this is phenotypes {phenotypes}')
 
         # Convert the mixed list of lists and strings into a list of strings
         phenotype_strings = [item[0] if isinstance(item, list) else item for item in phenotypes]
-        print(f'this is phenotype_strings {phenotype_strings}')
+        #print(f'this is phenotype_strings {phenotype_strings}')
         # drop NA and not provided
         filtered_phenotypes = [item for item in phenotype_strings if item not in ['NA', 'not provided']]
         # Remove duplicates from the list
         unique_phenotypes = list(set(filtered_phenotypes))
-        print(f'this is unique_phenotypes {unique_phenotypes}')
+        #print(f'this is unique_phenotypes {unique_phenotypes}')
         # Flatten the list
         phenotypes_list = ', '.join(unique_phenotypes)
-        print(f'phenotypes_list {phenotypes_list}')
+        #print(f'phenotypes_list {phenotypes_list}')
 
         # map the variant data to a dictionary
         # nullable uses get() to avoid KeyError
