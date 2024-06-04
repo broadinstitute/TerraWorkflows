@@ -104,7 +104,7 @@ def filter_transcripts(positions):
             for variant_dict in position[variants_field]:
                 if transcripts_field in variant_dict and len(variant_dict[transcripts_field]) > 1:
                     sorted_transcripts = sorted(variant_dict[transcripts_field], key=lambda x: x['transcript'])
-                    variant_dict[transcripts_field] = sorted_transcripts[0]
+                    variant_dict[transcripts_field] = [sorted_transcripts[0]]
         progress_bar.set_description('Selecting first transcript when sorted alphabetically...')
         progress_bar.update(1)
 
