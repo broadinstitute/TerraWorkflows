@@ -29,7 +29,7 @@ workflow GenomicsScreening {
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
-    String variantreport_docker_image = "variantreport:latest"
+    String variantreport_docker_image = "genomics_variant_report:675560f"
 
 
     call BatchVCFs as batch_vcfs {
@@ -63,7 +63,9 @@ workflow GenomicsScreening {
     call VariantReport {
         input:
             positions_annotation_json = AnnotateVCF.positions_annotation_json,
-            docker_path = docker_prefix + variantreport_docker_image
+            docker_path = docker_prefix + variantreport_docker_image,
+            output_prefix = output_prefix,
+            bed_file = bed_file
     }
 
     call PipelineMetadata {
@@ -153,7 +155,7 @@ task FilterVCF {
 
         Int disk_size_gb = ceil(2*size(batch_tars, "GiB")) + 50
         Int cpu = 1
-        Int memory_mb = 8000
+        Int memory_mb = 64000
         String docker_path
     }
 
@@ -168,21 +170,40 @@ task FilterVCF {
             local vcf_file=$1
 
             echo "Starting task for $vcf_file.."
-            sample_id=$(basename "$vcf_file" ".vcf")
+
+            # Determine the file extension and extract the sample ID
+            if [[ "$vcf_file" == *.vcf.gz ]]; then
+                sample_id=$(basename "$vcf_file" ".vcf.gz")
+            elif [[ "$vcf_file" == *.vcf ]]; then
+                sample_id=$(basename "$vcf_file" ".vcf")
+            else
+                echo "Unsupported file extension"
+                exit 1
+            fi
+
+            # Perform sorting
+            echo "Sorting VCF file: $vcf_file"
+            gatk \
+            SortVcf \
+            -I "$vcf_file" \
+            -O "$sample_id.sorted.vcf"
+            echo "Sorting done."
 
             # Perform indexing
-            echo "Indexing VCF file: $vcf_file"
+            echo "Indexing VCF file: $sample_id.sorted.vcf"
             gatk \
             IndexFeatureFile \
-            -I "$vcf_file"
+            -I "$sample_id.sorted.vcf"
+            echo "Indexing done."
 
             # Perform filtering
-            echo "Filtering VCF file: $vcf_file"
+            echo "Filtering VCF file: $sample_id.sorted.vcf"
             gatk \
             SelectVariants \
-            -V  "$vcf_file" \
+            -V  "$sample_id.sorted.vcf" \
             -L ~{bed_file} \
             -O "$sample_id.filtered.vcf"
+            echo "Filtering done."
         }
 
         # Declare array of input batched tars
@@ -192,8 +213,8 @@ task FilterVCF {
         # Untar the tarred inputs
         tar -xf $batch_tars --strip-components=1
 
-        # Declare array of vcf files
-        declare -a input_vcfs=($(ls | grep ".vcf$"))
+        # Declare array of vcf or .vcf.gz files
+        declare -a input_vcfs=($(ls | grep -E "\.vcf$|\.vcf\.gz$"))
         echo "input_vcfs: ${input_vcfs[@]}"
 
         # Launch tasks in parallel for each VCF file
@@ -373,10 +394,13 @@ task VariantReport {
 
     input {
         Array[File] positions_annotation_json
+        File bed_file
+        String output_prefix
+
 
         String docker_path
-        Int memory_mb = 4000
-        Int disk_size_gb = 15
+        Int memory_mb = 8000
+        Int disk_size_gb = 64
         Int cpu = 1
     }
 
@@ -397,8 +421,12 @@ task VariantReport {
             echo "Creating the report for $sample_id"
             python3 /src/variants_report.py \
             --positions_json $json \
-            --sample_identifier $sample_id
+            --sample_identifier $sample_id \
+            --output_prefix ~{output_prefix} \
+            --bed_file ~{bed_file}
         done
+
+        ls -lh
 
     >>>
 
