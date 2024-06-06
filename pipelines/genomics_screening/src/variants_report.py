@@ -170,7 +170,7 @@ def filter_variants_for_report(filtered_positions):
                     # remove clinvar_dict if clinvar_dict ref and alt alleles do not match the variant_dict ref and alt alleles
                     # we are comparing to the variant_dict (NIRVANA) ref and alt alleles because NIRVANA uses a different convention than the VCF (position)
                     elif 'refAllele' in clinvar_dict and 'altAllele' in clinvar_dict:
-                        if clinvar_dict['refAllele'] != variant_dict['refAllele'] or clinvar_dict['altAllele'] != variant_dict['altAlleles']:
+                        if clinvar_dict['refAllele'] != variant_dict['refAllele'] or clinvar_dict['altAllele'] != variant_dict['altAllele']:
                             logging.info(f'ClinVar ref and alt alleles do not match variant ref and alt alleles, /'
                                          f'removing clinvar dict' + str(clinvar_dict))
                             variant_dict[clinvar_field].remove(clinvar_dict)
