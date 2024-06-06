@@ -167,6 +167,12 @@ def filter_variants_for_report(filtered_positions):
                         logging.info(f'ClinVar significance does not pass inclusion filters, /'
                                      f'removing clinvar dict' + str(variant_dict))
                         variant_dict[clinvar_field].remove(clinvar_dict)
+                    # remove clinvar_dict if clinvar_dict ref and alt alleles do not match the variant_dict ref and alt alleles
+                    elif 'refAllele' in clinvar_dict and 'altAllele' in clinvar_dict:
+                        if clinvar_dict['refAllele'] != variant_dict['refAllele'] or clinvar_dict['altAllele'] != variant_dict['altAlleles']:
+                            logging.info(f'ClinVar ref and alt alleles do not match variant ref and alt alleles, /'
+                                         f'removing clinvar dict' + str(clinvar_dict))
+                            variant_dict[clinvar_field].remove(clinvar_dict)
 
     # remove any variants that don't have any populated clinvar fields left
     for position in filtered_positions[:]:
