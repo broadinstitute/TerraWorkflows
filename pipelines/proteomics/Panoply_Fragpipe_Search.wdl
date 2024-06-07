@@ -64,9 +64,6 @@ task fragpipe {
     set -euo pipefail
     set -x
     
-    ls
-    pwd
-    
     projdir="fragpipe"
     proc_data_zip="fragpipe_processed_data.zip"
     out_zip="fragpipe_output.zip"
