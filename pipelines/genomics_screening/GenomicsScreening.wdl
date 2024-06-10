@@ -29,7 +29,7 @@ workflow GenomicsScreening {
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
-    String variantreport_docker_image = "genomics_variant_report:675560f"
+    String variantreport_docker_image = "genomics_variant_report:5af8bc6"
 
 
     call BatchVCFs as batch_vcfs {
