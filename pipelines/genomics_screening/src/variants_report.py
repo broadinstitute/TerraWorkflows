@@ -419,7 +419,7 @@ def format_report(mapped_variants):
     else:
         html_content += """
                 <h3 style="font-size: 16px;">We have examined the following genes, which have been implicated in 
-                the phenotype:</h3>
+                a pathogenic phenotype:</h3>
                 <ul>
             """
 
