@@ -7,5 +7,7 @@
   "HLAAnalysis.build": "hg19",
   "HLAAnalysis.format": "STDFQ",
   "HLAAnalysis.indiv": "patient1",
+  "HLAAnalysis.insertCalc": 0,
+  "HLAAnalysis.includeFreq": 1,
   "HLAAnalysis.container": "sachet/polysolver:v4"
 }
