@@ -9,6 +9,8 @@ workflow GenomicsScreening {
         String output_prefix
     }
 
+    String pipeline_version = "1.0"
+
     # Determine docker prefix based on cloud provider
     String gcr_docker_prefix = "us.gcr.io/broad-gotc-prod/"
     String acr_docker_prefix = "terraworkflows.azurecr.io/"
@@ -27,7 +29,7 @@ workflow GenomicsScreening {
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
-    String variantreport_docker_image = "variantreport:latest"
+    String variantreport_docker_image = "genomics_variant_report:0e50556"
 
 
     call BatchVCFs as batch_vcfs {
@@ -61,7 +63,18 @@ workflow GenomicsScreening {
     call VariantReport {
         input:
             positions_annotation_json = AnnotateVCF.positions_annotation_json,
-            docker_path = docker_prefix + variantreport_docker_image
+            docker_path = docker_prefix + variantreport_docker_image,
+            output_prefix = output_prefix,
+            bed_file = bed_file
+    }
+
+    call PipelineMetadata {
+        input:
+            pipeline_version = pipeline_version,
+            output_prefix = output_prefix,
+            input_vcfs = input_vcfs,
+            pdf_report = VariantReport.pdf_report,
+            bed_file = bed_file
     }
 
     output {
@@ -69,6 +82,7 @@ workflow GenomicsScreening {
         Array[File] genes_annotation_json = AnnotateVCF.genes_annotation_json
         Array[File] variant_report_pdf = VariantReport.pdf_report
         Array[File] variant_table_tsv = VariantReport.tsv_file
+        File pipeline_metadata = PipelineMetadata.pipeline_metadata
     }
 }
 
@@ -141,7 +155,7 @@ task FilterVCF {
 
         Int disk_size_gb = ceil(2*size(batch_tars, "GiB")) + 50
         Int cpu = 1
-        Int memory_mb = 8000
+        Int memory_mb = 64000
         String docker_path
     }
 
@@ -156,21 +170,40 @@ task FilterVCF {
             local vcf_file=$1
 
             echo "Starting task for $vcf_file.."
-            sample_id=$(basename "$vcf_file" ".vcf")
+
+            # Determine the file extension and extract the sample ID
+            if [[ "$vcf_file" == *.vcf.gz ]]; then
+                sample_id=$(basename "$vcf_file" ".vcf.gz")
+            elif [[ "$vcf_file" == *.vcf ]]; then
+                sample_id=$(basename "$vcf_file" ".vcf")
+            else
+                echo "Unsupported file extension"
+                exit 1
+            fi
+
+            # Perform sorting
+            echo "Sorting VCF file: $vcf_file"
+            gatk \
+            SortVcf \
+            -I "$vcf_file" \
+            -O "$sample_id.sorted.vcf"
+            echo "Sorting done."
 
             # Perform indexing
-            echo "Indexing VCF file: $vcf_file"
+            echo "Indexing VCF file: $sample_id.sorted.vcf"
             gatk \
             IndexFeatureFile \
-            -I "$vcf_file"
+            -I "$sample_id.sorted.vcf"
+            echo "Indexing done."
 
             # Perform filtering
-            echo "Filtering VCF file: $vcf_file"
+            echo "Filtering VCF file: $sample_id.sorted.vcf"
             gatk \
             SelectVariants \
-            -V  "$vcf_file" \
+            -V  "$sample_id.sorted.vcf" \
             -L ~{bed_file} \
             -O "$sample_id.filtered.vcf"
+            echo "Filtering done."
         }
 
         # Declare array of input batched tars
@@ -180,8 +213,8 @@ task FilterVCF {
         # Untar the tarred inputs
         tar -xf $batch_tars --strip-components=1
 
-        # Declare array of vcf files
-        declare -a input_vcfs=($(ls | grep ".vcf$"))
+        # Declare array of vcf or .vcf.gz files
+        declare -a input_vcfs=($(ls | grep -E "\.vcf$|\.vcf\.gz$"))
         echo "input_vcfs: ${input_vcfs[@]}"
 
         # Launch tasks in parallel for each VCF file
@@ -361,10 +394,13 @@ task VariantReport {
 
     input {
         Array[File] positions_annotation_json
+        File bed_file
+        String output_prefix
+
 
         String docker_path
-        Int memory_mb = 4000
-        Int disk_size_gb = 15
+        Int memory_mb = 8000
+        Int disk_size_gb = 64
         Int cpu = 1
     }
 
@@ -385,8 +421,12 @@ task VariantReport {
             echo "Creating the report for $sample_id"
             python3 /src/variants_report.py \
             --positions_json $json \
-            --sample_identifier $sample_id
+            --sample_identifier $sample_id \
+            --output_prefix ~{output_prefix} \
+            --bed_file ~{bed_file}
         done
+
+        ls -lh
 
     >>>
 
@@ -402,3 +442,50 @@ task VariantReport {
         Array[File] tsv_file = glob("*.tsv")
     }
 }
+
+task PipelineMetadata {
+    input {
+        String pipeline_version
+        String output_prefix
+        Array[File] input_vcfs
+        Array[File] pdf_report
+        File bed_file
+
+        String memory_mb = 4000
+        String disk_size_gb = 10
+        String cpu = 1
+    }
+    command <<<
+
+        # Variables
+        pipeline_version=v~{pipeline_version}
+        declare -a input_vcfs=(~{sep=' ' input_vcfs})
+        declare -a pdf_reports=(~{sep=' ' pdf_report})
+
+        echo -e "input_vcf\tvariant_report_pdf" >> ~{output_prefix}_pipeline_metadata.txt
+
+        for ((i=0; i<${#pdf_reports[@]}; i++)); do
+            basename_pdf=$(basename "${pdf_reports[i]}")
+            basename_vcf=$(basename "${input_vcfs[i]}")
+            echo -e "$basename_vcf\t$basename_pdf" >> ~{output_prefix}_pipeline_metadata.txt
+        done
+
+        echo "" >> ~{output_prefix}_pipeline_metadata.txt
+
+        # Write the pipeline version to the file
+        date=$(date)
+        bed_file=$(basename ~{bed_file})
+        echo "The variant report PDFs were generated on $date using the $bed_file file and $pipeline_version version of this pipeline" >> ~{output_prefix}_pipeline_metadata.txt
+
+    >>>
+    runtime {
+        docker: "ubuntu:latest"
+        memory: "${memory_mb} MiB"
+        cpu: cpu
+        disks: 'local-disk ${disk_size_gb} HDD'
+    }
+    output {
+        File pipeline_metadata = "~{output_prefix}_pipeline_metadata.txt"
+    }
+}
+

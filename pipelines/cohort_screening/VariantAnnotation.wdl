@@ -6,6 +6,7 @@ workflow AnnotateVCFWorkflow {
         File bed_file
         String cloud_provider
         Int batch_size
+        String output_prefix
     }
 
     # Determine docker prefix based on cloud provider
@@ -26,7 +27,7 @@ workflow AnnotateVCFWorkflow {
 
     # Define docker images
     String nirvana_docker_image = "nirvana:np_add_nirvana_docker"
-    String variantreport_docker_image = "variantreport:latest"
+    String variantreport_docker_image = "genomics_variant_report:0e50556"
 
 
     call BatchVCFs as batch_vcfs {
@@ -59,7 +60,9 @@ workflow AnnotateVCFWorkflow {
     call VariantReport {
         input:
             positions_annotation_json = AnnotateVCF.positions_annotation_json,
-            docker_path = docker_prefix + variantreport_docker_image
+            docker_path = docker_prefix + variantreport_docker_image,
+            output_prefix = output_prefix,
+            bed_file = bed_file
     }
 
     output {
@@ -358,6 +361,8 @@ task VariantReport {
 
     input {
         Array[File] positions_annotation_json
+        File bed_file
+        String output_prefix
 
         String docker_path
         Int memory_mb = 4000
@@ -382,7 +387,9 @@ task VariantReport {
             echo "Creating the report for $sample_id"
             python3 /src/variants_report.py \
             --positions_json $json \
-            --sample_identifier $sample_id
+            --sample_identifier $sample_id \
+            --output_prefix ~{output_prefix} \
+            --bed_file ~{bed_file}
         done
 
     >>>
