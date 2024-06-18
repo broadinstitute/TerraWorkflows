@@ -16,20 +16,20 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY . /src
 
 # Will build with GitHub Action "Main Validation and Release" ../.github/workflows/build-and-publish-main.yaml
-# tag = us.gcr.io/broad-gotc-prod/variantreport:${{steps.get-artifact-slug.outputs.slug}}, us.gcr.io/broad-gotc-prod/variantreport:latest
+# tag = us.gcr.io/broad-gotc-prod/genomics_variant_report:${{steps.get-artifact-slug.outputs.slug}}, us.gcr.io/broad-gotc-prod/genomics_variant_report:latest
 
 # For now
 # Google Artifact Registry
 # to tag with the latest commit short SHA
-# docker build --platform="linux/amd64" -t us.gcr.io/broad-gotc-prod/variantreport:<latest_commit_short_SHA> .
-# docker build --platform="linux/amd64" -t us.gcr.io/broad-gotc-prod/variantreport:latest .
+# docker build --platform="linux/amd64" -t us.gcr.io/broad-gotc-prod/genomics_variant_report:<latest_commit_short_SHA> .
+# docker build --platform="linux/amd64" -t us.gcr.io/broad-gotc-prod/genomics_variant_report:latest .
 # Azure Container Registry
-# docker build --platform="linux/amd64" -t terraworkflows.azurecr.io/variantreport:<latest_commit_short_SHA> .
-# docker build --platform="linux/amd64" -t terraworkflows.azurecr.io/variantreport:latest .
+# docker build --platform="linux/amd64" -t terraworkflows.azurecr.io/genomics_variant_report:<latest_commit_short_SHA> .
+# docker build --platform="linux/amd64" -t terraworkflows.azurecr.io/genomics_variant_report:latest .
 
 # note that to run locally, assuming you are on a Mac, you will likely need to build without the platform flag
 
-# docker run --rm -it us.gcr.io/broad-gotc-prod/variantreport:<new_version>
+# docker run --rm -it us.gcr.io/broad-gotc-prod/genomics_variant_report:<new_version>
 
 # to push to Google Artifact Registry
 # make sure you are logged in to gcloud
