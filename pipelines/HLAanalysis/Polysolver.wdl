@@ -511,8 +511,8 @@ task PolysolverMut {
     >>>
 
     output {
-        File hlaMut = "hla_mut_out/hla_mut.tar.gz"
-        File hlaTypeBam = "hla_mut_out/hla_type_bams.tar.gz"
+        File hlaMut = "./hla_mut.tar.gz"
+        File hlaTypeBam = "./hla_type_bams.tar.gz"
         Array[File] hlaMutout= glob("./hla_mut_out/*")
     }
 
@@ -573,4 +573,3 @@ task PolysolverAnnot {
         preemptible: preemptible_tries
     }
 }
-
