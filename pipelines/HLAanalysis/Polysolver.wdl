@@ -87,12 +87,12 @@ task PolysolverType {
         #!/bin/sh
         set -e 
 
-        bam=${normalBam}
-        race=${race}
-        includeFreq=${includeFreq}
-        build=${build}
-        format=${format}
-        insertCalc=${insertCalc}
+        bam=~{normalBam}
+        race=~{race}
+        includeFreq=~{includeFreq}
+        build=~{build}
+        format=~{format}
+        insertCalc=~{insertCalc}
         outDir="$(pwd)/hla_out/"
 
         ids=/home/polysolver/data/ids
@@ -271,13 +271,13 @@ task PolysolverMut {
 
         
         #### check if an appropriate number of arguments were passed ####
-        normal_bam_hla=${normalBam}
-        tumor_bam_hla=${tumorBam}
-        hla=${winners}
-        build=${build}
-        format=${format}
+        normal_bam_hla=~{normalBam}
+        tumor_bam_hla=~{tumorBam}
+        hla=~{winners}
+        build=~{build}
+        format=~{format}
         outDir="$(pwd)/hla_mut_out"
-        indiv=${indiv}
+        indiv=~{indiv}
 
         mkdir -p "$outDir"
         tag_file=/home/polysolver/data/abc_38_both_pm_update.uniq
@@ -561,7 +561,7 @@ task PolysolverAnnot {
         ls -lah
 
         #### check if an appropriate number of arguments were passed ####
-        indiv=${indiv}
+        indiv=~{indiv}
         tarZipDir=${tarZipDir}
 
         export PERL5LIB=$PERL5LIB:/home/polysolver/scripts
