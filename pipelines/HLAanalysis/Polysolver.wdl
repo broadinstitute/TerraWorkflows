@@ -1,18 +1,20 @@
+version 1.0
+
 workflow HLAAnalysis {
     input {
-    File normalBam
-    File normalBamIndex
-    File tumorBam
-    File tumorBamIndex
-    String race
-    String build
-    String format
-    String indiv
-    Int includeFreq
-    Int insertCalc
-
-    String cloud_provider
+        File normalBam
+        File normalBamIndex
+        File tumorBam
+        File tumorBamIndex
+        String race
+        String build
+        String format
+        String indiv
+        Int includeFreq
+        Int insertCalc
+        String cloud_provider
     }
+
 
     # docker images
     String polysolver_docker = "polysolver:v4"
@@ -65,7 +67,7 @@ workflow HLAAnalysis {
 }
 
 task PolysolverType {
-      
+    input {
     File normalBam
     File normalBamIndex
     String race
@@ -79,6 +81,7 @@ task PolysolverType {
     Int mem_size = 16
     Int preemptible_tries = 3
     Int cpu = 4
+    }
 
     command <<<
         #!/bin/sh
@@ -244,7 +247,7 @@ task PolysolverType {
 
 
 task PolysolverMut {
-    
+    input {
     File normalBam
     File normalBamIndex
     File tumorBam
@@ -259,6 +262,7 @@ task PolysolverMut {
     Int mem_size = 16
     Int preemptible_tries = 3
     Int cpu = 4
+    }
 
     command <<<
         set -x
@@ -537,7 +541,7 @@ task PolysolverMut {
 }
 
 task PolysolverAnnot {
-    
+    input {
     File tarZipDir
     String indiv
     String polysolver_docker_path
@@ -546,7 +550,7 @@ task PolysolverAnnot {
     Int mem_size = 16
     Int preemptible_tries = 3
     Int cpu = 4
-
+    }
     command <<<
         set -x
         outDir=$(pwd)/hla_annot_out
