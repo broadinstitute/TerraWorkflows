@@ -113,6 +113,7 @@ task PolysolverType {
         echo "check_bam_flag_pairs status = $status"
         if [ $status == 0 ]; then
                 echo "bam=$bam file is not paired"
+                cat $outDir/check.status.out.txt
                 exit 1
         fi
 
