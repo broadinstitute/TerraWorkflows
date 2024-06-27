@@ -1,5 +1,5 @@
 workflow HLAAnalysis {
-    
+    input {
     File normalBam
     File normalBamIndex
     File tumorBam
@@ -8,9 +8,20 @@ workflow HLAAnalysis {
     String build
     String format
     String indiv
-    String container
     Int includeFreq
     Int insertCalc
+
+    String cloud_provider
+    }
+
+    # docker images
+    String polysolver_docker = "polysolver:v4"
+
+    String gcr_docker_prefix = "sachet/"
+    String acr_docker_prefix = "terraworkflows.azurecr.io/"
+
+    # choose docker prefix based on cloud provider
+    String docker_prefix = if cloud_provider == "gcp" then gcr_docker_prefix else acr_docker_prefix
 
 
     call PolysolverType {
@@ -22,7 +33,7 @@ workflow HLAAnalysis {
             format = format,
             includeFreq = includeFreq,
             insertCalc = insertCalc,
-            container = container
+            polysolver_docker_path = docker_prefix + polysolver_docker
     }
 
     call PolysolverMut {
@@ -35,14 +46,14 @@ workflow HLAAnalysis {
             build = build,
             format = format,
             indiv = indiv,
-            container = container
+            polysolver_docker_path = docker_prefix + polysolver_docker
     }
 
     call PolysolverAnnot {
         input:
             tarZipDir = PolysolverMut.hlaMut,
             indiv = indiv,
-            container = container
+            polysolver_docker_path = docker_prefix + polysolver_docker
     }
 
     output {
@@ -62,7 +73,7 @@ task PolysolverType {
     String format
     Int includeFreq
     Int insertCalc
-    String container
+    String polysolver_docker_path
 
     Int disk_size = 100
     Int mem_size = 16
@@ -222,7 +233,7 @@ task PolysolverType {
     }
 
     runtime {
-        docker: container
+        docker: polysolver_docker_path
         disks: "local-disk ${disk_size} SSD"
         cpu: cpu
         memory: "${mem_size} GiB"
@@ -242,7 +253,7 @@ task PolysolverMut {
     String build
     String format
     String indiv
-    String container
+    String polysolver_docker_path
 
     Int disk_size = 100
     Int mem_size = 16
@@ -517,7 +528,7 @@ task PolysolverMut {
     }
 
     runtime {
-        docker: container
+        docker: polysolver_docker_path
         disks: "local-disk ${disk_size} SSD"
         cpu: cpu
         memory: "${mem_size} GiB"
@@ -529,7 +540,7 @@ task PolysolverAnnot {
     
     File tarZipDir
     String indiv
-    String container
+    String polysolver_docker_path
 
     Int disk_size = 100
     Int mem_size = 16
@@ -566,7 +577,7 @@ task PolysolverAnnot {
     }
 
     runtime {
-        docker: container
+        docker: polysolver_docker_path
         disks: "local-disk ${disk_size} SSD"
         cpu: cpu
         memory: "${mem_size} GiB"
