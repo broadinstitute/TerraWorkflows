@@ -1,16 +1,29 @@
+version 1.0
+
 workflow HLAAnalysis {
-    
-    File normalBam
-    File normalBamIndex
-    File tumorBam
-    File tumorBamIndex
-    String race
-    String build
-    String format
-    String indiv
-    String container
-    Int includeFreq
-    Int insertCalc
+    input {
+        File normalBam
+        File normalBamIndex
+        File tumorBam
+        File tumorBamIndex
+        String race
+        String build
+        String format
+        String indiv
+        Int includeFreq
+        Int insertCalc
+        String cloud_provider
+    }
+
+
+    # docker images
+    String polysolver_docker = "polysolver:v4"
+
+    String gcr_docker_prefix = "sachet/"
+    String acr_docker_prefix = "terraworkflows.azurecr.io/"
+
+    # choose docker prefix based on cloud provider
+    String docker_prefix = if cloud_provider == "gcp" then gcr_docker_prefix else acr_docker_prefix
 
 
     call PolysolverType {
@@ -22,7 +35,7 @@ workflow HLAAnalysis {
             format = format,
             includeFreq = includeFreq,
             insertCalc = insertCalc,
-            container = container
+            polysolver_docker_path = docker_prefix + polysolver_docker
     }
 
     call PolysolverMut {
@@ -35,14 +48,14 @@ workflow HLAAnalysis {
             build = build,
             format = format,
             indiv = indiv,
-            container = container
+            polysolver_docker_path = docker_prefix + polysolver_docker
     }
 
     call PolysolverAnnot {
         input:
             tarZipDir = PolysolverMut.hlaMut,
             indiv = indiv,
-            container = container
+            polysolver_docker_path = docker_prefix + polysolver_docker
     }
 
     output {
@@ -54,7 +67,7 @@ workflow HLAAnalysis {
 }
 
 task PolysolverType {
-      
+    input {
     File normalBam
     File normalBamIndex
     String race
@@ -62,23 +75,24 @@ task PolysolverType {
     String format
     Int includeFreq
     Int insertCalc
-    String container
+    String polysolver_docker_path
 
     Int disk_size = 100
     Int mem_size = 16
     Int preemptible_tries = 3
     Int cpu = 4
+    }
 
     command <<<
         #!/bin/sh
         set -e 
 
-        bam=${normalBam}
-        race=${race}
-        includeFreq=${includeFreq}
-        build=${build}
-        format=${format}
-        insertCalc=${insertCalc}
+        bam=~{normalBam}
+        race=~{race}
+        includeFreq=~{includeFreq}
+        build=~{build}
+        format=~{format}
+        insertCalc=~{insertCalc}
         outDir="$(pwd)/hla_out/"
 
         ids=/home/polysolver/data/ids
@@ -222,7 +236,7 @@ task PolysolverType {
     }
 
     runtime {
-        docker: container
+        docker: polysolver_docker_path
         disks: "local-disk ${disk_size} SSD"
         cpu: cpu
         memory: "${mem_size} GiB"
@@ -233,7 +247,7 @@ task PolysolverType {
 
 
 task PolysolverMut {
-    
+    input {
     File normalBam
     File normalBamIndex
     File tumorBam
@@ -242,12 +256,13 @@ task PolysolverMut {
     String build
     String format
     String indiv
-    String container
+    String polysolver_docker_path
 
     Int disk_size = 100
     Int mem_size = 16
     Int preemptible_tries = 3
     Int cpu = 4
+    }
 
     command <<<
         set -x
@@ -255,13 +270,13 @@ task PolysolverMut {
 
         
         #### check if an appropriate number of arguments were passed ####
-        normal_bam_hla=${normalBam}
-        tumor_bam_hla=${tumorBam}
-        hla=${winners}
-        build=${build}
-        format=${format}
+        normal_bam_hla=~{normalBam}
+        tumor_bam_hla=~{tumorBam}
+        hla=~{winners}
+        build=~{build}
+        format=~{format}
         outDir="$(pwd)/hla_mut_out"
-        indiv=${indiv}
+        indiv=~{indiv}
 
         mkdir -p "$outDir"
         tag_file=/home/polysolver/data/abc_38_both_pm_update.uniq
@@ -517,7 +532,7 @@ task PolysolverMut {
     }
 
     runtime {
-        docker: container
+        docker: polysolver_docker_path
         disks: "local-disk ${disk_size} SSD"
         cpu: cpu
         memory: "${mem_size} GiB"
@@ -526,16 +541,16 @@ task PolysolverMut {
 }
 
 task PolysolverAnnot {
-    
+    input {
     File tarZipDir
     String indiv
-    String container
+    String polysolver_docker_path
 
     Int disk_size = 100
     Int mem_size = 16
     Int preemptible_tries = 3
     Int cpu = 4
-
+    }
     command <<<
         set -x
         outDir=$(pwd)/hla_annot_out
@@ -545,7 +560,7 @@ task PolysolverAnnot {
         ls -lah
 
         #### check if an appropriate number of arguments were passed ####
-        indiv=${indiv}
+        indiv=~{indiv}
         tarZipDir=${tarZipDir}
 
         export PERL5LIB=$PERL5LIB:/home/polysolver/scripts
@@ -566,7 +581,7 @@ task PolysolverAnnot {
     }
 
     runtime {
-        docker: container
+        docker: polysolver_docker_path
         disks: "local-disk ${disk_size} SSD"
         cpu: cpu
         memory: "${mem_size} GiB"
