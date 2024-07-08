@@ -33,7 +33,7 @@ workflow HLAAnalysis {
             format = format,
             includeFreq = includeFreq,
             insertCalc = insertCalc,
-            docker = docker_prefix + polysolver_docker
+            polysolver_docker_path = docker_prefix + polysolver_docker
     }
    
    call PolysolverMut {
@@ -44,7 +44,7 @@ workflow HLAAnalysis {
             tumorBamIndex = tumorBamIndex,
             winners = PolysolverType.hla_winner,
             build = build,
-            docker = docker_prefix + polysolver_docker
+            polysolver_docker_path = docker_prefix + polysolver_docker
     }
     
      call PolysolverAnnot {
