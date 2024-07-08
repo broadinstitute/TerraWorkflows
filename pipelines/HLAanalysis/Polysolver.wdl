@@ -72,10 +72,10 @@ task PolysolverType {
       String format
       Int includeFreq
       Int insertCalc
-      String docker
+      String polysolver_docker_path
 
-      Int disk_size = 500
-      Int mem_size = 42
+      Int disk_size = 100
+      Int mem_size = 16
       Int preemptible_tries = 3
       Int cpu = 4
     }
@@ -251,7 +251,7 @@ task PolysolverType {
     }
 
     runtime {
-        docker: docker
+        docker: polysolver_docker_path
         disks: "local-disk ${disk_size} SSD"
         cpu: cpu
         memory: "${mem_size} GiB"
@@ -267,7 +267,7 @@ task PolysolverMut {
       File tumorBamIndex
       File winners
       String build
-      String docker
+      String polysolver_docker_path
 
       Int disk_size = 100
       Int mem_size = 16
@@ -508,7 +508,7 @@ task PolysolverMut {
     }
 
     runtime {
-        docker: docker
+        docker: polysolver_docker_path
         disks: "local-disk ${disk_size} SSD"
         cpu: cpu
         memory: "${mem_size} GiB"
@@ -520,7 +520,7 @@ task PolysolverAnnot {
     
     File tarZipDir
     String indiv
-    String docker
+    String polysolver_docker_path
 
     Int disk_size = 100
     Int mem_size = 16
@@ -574,7 +574,7 @@ task PolysolverAnnot {
      }
 
     runtime {
-        docker: docker
+        docker: polysolver_docker_path
         disks: "local-disk ${disk_size} SSD"
         cpu: cpu
         memory: "${mem_size} GiB"
