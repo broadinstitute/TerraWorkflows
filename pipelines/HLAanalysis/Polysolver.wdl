@@ -518,15 +518,17 @@ task PolysolverMut {
 
 task PolysolverAnnot {
     
-    File tarZipDir
-    String indiv
-    String polysolver_docker_path
+    input {
+      File tarZipDir
+      String indiv
+      String polysolver_docker_path
 
-    Int disk_size = 100
-    Int mem_size = 16
-    Int preemptible_tries = 3
-    Int cpu = 4
-
+      Int disk_size = 100
+      Int mem_size = 16
+      Int preemptible_tries = 3
+      Int cpu = 4
+    }
+    
     command <<<
       set -euo pipefail
       set -x
