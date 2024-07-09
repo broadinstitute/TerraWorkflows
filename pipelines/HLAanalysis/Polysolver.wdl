@@ -530,45 +530,26 @@ task PolysolverAnnot {
     }
     
     command <<<
-      set -euo pipefail
-      set -x
-        
-      # /home/polysolver/scripts/shell_annotate_hla_mutations ${indiv} ${tarZipDir} $outDir
+        set -x
+        outDir=$(pwd)/hla_annot_out
 
-      # set PERL5LIB
-      export PERL5LIB=$PERL5LIB:/home/polysolver/scripts
-        
-      # make output directory
-      outDir=$(pwd)/hla_annot_out
-      mkdir -p "$outDir"
+        mkdir -p "$outDir"
+        #/home/polysolver/scripts/shell_annotate_hla_mutations ${indiv} ${tarZipDir} $outDir
+        ls -lah
 
-      # untar the input directory
-      tar -xvfz ~{tarZipDir}
+        #### check if an appropriate number of arguments were passed ####
+        indiv=~{indiv}
+        tarZipDir=${tarZipDir}
 
-      # set dirPrefix
-      dirPrefix=`/home/polysolver/scripts/get_prefix.pl ~{tarZipDir}`
-      echo "dirPrefix=$dirPrefix"
-        
-      # set complete fasta files
-      a_complete_fasta=/home/polysolver/data/a_complete.3100.new.eb.fasta
-      b_complete_fasta=/home/polysolver/data/b_complete.3100.new.eb.fasta
-      c_complete_fasta=/home/polysolver/data/c_complete.3100.new.eb.fasta
-
-      # call annotate_hla_mutect
-      /home/polysolver/scripts/annotate_hla_mutect.pl ~{indiv} $dirPrefix $a_complete_fasta $b_complete_fasta $c_complete_fasta /home/polysolver $outDir
-        
-      # call filter_hla_mutect
-      /home/polysolver/scripts/filter_hla_mutect.pl "$outDir/~{indiv}.mutect.unfiltered.annotated" ~{indiv} $outDir 0 /home/polysolver
-        
-      # call remove_synonymous_hla_mutect
-      /home/polysolver/scripts/remove_synonymous_hla_mutect.pl "$outDir/~{indiv}.mutect.filtered.annotated" ~{indiv} $outDir
-        
-      # call annotate_hla_strelka
-      /home/polysolver/scripts/annotate_hla_strelka_indels.pl $~{indiv} $dirPrefix $a_complete_fasta $b_complete_fasta $c_complete_fasta /home/polysolver $outDir
-
-      # call filter_hla_strelka_indels
-      /home/polysolver/scripts/filter_hla_strelka_indels.pl "$outDir/~{indiv}.strelka_indels.unfiltered.annotated" ~{indiv} $outDir /home/polysolver
-
+        export PERL5LIB=$PERL5LIB:/home/polysolver/scripts
+        tar xvfz $tarZipDir 
+        dirPrefix=`/home/polysolver/scripts/get_prefix.pl $tarZipDir`
+        echo "dirPrefix=$dirPrefix"
+        /home/polysolver/scripts/annotate_hla_mutect.pl $indiv $dirPrefix /home/polysolver/data/a_complete.3100.new.eb.fasta /home/polysolver/data/b_complete.3100.new.eb.fasta /home/polysolver/data/c_complete.3100.new.eb.fasta /home/polysolver $outDir
+        /home/polysolver/scripts/filter_hla_mutect.pl "$outDir/$indiv.mutect.unfiltered.annotated" $indiv $outDir 0 /home/polysolver
+        /home/polysolver/scripts/remove_synonymous_hla_mutect.pl "$outDir/$indiv.mutect.filtered.annotated" $indiv $outDir
+        /home/polysolver/scripts/annotate_hla_strelka_indels.pl $indiv $dirPrefix /home/polysolver/data/a_complete.3100.new.eb.fasta /home/polysolver/data/b_complete.3100.new.eb.fasta /home/polysolver/data/c_complete.3100.new.eb.fasta /home/polysolver $outDir
+        /home/polysolver/scripts/filter_hla_strelka_indels.pl "$outDir/$indiv.strelka_indels.unfiltered.annotated" $indiv $outDir /home/polysolver
     >>>
 
     output {
