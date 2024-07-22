@@ -113,7 +113,7 @@ task fragpipe {
     else
       cp -s ~{fragpipe_manifest} .
       frag_manifest=$(basename ${fragpipe_manifest})
-      sed -i -e "s/\/path\//\/$cromwell_root\/$working_dir\/$projdir\/data\//g" $frag_manifest  
+      sed -i -e "s|/path/|$cromwell_root/$working_dir/$projdir/data/|g" $frag_manifest  
     fi
     
     #headless version 
