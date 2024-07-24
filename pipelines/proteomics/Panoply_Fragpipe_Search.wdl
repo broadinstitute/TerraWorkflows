@@ -14,7 +14,7 @@ workflow panoply_fragpipe_search {
     Int? num_cpus
     Int? ram_gb
     Int? local_disk_gb
-    String vm_size
+    String vm_size="Standard_D64ds_v4"
   }
 
   call fragpipe {
