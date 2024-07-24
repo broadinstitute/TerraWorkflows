@@ -14,6 +14,7 @@ workflow panoply_fragpipe_search {
     Int? num_cpus
     Int? ram_gb
     Int? local_disk_gb
+    String vm_size
   }
 
   call fragpipe {
@@ -30,7 +31,8 @@ workflow panoply_fragpipe_search {
       num_preemptions=num_preemptions,
       num_cpus=num_cpus,
       ram_gb=ram_gb,
-      local_disk_gb=local_disk_gb
+      local_disk_gb=local_disk_gb,
+      vm_size=vm_size
   }
 
   output {
@@ -56,6 +58,7 @@ task fragpipe {
     Int num_cpus=32
     Int ram_gb=128
     Int local_disk_gb=2000
+    String vm_size
   }
   Array[File] files = if defined(file_of_files) then read_lines(select_first([file_of_files])) else []
 
@@ -141,6 +144,7 @@ task fragpipe {
     disks : "local-disk ${local_disk_gb} HDD"
     preemptible : num_preemptions
     cpu: num_cpus
+    vm_size: vm_size
   }
 
   meta {
