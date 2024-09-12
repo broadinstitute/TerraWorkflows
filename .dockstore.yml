@@ -4,3 +4,7 @@ workflows:
   - name: VariantAnnotation
     subclass: WDL
     primaryDescriptorPath: /pipelines/cohort_screening/VariantAnnotation.wdl
+
+  - name: GWAS-Regenie
+    subclass: WDL
+    primaryDescriptorPath: /pipelines/gwas/regenie_gwas.wdl
